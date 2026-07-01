@@ -1176,6 +1176,7 @@ ECC 是**首个最大化利用各大主要 AI 编程工具的插件**。以下�
 - **关注：** [@affaanmustafa](https://x.com/affaanmustafa)
 - **zenith.chat:** [zenith.chat](https://zenith.chat)
 - **技能目录：** awesome-agent-skills（社区维护的智能体技能目录）
+- **可视化工具书：** [Vexilo · Claude Code 工具书](https://vexilo.app/?lang=en) — 31 agents / 99 commands / 123 skills / 13 rules 的可视化索引，按 5 步工作流组织。一键"Teach Claude this handbook"30 秒把整本工具书喂给本地 Claude。([companion repo](https://github.com/lilhawk7077/claude-code-resources))
 
 ---
 
