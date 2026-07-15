@@ -173,6 +173,40 @@ OpenCode 拥有 20 多个 Claude Code 中不可用的额外事件。
 }
 ```
 
+## MiniMax Provider Presets
+
+The bundled `opencode.json` keeps the existing defaults and adds OpenAI-compatible
+presets for both MiniMax regions. Set `MINIMAX_API_KEY`, then select one of these
+models:
+
+| Region | Model selector                       |
+| ------ | ------------------------------------ |
+| Global | `minimax-global-openai/MiniMax-M3`   |
+| Global | `minimax-global-openai/MiniMax-M2.7` |
+| China  | `minimax-cn-openai/MiniMax-M3`       |
+| China  | `minimax-cn-openai/MiniMax-M2.7`     |
+
+For the Anthropic-compatible protocol, merge this configuration into
+`~/.claude/settings.json`:
+
+```json
+{
+  "env": {
+    "ANTHROPIC_BASE_URL": "https://api.minimax.io/anthropic",
+    "ANTHROPIC_AUTH_TOKEN": "<MINIMAX_API_KEY>",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "1000000",
+    "ANTHROPIC_MODEL": "MiniMax-M3",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "MiniMax-M3",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "MiniMax-M3",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "MiniMax-M3"
+  }
+}
+```
+
+Use `https://api.minimaxi.com/anthropic` as `ANTHROPIC_BASE_URL` for the China
+endpoint. Keep the base URL ending in `/anthropic`; compatible clients append
+`/v1/messages` to it.
+
 ## 许可证 (License)
 
 MIT
