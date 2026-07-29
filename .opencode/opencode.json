@@ -19,9 +19,9 @@
           "attachment": true,
           "reasoning": true,
           "cost": {
-            "input": 0.3,
-            "output": 1.2,
-            "cache_read": 0.06
+            "input": 0.6,
+            "output": 2.4,
+            "cache_read": 0.12
           },
           "modalities": {
             "input": [
@@ -70,9 +70,9 @@
           "attachment": true,
           "reasoning": true,
           "cost": {
-            "input": 0.3,
-            "output": 1.2,
-            "cache_read": 0.06
+            "input": 0.6,
+            "output": 2.4,
+            "cache_read": 0.12
           },
           "modalities": {
             "input": [
