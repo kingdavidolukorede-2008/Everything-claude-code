@@ -302,9 +302,24 @@ section{padding:clamp(64px,8vw,116px) 0}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(238px,1fr));gap:14px}
 .grid-empty{margin-top:20px;color:var(--soil-soft)}
 .card{
-  background:var(--leaf);border:1px solid var(--line);padding:20px;
+  --card-pad:20px;
+  background:var(--leaf);border:1px solid var(--line);padding:var(--card-pad);
   display:flex;flex-direction:column;position:relative;
   transition:transform .25s var(--ease),box-shadow .25s,border-color .25s;
+}
+/* photography is optional per product — the image bleeds to the card edge and
+   pushes nothing else around, so cards with and without one sit level in the grid */
+.card-media{
+  width:calc(100% + var(--card-pad) * 2);
+  margin:calc(var(--card-pad) * -1) calc(var(--card-pad) * -1) 16px;
+  aspect-ratio:4/3;height:auto;object-fit:cover;
+  background:var(--leaf-deep);
+  filter:saturate(.92);transition:filter .3s,transform .5s var(--ease);
+}
+.card:hover .card-media{filter:saturate(1)}
+.card.has-media .badge{
+  background:rgba(17,26,19,.72);color:var(--leaf);
+  backdrop-filter:blur(6px);
 }
 .card:hover{transform:translateY(-3px);box-shadow:var(--shadow-card)}
 .card.in-cart{border-color:var(--c);box-shadow:inset 3px 0 0 var(--c)}
@@ -511,7 +526,7 @@ footer a:hover{color:var(--leaf);border-color:currentColor}
   .arms{grid-template-columns:1fr}
   .stats{grid-template-columns:1fr 1fr}
   .grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-  .card{padding:16px}
+  .card{--card-pad:16px}
   .card h3{font-size:17px}
   .card .price{font-size:20px}
   .nav .wa-btn span{display:none}

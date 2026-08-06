@@ -14,6 +14,12 @@
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
   /* ---------------------------------------------------------------- catalogue */
+  // Photography is optional per product. Add `img` (a filename in assets/img/,
+  // 4:3 and ~640px wide WebP) plus `alt` to give a product a photo; a card
+  // without one renders the typographic layout instead. A photo that fails to
+  // load is removed rather than left as a broken frame — see the img error
+  // handler below. Note the grid reads as unfinished when only some products
+  // have a photo, so add them as a complete set.
   var PRODUCTS = [
     { id:"eggs",  arm:"Poultry",    c:"var(--maize)", name:"Table eggs",           unit:"Crate of 30",         price:5200,  note:"Collected daily" },
     { id:"broil", arm:"Poultry",    c:"var(--maize)", name:"Live broiler",         unit:"Per bird, 2.0–2.4kg", price:9500,  note:"Catch it yourself or we dress it" },
@@ -63,7 +69,12 @@
   if (grid) {
     grid.innerHTML = PRODUCTS.map(function (p) {
       return '' +
-      '<article class="card" data-arm="' + esc(p.arm) + '" data-card="' + p.id + '" style="--c:' + p.c + '">' +
+      '<article class="card' + (p.img ? ' has-media' : '') + '" data-arm="' + esc(p.arm) +
+        '" data-card="' + p.id + '" style="--c:' + p.c + '">' +
+        (p.img
+          ? '<img class="card-media" src="assets/img/' + esc(p.img) + '" alt="' + esc(p.alt || p.name) +
+            '" width="640" height="480" loading="lazy" decoding="async">'
+          : '') +
         (p.badge ? '<span class="badge">' + esc(p.badge) + '</span>' : '') +
         '<div class="tag"><i></i>' + esc(p.arm) + '</div>' +
         '<h3 id="n-' + p.id + '">' + esc(p.name) + '</h3>' +
@@ -76,6 +87,15 @@
         '</div>' +
       '</article>';
     }).join("");
+
+    // a missing or broken photo degrades to the typographic card, never a broken frame
+    $$(".card-media", grid).forEach(function (img) {
+      img.addEventListener("error", function () {
+        var card = img.closest(".card");
+        if (card) card.classList.remove("has-media");
+        img.remove();
+      });
+    });
 
     grid.addEventListener("click", function (e) {
       var b = e.target.closest("button[data-act]");

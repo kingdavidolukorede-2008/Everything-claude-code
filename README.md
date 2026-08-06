@@ -32,6 +32,18 @@ add, remove or reprice there and the rest follows.
 `badge` is optional. `arm` also generates the filter chips, so a new arm name
 creates its own chip automatically.
 
+**Product photography** is optional per product. Drop a 4:3 WebP roughly 640px
+wide into `assets/img/`, then add `img` and `alt` to that product:
+
+```js
+{ id:"eggs", …, img:"eggs.webp", alt:"A full crate of fresh brown eggs" }
+```
+
+The photo bleeds to the card edge and cards without one keep the typographic
+layout, so nothing shifts. A photo that fails to load is removed at runtime
+rather than left as a broken frame. Add photography as a complete set though —
+a grid where only some products have a picture reads as unfinished.
+
 **Phone number**: the `WA` constant in `assets/js/app.js` plus the `wa.me` links in
 `index.html` — currently the placeholder `2348000000000`.
 
