@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Design tokens — black / white / flame, premium serif + clean sans
+   ============================================================ */
+@theme {
+  --color-ink: #0a0a0a;
+  --color-ink-2: #141414;
+  --color-paper: #ffffff;
+  --color-bone: #f4f3f1;
+  --color-ash: #6b6b6b;
+  --color-hair: #e4e2df;
+  --color-flame: #e63020;
+  --color-flame-dp: #b91f12;
+
+  --font-display: "Bodoni Moda", "Times New Roman", Georgia, serif;
+  --font-body: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-synthesis-weight: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Every anchor target clears the fixed 72px navbar. */
+  section[id] {
+    scroll-margin-top: 72px;
+  }
+
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-flame);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* --- scroll reveal ---
+     Content is visible by default. Only once useReveal has run does the
+     hidden state apply, so a JS failure or a browser without
+     IntersectionObserver still shows a complete page. --- */
+  .reveal {
+    transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+  .reveal-ready .reveal:not(.is-in) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-ready .reveal:not(.is-in) { opacity: 1; transform: none; }
+  }
+
+  /* --- eyebrow label --- */
+  .eyebrow {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  /* --- buttons --- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 1rem 2rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid currentColor;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: background-color 0.25s, color 0.25s, border-color 0.25s;
+  }
+  .btn--flame {
+    background: var(--color-flame);
+    border-color: var(--color-flame);
+    color: #fff;
+  }
+  .btn--flame:hover { background: var(--color-flame-dp); border-color: var(--color-flame-dp); }
+  .btn--dark { background: var(--color-ink); border-color: var(--color-ink); color: #fff; }
+  .btn--dark:hover { background: var(--color-flame); border-color: var(--color-flame); }
+  .btn--outline:hover { background: var(--color-ink); border-color: var(--color-ink); color: #fff; }
+  .btn--outline-light:hover { background: #fff; color: var(--color-ink); }
+  .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+  /* --- form fields --- */
+  .field {
+    width: 100%;
+    padding: 0.95rem 1.1rem;
+    border: 1px solid var(--color-hair);
+    background: #fff;
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+  }
+  .field::placeholder { color: var(--color-ash); }
+  .field:focus { outline: none; border-color: var(--color-flame); }
+  .field--dark {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #fff;
+  }
+  .field--dark::placeholder { color: rgba(255, 255, 255, 0.45); }
+  .field--dark:focus { border-color: var(--color-flame); }
+}
