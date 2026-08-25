@@ -11,6 +11,10 @@ export const WINE = '#2B1520'
 
 let uid = 0
 export const nid = (p = 'u') => `${p}${++uid}`
+/** Reset the id counter so each drawing's generated ids are reproducible. */
+export const resetIds = () => {
+  uid = 0
+}
 
 export function rng(seed) {
   let a = seed
@@ -386,6 +390,10 @@ export function ground(w, h, seed = 1) {
 }
 
 export function svg(w, h, body, seed = 1) {
-  uid = 0
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${ground(w, h, seed)}${body}</svg>`
+}
+
+/** Same artwork with no ground — a cut-out for floating over a page. */
+export function svgCutout(w, h, body) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${body}</svg>`
 }

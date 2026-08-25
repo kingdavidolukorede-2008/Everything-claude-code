@@ -29,6 +29,8 @@ src/
   hooks/                  Lagos clock, reduced-motion, body-scroll-lock
   components/             one component per page section + Nav, CartDrawer,
                             ReserveModal, DialSVG (24-hour hero dial), Icons
+  lib/utils.ts            cn() — clsx + tailwind-merge
+  components/ui/          shadcn-convention component folder
 scripts/                  engraving library + plate generator (see Images)
 public/images/            generated engraved dish plates and scenes (see below)
 ```
@@ -58,6 +60,34 @@ item means adding a composition of the same id — nothing else to wire up.
 
 To use real photography instead, drop files at the same paths and update
 `plateFor()` for the extension.
+
+## shadcn / component conventions
+
+The project follows the shadcn layout so components can be dropped in or pulled
+with the shadcn CLI without rewiring imports:
+
+- `components.json` — shadcn config (Tailwind v4, no `tailwind.config`, CSS at
+  `src/index.css`, lucide icon library).
+- `@/*` resolves to `src/*` — declared in `tsconfig.json` and `tsconfig.app.json`
+  for the type-checker, and in `vite.config.ts` `resolve.alias` for the bundler.
+  Both are required; TypeScript paths alone do not affect the bundle. `baseUrl`
+  is deliberately omitted — it is deprecated in TypeScript 6, and `paths`
+  resolves relative to the tsconfig without it.
+- `src/lib/utils.ts` exports `cn()` (clsx + tailwind-merge), which every shadcn
+  component imports.
+- `src/components/ui/` holds third-party/generated primitives. Keeping them in
+  their own folder matters: the shadcn CLI writes and overwrites files there, so
+  anything hand-written outside `ui/` is safe from being clobbered on the next
+  `shadcn add`, and the boundary keeps "vendored, regenerable" separate from
+  "ours".
+
+Belle Food's own sections live directly in `src/components/` and use the house
+tokens (`bg-ink`, `text-cream`, `text-gold`) rather than the semantic ones.
+
+`src/index.css` also maps the shadcn semantic tokens — `--color-background`,
+`--color-primary`, `--color-muted-foreground`, `--color-border`, `--color-ring`
+and the rest — onto the Belle Food palette, so a shadcn component dropped in
+renders in the house colours instead of default neutral.
 
 ## Functionality
 

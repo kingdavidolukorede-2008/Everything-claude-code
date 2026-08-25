@@ -19,6 +19,30 @@
   --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
   --radius-sq: 2px;
+
+  /* shadcn semantic tokens, mapped onto the Belle Food palette so shadcn
+     components drop in already wearing the house colours. */
+  --color-background: #170b0e;
+  --color-foreground: #f4e8d8;
+  --color-card: #2b1520;
+  --color-card-foreground: #f4e8d8;
+  --color-popover: #2b1520;
+  --color-popover-foreground: #f4e8d8;
+  --color-primary: #c9a24b;
+  --color-primary-foreground: #170b0e;
+  --color-secondary: #2b1520;
+  --color-secondary-foreground: #f4e8d8;
+  --color-muted: #2b1520;
+  --color-muted-foreground: #c9b9a6;
+  --color-accent: #c1442e;
+  --color-accent-foreground: #f4e8d8;
+  --color-destructive: #c1442e;
+  --color-destructive-foreground: #f4e8d8;
+  --color-border: rgba(244, 232, 216, 0.12);
+  --color-input: rgba(244, 232, 216, 0.12);
+  --color-ring: #c9a24b;
+
+  --animate-float: float 6s ease-in-out infinite;
 }
 
 @layer base {
@@ -164,6 +188,16 @@
     border-radius: var(--radius-sq);
     color: var(--color-cream-dim);
     background: rgba(244, 232, 216, 0.03);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
   }
 }
 

@@ -5,7 +5,7 @@ import {
   GOLD, SOFT, PEPPER, OUT, DET, FINE, HI,
   el, ci, pa, ln, grp, hatch, stipple,
   plate, bowl, glass, board, mound, dome, snail, fish, steam, leaf,
-  citrus, chunks, skewer, spheres, cylinder, drumstick, pepperRing, svg,
+  citrus, chunks, skewer, spheres, cylinder, drumstick, pepperRing, resetIds, svg, svgCutout,
 } from './engrave-lib.mjs'
 
 const OUTDIR = new URL('../public/images/', import.meta.url).pathname
@@ -388,12 +388,21 @@ const scenes = {
 }
 
 // ── write ─────────────────────────────────────────────────────────────────
+// Cut-outs (no ground) used by the floating-plates hero.
+const FLOATING = ['rg-jollof', 'gm-catfish', 'ss-egusi', 'sc-suya', 'dr-chapman', 'sc-snail']
+
 let n = 0
 for (const [id, build] of Object.entries(dishes)) {
-  writeFileSync(`${OUTDIR}${id}.svg`, svg(D, D, build(), (n % 7) + 1))
+  resetIds()
+  const body = build()
+  writeFileSync(`${OUTDIR}${id}.svg`, svg(D, D, body, (n % 7) + 1))
+  if (FLOATING.includes(id)) {
+    writeFileSync(`${OUTDIR}${id}-cutout.svg`, svgCutout(D, D, body))
+  }
   n++
 }
 for (const [id, build] of Object.entries(scenes)) {
+  resetIds()
   writeFileSync(`${OUTDIR}${id}.svg`, svg(SW, SH, build(), (n % 7) + 1))
   n++
 }

@@ -3,6 +3,7 @@ import { Nav } from './components/Nav'
 import { Hero } from './components/Hero'
 import { About } from './components/About'
 import { Kitchen } from './components/Kitchen'
+import { FloatingPlates } from './components/FloatingPlates'
 import { MenuSection } from './components/MenuSection'
 import { GallerySection } from './components/Gallery'
 import { Reviews } from './components/Reviews'
@@ -30,6 +31,7 @@ function AppShell() {
         <Hero />
         <About />
         <Kitchen />
+        <FloatingPlates />
         <MenuSection />
         <GallerySection />
         <Reviews />
