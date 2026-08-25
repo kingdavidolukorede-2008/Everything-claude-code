@@ -1,60 +1,57 @@
 import { FloatingFoodHero } from '@/components/ui/hero-section-7'
 
 /**
- * The floating-plates interlude between the featured dishes and the menu.
- * Uses the engraved cut-outs (no ground) so the plates read as drifting
- * objects rather than tiles.
- *
- * Every plate carries `aspect-square`: the artwork is square, and an
+ * The FloatingFoodHero reference content, rendered with the site's own
+ * artwork. Title, description, alt text and the per-image position classes
+ * are the demo's verbatim; `aspect-square` is added to each because an
  * absolutely-positioned img given only a width collapses to zero height.
  */
-const PLATE = 'absolute aspect-square animate-float'
-
 const HERO_IMAGES = [
   {
-    src: '/images/rg-jollof-cutout.svg',
-    alt: 'An engraving of a plate of party jollof rice',
-    className: `${PLATE} w-44 sm:w-60 md:w-72 lg:w-80 -top-4 -left-6 sm:left-0 md:-top-2 md:left-4 opacity-95`,
+    src: '/images/demo-burger.svg',
+    alt: 'A delicious cheeseburger',
+    className:
+      'aspect-square w-40 sm:w-56 md:w-64 lg:w-72 top-10 left-4 sm:left-10 md:top-20 md:left-20 animate-float',
   },
   {
-    src: '/images/gm-catfish-cutout.svg',
-    alt: 'An engraving of a whole grilled catfish on a platter',
-    className: `${PLATE} w-40 sm:w-56 md:w-68 lg:w-76 -top-6 -right-6 sm:right-0 md:-top-4 md:right-2 opacity-95`,
+    src: '/images/demo-steamer.svg',
+    alt: 'A bamboo steamer with dumplings',
+    className:
+      'aspect-square w-28 sm:w-36 md:w-48 top-10 right-4 sm:right-10 md:top-16 md:right-16 animate-float',
   },
   {
-    src: '/images/sc-suya-cutout.svg',
-    alt: 'An engraving of chicken suya skewers on a board',
-    className: `${PLATE} w-40 sm:w-52 md:w-64 -bottom-8 -left-4 sm:left-2 md:-bottom-6 md:left-10 opacity-95`,
+    src: '/images/demo-pizza.svg',
+    alt: 'A slice of pizza',
+    className:
+      'aspect-square w-32 sm:w-40 md:w-56 bottom-8 right-5 sm:right-10 md:bottom-16 md:right-20 animate-float',
   },
   {
-    src: '/images/ss-egusi-cutout.svg',
-    alt: 'An engraving of a bowl of egusi soup',
-    className: `${PLATE} w-36 sm:w-52 md:w-64 -bottom-6 -right-4 sm:right-2 md:-bottom-4 md:right-10 opacity-95`,
+    src: '/images/demo-basil.svg',
+    alt: 'A basil leaf',
+    className: 'aspect-square w-8 sm:w-12 top-1/4 left-1/3 animate-float',
   },
   {
-    src: '/images/dr-chapman-cutout.svg',
-    alt: 'An engraving of a glass of Chapman',
-    className: `${PLATE} hidden lg:block w-24 top-[3%] left-[44%] opacity-70`,
+    src: '/images/demo-tomato.svg',
+    alt: 'A slice of tomato',
+    className: 'aspect-square w-8 sm:w-10 top-1/2 right-1/4 animate-float',
   },
   {
-    src: '/images/sc-snail-cutout.svg',
-    alt: 'An engraving of peppered snails',
-    className: `${PLATE} hidden lg:block w-28 bottom-[4%] left-[52%] opacity-70`,
+    src: '/images/demo-tomato.svg',
+    alt: 'A slice of tomato',
+    className: 'aspect-square w-8 sm:w-10 top-3/4 left-1/4 animate-float',
   },
 ]
 
 export function FloatingPlates() {
   return (
     <FloatingFoodHero
-      title="Whatever hour brings you in."
-      description="Small chops at noon, a whole catfish at midnight, pepper soup at 3am — the grill stays lit and the plates keep coming."
+      title="Better food for more people"
+      description="For over a decade, we've enabled our customers to discover new tastes, delivered right to their doorstep."
       images={HERO_IMAGES}
       className={[
         'border-y border-hairline',
         // the swirls paint with currentColor
         'text-gold/25',
-        // tighten the band; the component defaults to 60vh / 80vh
-        'min-h-[520px] py-16 md:py-20 lg:min-h-[600px]',
         // headings on this site are Fraunces, not the body face
         '[&_h1]:font-display [&_h1]:font-semibold [&_h1]:tracking-normal',
       ].join(' ')}

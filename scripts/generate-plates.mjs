@@ -387,6 +387,123 @@ const scenes = {
   },
 }
 
+
+// ── demo subjects for the FloatingFoodHero reference content ──────────────
+// Drawn rather than sourced: this environment's network policy blocks image
+// hosts, and a production page should not hotlink someone else's CDN.
+const demo = {
+  'demo-burger': () => {
+    const cx = CX
+    const bunTop = `M ${cx - 172} 596 q 0 -190 172 -190 q 172 0 172 190 Z`
+    const patty = `M ${cx - 164} 632 q -14 -46 22 -52 h 284 q 36 6 22 52 q -18 30 -164 30 q -146 0 -164 -30 Z`
+    let seeds = ''
+    ;[[-96, 500], [-38, 470], [26, 468], [88, 498], [-64, 538], [56, 540], [0, 512]].forEach(([dx, y]) => {
+      seeds += el(cx + dx, y, 15, 9, { ...FINE, opacity: 0.7 })
+    })
+    return (
+      pa(bunTop, OUT) +
+      hatch(`<path d="${bunTop}"/>`, { bbox: { x: cx - 172, y: 400, width: 344, height: 200 }, angle: 34, gap: 14, opacity: 0.2 }) +
+      seeds +
+      // cheese
+      pa(`M ${cx - 178} 600 q 44 26 90 4 q 44 26 90 4 q 44 24 88 -8 l 0 34 q -46 30 -90 6 q -46 24 -90 0 q -46 22 -88 -6 Z`, DET) +
+      pa(patty, OUT) +
+      hatch(`<path d="${patty}"/>`, { bbox: { x: cx - 170, y: 574, width: 340, height: 92 }, angle: 48, gap: 9, opacity: 0.3 }) +
+      // lettuce
+      pa(`M ${cx - 180} 676 q 40 -30 78 -6 q 38 -28 76 -4 q 38 -26 76 -2 q 34 -22 70 4 q -34 26 -70 12 q -38 20 -76 2 q -38 20 -76 0 q -38 18 -78 -6 Z`, DET) +
+      // bottom bun
+      pa(`M ${cx - 164} 686 h 328 q 26 0 22 40 q -8 42 -186 42 q -178 0 -186 -42 q -4 -40 22 -40 Z`, OUT) +
+      hatch(`<path d="M ${cx - 164} 686 h 328 q 26 0 22 40 q -8 42 -186 42 q -178 0 -186 -42 q -4 -40 22 -40 Z"/>`,
+        { bbox: { x: cx - 190, y: 686, width: 380, height: 90 }, angle: 30, gap: 13, opacity: 0.22 })
+    )
+  },
+
+  'demo-steamer': () => {
+    const cx = CX
+    let slats = ''
+    for (let i = 0; i <= 10; i++) {
+      const x = cx - 200 + i * 40
+      slats += ln(x, 560, x, 664, { ...FINE, opacity: 0.4 })
+      slats += ln(x, 686, x, 786, { ...FINE, opacity: 0.4 })
+    }
+    return (
+      // lid
+      pa(`M ${cx - 214} 540 q 0 -104 214 -104 q 214 0 214 104 Z`, OUT) +
+      el(cx, 540, 214, 42, OUT) +
+      ci(cx, 428, 26, OUT) +
+      hatch(`<path d="M ${cx - 214} 540 q 0 -104 214 -104 q 214 0 214 104 Z"/>`,
+        { bbox: { x: cx - 214, y: 430, width: 428, height: 112 }, angle: 62, gap: 15, opacity: 0.2 }) +
+      // two tiers
+      `<rect ${['x="' + (cx - 204) + '"', 'y="556"', 'width="408"', 'height="112"', 'rx="10"', 'fill="none"', 'stroke="' + GOLD + '"', 'stroke-width="4.4"'].join(' ')}/>` +
+      `<rect ${['x="' + (cx - 204) + '"', 'y="682"', 'width="408"', 'height="108"', 'rx="10"', 'fill="none"', 'stroke="' + GOLD + '"', 'stroke-width="4.4"'].join(' ')}/>` +
+      slats +
+      // dumplings peeking from the top tier
+      [[-104, 0.95], [0, 1.05], [104, 0.95]].map(([dx, sc]) =>
+        pa(`M ${cx + dx - 56 * sc} 556 q ${16 * sc} ${-66 * sc} ${56 * sc} ${-66 * sc} q ${40 * sc} 0 ${56 * sc} ${66 * sc} Z`, DET) +
+        pa(`M ${cx + dx - 30 * sc} 522 q ${30 * sc} ${-22 * sc} ${60 * sc} 0`, FINE),
+      ).join('') +
+      steam(cx, 400, 190, 3, 84)
+    )
+  },
+
+  'demo-pizza': () => {
+    const cx = CX
+    const slice = `M ${cx} 268 L ${cx - 186} 706 Q ${cx} 764 ${cx + 186} 706 Z`
+    return (
+      pa(slice, OUT) +
+      // crust
+      pa(`M ${cx - 186} 706 Q ${cx} 764 ${cx + 186} 706 Q ${cx} 700 ${cx - 186} 706 Z`, OUT) +
+      stipple(`<path d="${slice}"/>`, { bbox: { x: cx - 186, y: 268, width: 372, height: 440 }, n: 240, seed: 77, r: 2.4, opacity: 0.4 }) +
+      // pepperoni
+      [[-64, 560, 40], [58, 578, 36], [-6, 452, 32], [82, 470, 26], [-84, 660, 28]].map(([dx, y, r]) =>
+        ci(cx + dx, y, r, DET) + hatch(`<circle cx="${cx + dx}" cy="${y}" r="${r}"/>`,
+          { bbox: { x: cx + dx - r, y: y - r, width: r * 2, height: r * 2 }, angle: 42, gap: 7, opacity: 0.3 }),
+      ).join('') +
+      leaf(cx + 30, 640, 62, -28)
+    )
+  },
+
+  'demo-basil': () => {
+    const cx = CX
+    const blade = `M ${cx} 210 Q ${cx + 176} 470 ${cx} 790 Q ${cx - 176} 470 ${cx} 210 Z`
+    let veins = ''
+    for (let i = 1; i <= 6; i++) {
+      const y = 300 + i * 68
+      const w = 128 * Math.sin((i / 7) * Math.PI)
+      veins += pa(`M ${cx} ${y} q ${w * 0.6} ${-16} ${w} ${-44}`, { ...FINE, opacity: 0.55 })
+      veins += pa(`M ${cx} ${y} q ${-w * 0.6} ${-16} ${-w} ${-44}`, { ...FINE, opacity: 0.55 })
+    }
+    return (
+      pa(blade, OUT) +
+      ln(cx, 216, cx, 786, { ...DET, 'stroke-width': 3.2 }) +
+      veins +
+      hatch(`<path d="${blade}"/>`, { bbox: { x: cx - 176, y: 210, width: 352, height: 580 }, angle: 70, gap: 16, opacity: 0.16 })
+    )
+  },
+
+  'demo-tomato': () => {
+    const cx = CX
+    const cy = 500
+    let locules = ''
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2 - Math.PI / 2
+      const lx = cx + Math.cos(a) * 132
+      const ly = cy + Math.sin(a) * 132
+      locules += grp(
+        pa('M 0 -56 q 54 30 44 82 q -44 22 -88 0 q -10 -52 44 -82 Z', DET) +
+          ci(0, 18, 13, FINE) + ci(-24, 6, 11, FINE) + ci(24, 6, 11, FINE),
+        { transform: `translate(${lx} ${ly}) rotate(${(a * 180) / Math.PI + 90}) scale(0.82)` },
+      )
+    }
+    return (
+      ci(cx, cy, 290, OUT) +
+      ci(cx, cy, 252, DET) +
+      hatch(`<circle cx="${cx}" cy="${cy}" r="290"/>`, { bbox: { x: cx - 290, y: cy - 290, width: 580, height: 580 }, angle: 40, gap: 17, opacity: 0.14 }) +
+      locules +
+      ci(cx, cy, 46, DET)
+    )
+  },
+}
+
 // ── write ─────────────────────────────────────────────────────────────────
 // Cut-outs (no ground) used by the floating-plates hero.
 const FLOATING = ['rg-jollof', 'gm-catfish', 'ss-egusi', 'sc-suya', 'dr-chapman', 'sc-snail']
@@ -404,6 +521,11 @@ for (const [id, build] of Object.entries(dishes)) {
 for (const [id, build] of Object.entries(scenes)) {
   resetIds()
   writeFileSync(`${OUTDIR}${id}.svg`, svg(SW, SH, build(), (n % 7) + 1))
+  n++
+}
+for (const [id, build] of Object.entries(demo)) {
+  resetIds()
+  writeFileSync(`${OUTDIR}${id}.svg`, svgCutout(D, D, build()))
   n++
 }
 console.log(`wrote ${n} engraved plates to public/images/`)
