@@ -1,76 +1,60 @@
-# Omojowo Integrated Farms — website
+# Belle Food
 
-Static marketing and ordering site for a closed-loop integrated farm in Odogunyan,
-Ikorodu, Lagos. No build step, no dependencies — open `index.html` or serve the
-folder.
+A dark, typographic, late-night restaurant site for **Belle Food** — a women-owned,
+founder-led kitchen open 24 hours on Chevron Drive, Eti-Osa, Lekki, Lagos.
 
-```
-index.html              markup, meta, JSON-LD
-assets/css/styles.css   tokens → primitives → components → responsive → motion/print
-assets/js/app.js        catalogue, cart, filters, diagram, nav, scroll state
-```
+Built with React, Vite, TypeScript and Tailwind CSS v4.
 
 ## Running it
 
 ```bash
-python3 -m http.server 8000   # then open http://localhost:8000
+npm install
+npm run dev       # local dev server
+npm run build     # type-check + production build to dist/
+npm run preview   # preview the production build
+npm run lint      # oxlint
 ```
 
-Deploys as-is to GitHub Pages, Netlify, Vercel or any static host.
+## Structure
 
-## Editing content
-
-**Prices and produce** live in the `PRODUCTS` array at the top of `assets/js/app.js`.
-Each entry drives the shop card, the price ticker and the WhatsApp order message —
-add, remove or reprice there and the rest follows.
-
-```js
-{ id:"eggs", arm:"Poultry", c:"var(--maize)", name:"Table eggs",
-  unit:"Crate of 30", price:5200, note:"Collected daily", badge:"Seasonal" }
+```
+index.html               meta, title, OG tags
+src/
+  App.tsx                entry component — providers + page sections
+  main.tsx                React root
+  index.css               Tailwind v4 @theme tokens, fonts, base styles
+  types.ts                shared types (MenuItem, CartLine, Fulfilment…)
+  data/                   business info, menu, reviews (all real content)
+  context/                CartContext (order state) and ToastContext
+  hooks/                  Lagos clock, reduced-motion, body-scroll-lock
+  components/             one component per page section + Nav, CartDrawer,
+                            ReserveModal, DialSVG (24-hour hero dial), Icons
+public/images/            generated SVG "photography" plates (see below)
 ```
 
-`badge` is optional. `arm` also generates the filter chips, so a new arm name
-creates its own chip automatically.
+## Images
 
-**Product photography** is optional per product. Drop a 4:3 WebP roughly 640px
-wide into `assets/img/`, then add `img` and `alt` to that product:
+`public/images/*.svg` are hand-built, art-directed graphics (dark gradient
+wash + gold linework motif + film grain + vignette) rather than photographs —
+the AI image-generation tools available in this environment didn't have
+enough balance to produce the full photoreal set the brief called for. They're
+designed to match the site's palette exactly and carry no watermarks or text.
+Swap them for real photography by replacing the files at the same paths
+(`about-interior.svg`, `dish-*.svg`, `menu-*.svg`, `gallery-*.svg`) — code
+references them by path, not format, so real `.jpg`/`.webp` files work as
+long as the referencing paths in `src/data/menu.ts`, `src/components/About.tsx`
+and `src/components/Gallery.tsx` are updated to match.
 
-```js
-{ id:"eggs", …, img:"eggs.webp", alt:"A full crate of fresh brown eggs" }
-```
+## Functionality
 
-The photo bleeds to the card edge and cards without one keep the typographic
-layout, so nothing shifts. A photo that fails to load is removed at runtime
-rather than left as a broken frame. Add photography as a complete set though —
-a grid where only some products have a picture reads as unfinished.
-
-**Phone number**: the `WA` constant in `assets/js/app.js` plus the `wa.me` links in
-`index.html` — currently the placeholder `2348000000000`.
-
-**Free-delivery threshold**: the `FREE_DELIVERY` constant in `assets/js/app.js`
-(₦25,000), which drives the progress meter in the order bar.
-
-**Colour and type**: the `:root` token block in `assets/css/styles.css`. The
-`--maize` / `--pond` / `--clay` tokens are the darker text-safe shades; the
-`-bright` variants are for graphics only, so keep body text on the base tokens
-to hold contrast.
-
-## How the ordering works
-
-There is no checkout and no server. Quantities are held in `localStorage`
-(`omojowo.cart.v1`) so an order survives a reload, and the order bar composes a
-formatted itemised message into a `wa.me` deep link. The customer sends it; the
-farm confirms weight, availability and delivery by reply.
-
-## Accessibility and behaviour notes
-
-- Skip link, visible focus rings, and a live region that announces cart and
-  filter changes.
-- Mobile menu is a real disclosure: `aria-expanded`, Escape to close, scrim
-  click, focus kept inside while open, released on resize to desktop.
-- The loop diagram is keyboard operable (`Enter` / `Space` to trace an arm,
-  `Escape` to clear) and carries a text description for screen readers.
-- Everything animated is disabled under `prefers-reduced-motion: reduce`.
-- The shop grid is JavaScript-rendered; a `<noscript>` block gives WhatsApp and
-  phone fallbacks.
-- A print stylesheet drops the chrome and prints the price list.
+- **Order drawer**: add/remove items, adjust quantity, pick dine-in / takeaway
+  / delivery, fill in contact details, and build a prefilled WhatsApp order
+  ticket (`wa.me/2349137421838`) or call directly.
+- **Reserve modal**: name, phone, guest count, date, time and notes, with a
+  confirmation state and a call-to-confirm fallback.
+- **Live Africa/Lagos clock** in the hero and Visit section.
+- Mobile nav locks body scroll; both the cart drawer and reserve modal close
+  on `Escape` or overlay click.
+- Money is formatted with `Intl.NumberFormat('en-NG', { currency: 'NGN' })`.
+- Respects `prefers-reduced-motion` throughout (marquee, dial spin, scroll
+  reveals).

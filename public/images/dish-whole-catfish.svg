@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900">
+  <defs>
+    <radialGradient id="glow-dish-whole-catfish" cx="50%" cy="45%" r="75%">
+      <stop offset="0%" stop-color="#C9A24B" stop-opacity="0.55"/>
+      <stop offset="45%" stop-color="#2B1520" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#170B0E"/>
+    </radialGradient>
+    <radialGradient id="vign-dish-whole-catfish" cx="50%" cy="50%" r="75%">
+      <stop offset="55%" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.55"/>
+    </radialGradient>
+    
+  <filter id="grain-dish-whole-catfish">
+    <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="18" stitchTiles="stitch" result="noise"/>
+    <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.05 0"/>
+  </filter>
+  </defs>
+  <rect width="1200" height="900" fill="#170B0E"/>
+  <rect width="1200" height="900" fill="url(#glow-dish-whole-catfish)"/>
+  <rect width="1200" height="900" filter="url(#grain-dish-whole-catfish)"/>
+  <rect width="1200" height="900" fill="url(#vign-dish-whole-catfish)"/><defs><radialGradient id="spot-600"><stop offset="0%" stop-color="#C9A24B" stop-opacity="0.3"/><stop offset="100%" stop-color="#C9A24B" stop-opacity="0"/></radialGradient></defs>
+    <ellipse cx="600" cy="450" rx="289.8" ry="105.84" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.6"/>
+    <path d="M 864.6 450 l 100.80000000000001 -63.00000000000001 l 0 126.00000000000001 z" fill="none" stroke="#C9A24B" stroke-width="2.5" opacity="0.6"/>
+    <path d="M 524.4 349.2 q 75.60000000000001 -37.800000000000004 151.20000000000002 0" fill="none" stroke="#E3C878" stroke-width="2" opacity="0.4"/>
+    <circle cx="385.79999999999995" cy="434.88" r="3" fill="#E3C878" opacity="0.7"/><rect width="1200" height="900" fill="none" stroke="#F4E8D8" stroke-opacity="0.06" stroke-width="1"/></svg>
