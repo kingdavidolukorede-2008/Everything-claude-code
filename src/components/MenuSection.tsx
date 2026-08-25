@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { MENU_CATEGORIES, MENU_ITEMS, MENU_OVERVIEW, ORDER_YOUR_WAY } from '../data/menu'
 import type { MenuCategory } from '../types'
 import { useCart } from '../context/CartContext'
-import { formatNaira } from '../utils/format'
+import { formatNaira, plateFor } from '../utils/format'
 import { Container } from './Container'
 import { Reveal } from './Reveal'
 import { PlusIcon } from './Icons'
@@ -80,31 +80,33 @@ export function MenuSection() {
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => (
             <Reveal key={item.id} delay={(i % 6) * 60}>
-              <article className="card card-hover flex h-full gap-4 overflow-hidden p-4">
+              <article className="card card-hover flex h-full min-h-[148px] gap-4 overflow-hidden p-4">
                 <img
-                  src={item.image}
-                  alt={item.name}
-                  className="h-24 w-24 shrink-0 rounded-sq object-cover"
+                  src={plateFor(item.id)}
+                  alt={`Engraving of ${item.name}`}
+                  className="h-28 w-28 shrink-0 rounded-sq object-cover"
                   loading="lazy"
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-display text-base text-cream">{item.name}</h3>
-                    {item.houseFavourite && (
-                      <span className="chip shrink-0 !px-1.5 !py-0.5 text-[10px]">House favourite</span>
-                    )}
-                  </div>
+                  <h3 className="font-display text-base leading-snug text-cream">{item.name}</h3>
                   <p className="mt-1 line-clamp-2 flex-1 text-xs leading-relaxed text-cream-faint">
                     {item.description}
                   </p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="font-mono text-sm text-gold-soft">
-                      {formatNaira(item.price)}
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="flex min-w-0 items-baseline gap-2">
+                      <span className="font-mono text-sm text-gold-soft">
+                        {formatNaira(item.price)}
+                      </span>
+                      {item.houseFavourite && (
+                        <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.08em] text-gold">
+                          <span aria-hidden="true">&#10022;</span> Favourite
+                        </span>
+                      )}
                     </span>
                     <button
                       type="button"
                       onClick={() => cart.addItem(item)}
-                      className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.08em] text-cream hover:text-gold-soft"
+                      className="flex shrink-0 items-center gap-1 font-mono text-[11px] uppercase tracking-[0.08em] text-cream hover:text-gold-soft"
                       aria-label={`Add ${item.name} to order`}
                     >
                       <PlusIcon className="h-3.5 w-3.5" />

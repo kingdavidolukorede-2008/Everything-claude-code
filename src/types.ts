@@ -13,7 +13,6 @@ export interface MenuItem {
   category: MenuCategory
   price: number
   description: string
-  image: string
   houseFavourite?: boolean
 }
 

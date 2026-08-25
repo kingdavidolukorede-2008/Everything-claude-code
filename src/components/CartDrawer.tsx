@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useCart } from '../context/CartContext'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
-import { formatNaira } from '../utils/format'
+import { formatNaira, plateFor } from '../utils/format'
 import { buildWhatsAppLink } from '../utils/whatsapp'
 import { BUSINESS } from '../data/business'
 import type { Fulfilment } from '../types'
@@ -99,7 +99,7 @@ export function CartDrawer() {
               {cart.lines.map((line) => (
                 <li key={line.item.id} className="flex items-center gap-3">
                   <img
-                    src={line.item.image}
+                    src={plateFor(line.item.id)}
                     alt=""
                     className="h-16 w-16 shrink-0 rounded-sq object-cover"
                   />

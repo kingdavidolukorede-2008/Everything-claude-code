@@ -16,7 +16,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Small Chops',
     price: 6500,
     description: 'Charred garden snail tossed through a fiery pepper sauce.',
-    image: '/images/menu-small-chops.svg',
   },
   {
     id: 'sc-puffpuff',
@@ -24,7 +23,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Small Chops',
     price: 2000,
     description: 'Golden, pillow-soft street classic, fried to order.',
-    image: '/images/menu-small-chops.svg',
   },
   {
     id: 'sc-springrolls',
@@ -32,7 +30,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Small Chops',
     price: 3500,
     description: 'Crisp shells packed with spiced vegetables.',
-    image: '/images/menu-small-chops.svg',
   },
   {
     id: 'sc-suya',
@@ -40,7 +37,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Small Chops',
     price: 5500,
     description: 'Smoky grilled chicken dusted in yaji spice.',
-    image: '/images/menu-small-chops.svg',
     houseFavourite: true,
   },
 
@@ -51,7 +47,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Soups & Swallow',
     price: 4500,
     description: 'Vegetable soup layered with assorted meat and fish.',
-    image: '/images/menu-soups-swallow.svg',
   },
   {
     id: 'ss-egusi',
@@ -59,7 +54,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Soups & Swallow',
     price: 4500,
     description: 'Ground melon-seed soup, thick and full-bodied.',
-    image: '/images/dish-egusi-poundedyam.svg',
     houseFavourite: true,
   },
   {
@@ -68,7 +62,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Soups & Swallow',
     price: 8500,
     description: 'Whole catfish in a clear, fiery herbal broth.',
-    image: '/images/menu-soups-swallow.svg',
   },
   {
     id: 'ss-swallow',
@@ -76,7 +69,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Soups & Swallow',
     price: 1500,
     description: 'Your swallow of choice, pounded fresh to order.',
-    image: '/images/menu-soups-swallow.svg',
   },
 
   // Rice & Grains
@@ -86,7 +78,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Rice & Grains',
     price: 5500,
     description: 'Smoky, oven-finished party jollof rice.',
-    image: '/images/dish-party-jollof.svg',
     houseFavourite: true,
   },
   {
@@ -95,7 +86,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Rice & Grains',
     price: 6000,
     description: 'Fried rice built on native spice, not curry powder.',
-    image: '/images/menu-rice-grains.svg',
   },
   {
     id: 'rg-ofada',
@@ -103,7 +93,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Rice & Grains',
     price: 7500,
     description: 'Local ofada rice with a green-pepper ayamase sauce.',
-    image: '/images/menu-rice-grains.svg',
   },
   {
     id: 'rg-coconut',
@@ -111,7 +100,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Rice & Grains',
     price: 5500,
     description: 'Rice slow-simmered in coconut milk and pepper.',
-    image: '/images/menu-rice-grains.svg',
   },
 
   // Grills & Mains
@@ -121,7 +109,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Grills & Mains',
     price: 12000,
     description: 'Whole catfish, char-grilled and pepper-glazed.',
-    image: '/images/dish-whole-catfish.svg',
     houseFavourite: true,
   },
   {
@@ -130,7 +117,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Grills & Mains',
     price: 7500,
     description: 'Chicken parts fried and finished in pepper sauce.',
-    image: '/images/menu-grills-mains.svg',
   },
   {
     id: 'gm-turkey',
@@ -138,7 +124,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Grills & Mains',
     price: 8500,
     description: 'Grilled turkey with hand-cut fries.',
-    image: '/images/menu-grills-mains.svg',
   },
   {
     id: 'gm-platter',
@@ -146,7 +131,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Grills & Mains',
     price: 15000,
     description: 'Beef, chicken, turkey and shaki, built for the table.',
-    image: '/images/menu-grills-mains.svg',
   },
 
   // Drinks
@@ -156,7 +140,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Drinks',
     price: 2500,
     description: 'The house mix, chilled and citrus-bright.',
-    image: '/images/menu-drinks.svg',
     houseFavourite: true,
   },
   {
@@ -165,7 +148,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Drinks',
     price: 1500,
     description: 'Hibiscus, ginger and clove, steeped overnight.',
-    image: '/images/menu-drinks.svg',
   },
   {
     id: 'dr-malt',
@@ -173,7 +155,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Drinks',
     price: 1200,
     description: 'Ice-cold malt, straight from the fridge.',
-    image: '/images/menu-drinks.svg',
   },
   {
     id: 'dr-juice',
@@ -181,7 +162,6 @@ export const MENU_ITEMS: MenuItem[] = [
     category: 'Drinks',
     price: 2000,
     description: 'Seasonal fruit, pressed fresh to order.',
-    image: '/images/menu-drinks.svg',
   },
 ]
 
@@ -193,7 +173,6 @@ export const FEATURED_DISHES: MenuItem[] = [
     price: 5500,
     description:
       'Smoky, oven-finished party jollof — the kind that makes a room go quiet for a minute.',
-    image: '/images/dish-party-jollof.svg',
     houseFavourite: true,
   },
   {
@@ -203,7 +182,6 @@ export const FEATURED_DISHES: MenuItem[] = [
     price: 12000,
     description:
       'Char-grilled whole catfish, glazed in pepper sauce, plated for sharing.',
-    image: '/images/dish-whole-catfish.svg',
     houseFavourite: true,
   },
   {
@@ -213,7 +191,6 @@ export const FEATURED_DISHES: MenuItem[] = [
     price: 6000,
     description:
       'Ground egusi soup, thick with assorted meat and stockfish, spooned beside hot pounded yam.',
-    image: '/images/dish-egusi-poundedyam.svg',
     houseFavourite: true,
   },
 ]

@@ -29,21 +29,35 @@ src/
   hooks/                  Lagos clock, reduced-motion, body-scroll-lock
   components/             one component per page section + Nav, CartDrawer,
                             ReserveModal, DialSVG (24-hour hero dial), Icons
-public/images/            generated SVG "photography" plates (see below)
+scripts/                  engraving library + plate generator (see Images)
+public/images/            generated engraved dish plates and scenes (see below)
 ```
 
 ## Images
 
-`public/images/*.svg` are hand-built, art-directed graphics (dark gradient
-wash + gold linework motif + film grain + vignette) rather than photographs —
-the AI image-generation tools available in this environment didn't have
-enough balance to produce the full photoreal set the brief called for. They're
-designed to match the site's palette exactly and carry no watermarks or text.
-Swap them for real photography by replacing the files at the same paths
-(`about-interior.svg`, `dish-*.svg`, `menu-*.svg`, `gallery-*.svg`) — code
-references them by path, not format, so real `.jpg`/`.webp` files work as
-long as the referencing paths in `src/data/menu.ts`, `src/components/About.tsx`
-and `src/components/Gallery.tsx` are updated to match.
+`public/images/*.svg` are an original engraved illustration system — gold linework
+on a wine ground, in the vocabulary of antique menu plates: contour outlines,
+parallel hatching for shadow, and stipple for grain and texture. Every dish has
+its own bespoke plate; there are no shared or repeated marks.
+
+They are generated, not hand-authored, so they stay consistent and editable:
+
+```bash
+node scripts/generate-plates.mjs    # rewrites public/images/
+```
+
+- `scripts/engrave-lib.mjs` — drawing primitives (vessels, hatching, stipple,
+  fish, mounds, skewers, steam, …) plus the stroke-weight hierarchy.
+- `scripts/generate-plates.mjs` — one composition per dish, plus the four
+  interior scenes and the About room.
+
+Dish plates are square (1000×1000) so they crop safely to the 4:3 featured cards
+and read cleanly at thumbnail size; scenes are 1200×900. Each dish's artwork is
+resolved from its id by `plateFor()` in `src/utils/format.ts`, so adding a menu
+item means adding a composition of the same id — nothing else to wire up.
+
+To use real photography instead, drop files at the same paths and update
+`plateFor()` for the extension.
 
 ## Functionality
 

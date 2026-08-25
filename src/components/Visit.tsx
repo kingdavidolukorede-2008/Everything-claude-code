@@ -24,7 +24,8 @@ export function Visit({ onReserve }: VisitProps) {
 
         <div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
-            <div className="card h-full p-8">
+            <div className="card flex h-full flex-col p-8">
+              <p className="eyebrow mb-6">Address</p>
               <div className="flex items-start gap-3">
                 <MapPinIcon className="mt-1 h-5 w-5 shrink-0 text-gold" />
                 <div>
@@ -35,7 +36,14 @@ export function Visit({ onReserve }: VisitProps) {
                 </div>
               </div>
 
-              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="mt-6 flex flex-wrap gap-2">
+                <span className="chip">Dine-in</span>
+                <span className="chip">Takeaway</span>
+                <span className="chip">No-contact delivery</span>
+                <span className="chip">Also on Glovo</span>
+              </div>
+
+              <div className="mt-auto grid grid-cols-1 gap-3 pt-8 sm:grid-cols-2">
                 <a
                   href={BUSINESS.mapsUrl}
                   target="_blank"

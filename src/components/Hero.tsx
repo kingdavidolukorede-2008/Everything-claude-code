@@ -40,7 +40,7 @@ export function Hero() {
             </span>
           </div>
 
-          <div className="mt-7 flex flex-wrap gap-2.5">
+          <div className="mt-7 flex max-w-[440px] flex-wrap gap-2.5">
             <span className="chip">
               <StarIcon className="h-3 w-3 text-gold" />
               {BUSINESS.rating} · {BUSINESS.reviewCount} reviews

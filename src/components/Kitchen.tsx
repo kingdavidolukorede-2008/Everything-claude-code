@@ -1,6 +1,6 @@
 import { FEATURED_DISHES } from '../data/menu'
 import { useCart } from '../context/CartContext'
-import { formatNaira } from '../utils/format'
+import { formatNaira, plateFor } from '../utils/format'
 import { Container } from './Container'
 import { Reveal } from './Reveal'
 import { PlusIcon } from './Icons'
@@ -24,7 +24,7 @@ export function Kitchen() {
               <article className="card card-hover group flex h-full flex-col overflow-hidden">
                 <div className="relative overflow-hidden">
                   <img
-                    src={dish.image}
+                    src={plateFor(dish.id)}
                     alt={dish.name}
                     className="aspect-[4/3] w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"

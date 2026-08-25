@@ -90,13 +90,16 @@ export function DialSVG() {
         })}
         <circle cx="236" cy="200" r="15" fill="#170B0E" opacity="0.15" />
 
-        {/* center label */}
+        {/* centre medallion — keeps the label legible across both halves */}
+        <circle cx="200" cy="200" r="58" fill="#170B0E" opacity="0.92" />
+        <circle cx="200" cy="200" r="58" fill="none" stroke="#C9A24B" strokeOpacity="0.55" strokeWidth="1" />
+        <circle cx="200" cy="200" r="52" fill="none" stroke="#C9A24B" strokeOpacity="0.25" strokeWidth="0.75" />
         <text
           x="200"
           y="196"
           textAnchor="middle"
           fill="#F4E8D8"
-          fontSize="15"
+          fontSize="17"
           fontFamily="'IBM Plex Mono', monospace"
           letterSpacing="2"
         >
@@ -104,10 +107,10 @@ export function DialSVG() {
         </text>
         <text
           x="200"
-          y="214"
+          y="216"
           textAnchor="middle"
-          fill="#C9B9A6"
-          fontSize="9"
+          fill="#C9A24B"
+          fontSize="8.5"
           fontFamily="'IBM Plex Mono', monospace"
           letterSpacing="1.5"
         >
