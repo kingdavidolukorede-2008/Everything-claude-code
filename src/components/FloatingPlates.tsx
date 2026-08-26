@@ -4,8 +4,9 @@ import { FloatingFoodHero } from '@/components/ui/hero-section-7'
  * The site's main hero: the FloatingFoodHero reference content, rendered
  * with the site's own artwork. Title and description are the demo's verbatim.
  *
- * The largest plate is a photograph rather than an engraving — jollof rice is
- * the dish this restaurant is actually known for, so it leads.
+ * The two plates that carry the composition are photographs rather than
+ * engravings — jollof rice leads on the left, egusi and pounded yam answers it
+ * on the right. Those are the dishes this restaurant is actually known for.
  *
  * Each plate declares the lane it belongs to and nothing else about where it
  * sits. The demo positioned these absolutely at fractions of the section
@@ -47,8 +48,8 @@ const HERO_IMAGES = [
     className: 'w-7 sm:w-9 xl:w-10 xl:-translate-x-16',
   },
   {
-    src: '/images/demo-pizza.svg',
-    alt: 'A slice of pizza',
+    src: '/images/photo/egusi-pounded-yam.webp',
+    alt: 'A plate of egusi soup with pounded yam, goat meat and snail',
     side: 'right' as const,
     className: 'w-24 sm:w-28 md:w-32 xl:w-48 xl:-translate-x-6',
   },
