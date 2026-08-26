@@ -58,7 +58,12 @@ and read cleanly at thumbnail size; scenes are 1200×900. Each dish's artwork is
 resolved from its id by `plateFor()` in `src/utils/format.ts`, so adding a menu
 item means adding a composition of the same id — nothing else to wire up.
 
-To use real photography instead, drop files at the same paths and update
+`public/images/photo/` holds photography rather than linework. The hero's largest
+plate is `jollof-rice.webp` — a supplied stock cutout, background removed and
+re-encoded to a 576×576 transparent WebP (2× its 288px maximum display width).
+It is the one photograph on the page; everything else is engraved.
+
+To use real photography elsewhere, drop files at the same paths and update
 `plateFor()` for the extension.
 
 ## shadcn / component conventions

@@ -2,14 +2,17 @@ import { FloatingFoodHero } from '@/components/ui/hero-section-7'
 
 /**
  * The site's main hero: the FloatingFoodHero reference content, rendered
- * with the site's own artwork. Title, description, alt text and the per-image position classes
- * are the demo's verbatim; `aspect-square` is added to each because an
+ * with the site's own artwork. Title, description and the per-image position
+ * classes are the demo's verbatim; `aspect-square` is added to each because an
  * absolutely-positioned img given only a width collapses to zero height.
+ *
+ * The largest plate is a photograph rather than an engraving — jollof rice is
+ * the dish this restaurant is actually known for, so it leads.
  */
 const HERO_IMAGES = [
   {
-    src: '/images/demo-burger.svg',
-    alt: 'A delicious cheeseburger',
+    src: '/images/photo/jollof-rice.webp',
+    alt: 'A plate of jollof rice with chicken drumsticks, sweet peppers and peas',
     className:
       'aspect-square w-40 sm:w-56 md:w-64 lg:w-72 top-10 left-4 sm:left-10 md:top-20 md:left-20 animate-float',
   },
