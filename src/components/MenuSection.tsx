@@ -77,9 +77,14 @@ export function MenuSection() {
           ))}
         </div>
 
+        {/*
+          Each Reveal is the grid item, so it carries `min-w-0`: without it the
+          track cannot shrink below the card's min-content and the page scrolls
+          sideways under about 375px.
+        */}
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item, i) => (
-            <Reveal key={item.id} delay={(i % 6) * 60}>
+            <Reveal key={item.id} className="min-w-0" delay={(i % 6) * 60}>
               <article className="card card-hover flex h-full min-h-[148px] gap-4 overflow-hidden p-4">
                 <img
                   src={plateFor(item.id)}
