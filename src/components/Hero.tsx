@@ -11,7 +11,7 @@ export function Hero() {
   const { time } = useLagosClock()
 
   return (
-    <section id="top" className="relative overflow-hidden pt-14 sm:pt-20">
+    <section id="belle" className="relative overflow-hidden pt-14 sm:pt-20">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(201,162,75,0.12),transparent_55%)]" />
       <div className="mx-auto grid max-w-[1180px] gap-12 px-5 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-8">
         <div>

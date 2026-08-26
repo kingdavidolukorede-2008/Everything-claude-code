@@ -1,8 +1,8 @@
 import { FloatingFoodHero } from '@/components/ui/hero-section-7'
 
 /**
- * The FloatingFoodHero reference content, rendered with the site's own
- * artwork. Title, description, alt text and the per-image position classes
+ * The site's main hero: the FloatingFoodHero reference content, rendered
+ * with the site's own artwork. Title, description, alt text and the per-image position classes
  * are the demo's verbatim; `aspect-square` is added to each because an
  * absolutely-positioned img given only a width collapses to zero height.
  */
@@ -44,17 +44,19 @@ const HERO_IMAGES = [
 
 export function FloatingPlates() {
   return (
-    <FloatingFoodHero
-      title="Better food for more people"
-      description="For over a decade, we've enabled our customers to discover new tastes, delivered right to their doorstep."
-      images={HERO_IMAGES}
-      className={[
-        'border-y border-hairline',
-        // the swirls paint with currentColor
-        'text-gold/25',
-        // headings on this site are Fraunces, not the body face
-        '[&_h1]:font-display [&_h1]:font-semibold [&_h1]:tracking-normal',
-      ].join(' ')}
-    />
+    <div id="top" className="scroll-mt-24">
+      <FloatingFoodHero
+        title="Better food for more people"
+        description="For over a decade, we've enabled our customers to discover new tastes, delivered right to their doorstep."
+        images={HERO_IMAGES}
+        className={[
+          'border-b border-hairline',
+          // the swirls paint with currentColor
+          'text-gold/25',
+          // headings on this site are Fraunces, not the body face
+          '[&_h1]:font-display [&_h1]:font-semibold [&_h1]:tracking-normal',
+        ].join(' ')}
+      />
+    </div>
   )
 }

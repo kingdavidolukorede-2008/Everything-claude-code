@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Nav } from './components/Nav'
+import { FloatingPlates } from './components/FloatingPlates'
 import { Hero } from './components/Hero'
 import { About } from './components/About'
 import { Kitchen } from './components/Kitchen'
-import { FloatingPlates } from './components/FloatingPlates'
 import { MenuSection } from './components/MenuSection'
 import { GallerySection } from './components/Gallery'
 import { Reviews } from './components/Reviews'
@@ -28,10 +28,10 @@ function AppShell() {
 
       <Nav onReserve={() => setReserveOpen(true)} />
       <main>
+        <FloatingPlates />
         <Hero />
         <About />
         <Kitchen />
-        <FloatingPlates />
         <MenuSection />
         <GallerySection />
         <Reviews />
