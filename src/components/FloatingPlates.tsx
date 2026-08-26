@@ -2,56 +2,46 @@ import { FloatingFoodHero } from '@/components/ui/hero-section-7'
 
 /**
  * The site's main hero: the FloatingFoodHero reference content, rendered
- * with the site's own artwork. Title and description are the demo's verbatim.
+ * with the site's own artwork. Title, description and the per-image position
+ * classes are the demo's verbatim; `aspect-square` is added to each because an
+ * absolutely-positioned img given only a width collapses to zero height.
  *
- * The two plates that carry the composition are photographs rather than
- * engravings — jollof rice leads on the left, egusi and pounded yam answers it
- * on the right. Those are the dishes this restaurant is actually known for.
- *
- * Each plate declares the lane it belongs to and nothing else about where it
- * sits. The demo positioned these absolutely at fractions of the section
- * (`left-1/3`, `top-1/2`), which walked them straight into the centred type as
- * the window narrowed; lanes give the food and the letters each their own
- * column instead. `className` is therefore size and drift only — the small
- * `lg:translate-*` nudges keep the column from reading as a rigid stack, and
- * stay well inside the lane's own width.
+ * The two largest plates are photographs rather than engravings — jollof rice
+ * and egusi with pounded yam, the dishes this restaurant is actually known for.
  */
 const HERO_IMAGES = [
   {
-    src: '/images/demo-basil.svg',
-    alt: 'A basil leaf',
-    side: 'left' as const,
-    className: 'w-7 sm:w-9 xl:w-11 xl:translate-x-10',
-  },
-  {
     src: '/images/photo/jollof-rice.webp',
     alt: 'A plate of jollof rice with chicken drumsticks, sweet peppers and peas',
-    side: 'left' as const,
-    className: 'w-36 sm:w-44 md:w-52 xl:w-72',
-  },
-  {
-    src: '/images/demo-tomato.svg',
-    alt: 'A slice of tomato',
-    side: 'left' as const,
-    className: 'w-7 sm:w-9 xl:w-10 xl:translate-x-20',
+    className:
+      'aspect-square w-40 sm:w-56 md:w-64 lg:w-72 top-10 left-4 sm:left-10 md:top-20 md:left-20 animate-float',
   },
   {
     src: '/images/demo-steamer.svg',
     alt: 'A bamboo steamer with dumplings',
-    side: 'right' as const,
-    className: 'w-20 sm:w-24 md:w-28 xl:w-40',
-  },
-  {
-    src: '/images/demo-tomato.svg',
-    alt: 'A slice of tomato',
-    side: 'right' as const,
-    className: 'w-7 sm:w-9 xl:w-10 xl:-translate-x-16',
+    className:
+      'aspect-square w-28 sm:w-36 md:w-48 top-10 right-4 sm:right-10 md:top-16 md:right-16 animate-float',
   },
   {
     src: '/images/photo/egusi-pounded-yam.webp',
     alt: 'A plate of egusi soup with pounded yam, goat meat and snail',
-    side: 'right' as const,
-    className: 'w-24 sm:w-28 md:w-32 xl:w-48 xl:-translate-x-6',
+    className:
+      'aspect-square w-32 sm:w-40 md:w-56 bottom-8 right-5 sm:right-10 md:bottom-16 md:right-20 animate-float',
+  },
+  {
+    src: '/images/demo-basil.svg',
+    alt: 'A basil leaf',
+    className: 'aspect-square w-8 sm:w-12 top-1/4 left-1/3 animate-float',
+  },
+  {
+    src: '/images/demo-tomato.svg',
+    alt: 'A slice of tomato',
+    className: 'aspect-square w-8 sm:w-10 top-1/2 right-1/4 animate-float',
+  },
+  {
+    src: '/images/demo-tomato.svg',
+    alt: 'A slice of tomato',
+    className: 'aspect-square w-8 sm:w-10 top-3/4 left-1/4 animate-float',
   },
 ]
 

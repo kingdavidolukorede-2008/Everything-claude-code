@@ -4,13 +4,11 @@ import { cn } from '@/lib/utils'
  * @typedef FloatingImageProps
  * @property {string} src - The source URL for the image.
  * @property {string} alt - The alt text for the image for accessibility.
- * @property {'left'|'right'} side - Which lane the image drifts in.
- * @property {string} className - Tailwind CSS classes for sizing and lane offset.
+ * @property {string} className - Tailwind CSS classes for positioning, sizing, and animation.
  */
 interface FloatingImageProps {
   src: string
   alt: string
-  side: 'left' | 'right'
   className: string
 }
 
@@ -71,48 +69,7 @@ const Swirls = () => (
 )
 
 /**
- * One flank of plates. The lane holds real layout space rather than floating
- * over the section, which is what keeps the food off the letters: from `xl` up
- * it is a column beside the text, and below that it collapses to a row above or
- * below it. Either way the grid, not a guessed offset, owns the separation.
- */
-function Lane({
-  images,
-  side,
-  delayFrom,
-}: {
-  images: FloatingImageProps[]
-  side: 'left' | 'right'
-  delayFrom: number
-}) {
-  return (
-    <div
-      aria-hidden="true"
-      className={cn(
-        'flex items-center justify-center gap-5 sm:gap-8',
-        'xl:flex-col xl:gap-8',
-        side === 'left'
-          ? 'xl:items-start xl:justify-self-start'
-          : 'xl:items-end xl:justify-self-end',
-      )}
-    >
-      {images.map((image, index) => (
-        <img
-          key={image.src + index}
-          src={image.src}
-          alt={image.alt}
-          loading="lazy"
-          className={cn('animate-float max-w-full object-contain', image.className)}
-          style={{ animationDelay: `${(delayFrom + index) * 300}ms` }}
-        />
-      ))}
-    </div>
-  )
-}
-
-/**
- * A responsive hero: plates drift in a lane down each side of the text, and
- * stack above and below it once the screen is too narrow to flank.
+ * A responsive hero section with images drifting around centred text.
  * Motion is disabled under `prefers-reduced-motion`.
  */
 export function FloatingFoodHero({
@@ -121,13 +78,10 @@ export function FloatingFoodHero({
   images,
   className,
 }: FloatingFoodHeroProps) {
-  const left = images.filter((image) => image.side === 'left')
-  const right = images.filter((image) => image.side === 'right')
-
   return (
     <section
       className={cn(
-        'relative flex min-h-[36rem] w-full items-center justify-center overflow-hidden bg-background py-20 md:py-28 xl:min-h-[44rem] xl:py-32',
+        'relative flex min-h-[60vh] w-full items-center justify-center overflow-hidden bg-background py-20 md:py-32 lg:min-h-[80vh]',
         className,
       )}
     >
@@ -135,23 +89,26 @@ export function FloatingFoodHero({
         <Swirls />
       </div>
 
-      {/*
-        The two lanes are one `1fr` each, so they stay equal and the column of
-        type stays centred in the section. `minmax(0,…)` lets a lane fall below
-        its plate's width on a tight screen — the plate then scales down under
-        `max-w-full` rather than pushing into the text.
-      */}
-      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-y-14 px-6 xl:max-w-[88rem] xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] xl:gap-x-16 xl:gap-y-0">
-        <Lane images={left} side="left" delayFrom={0} />
+      {/* Floating images */}
+      <div className="pointer-events-none absolute inset-0 z-10" aria-hidden="true">
+        {images.map((image, index) => (
+          <img
+            key={image.src + index}
+            src={image.src}
+            alt={image.alt}
+            loading="lazy"
+            className={cn('absolute object-contain', image.className)}
+            style={{ animationDelay: `${index * 300}ms` }}
+          />
+        ))}
+      </div>
 
-        <div className="mx-auto max-w-2xl text-center xl:max-w-xl">
-          <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
-            {title}
-          </h1>
-          <p className="mt-6 text-lg leading-8 text-muted-foreground">{description}</p>
-        </div>
-
-        <Lane images={right} side="right" delayFrom={left.length} />
+      {/* Text content */}
+      <div className="container relative z-20 mx-auto max-w-2xl px-4 text-center">
+        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
+          {title}
+        </h1>
+        <p className="mt-6 text-lg leading-8 text-muted-foreground">{description}</p>
       </div>
     </section>
   )
