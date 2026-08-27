@@ -86,6 +86,7 @@ The rest are dish photographs, all full-frame and all WebP q74:
 | `pounded-yam.webp` | 512 | Pounded Yam / Eba / Semo |
 | `native-fried-rice.webp` | 512 | Native Fried Rice |
 | `ofada-ayamase.webp` | 420 | Ofada Rice & Ayamase |
+| `coconut-rice.webp` | 440 | Coconut Rice |
 
 800px covers the Kitchen feature card at 2×; 512px covers the 112px menu
 thumbnail at better than 4×, which is all the dishes that are not featured need.
@@ -127,12 +128,12 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Eleven of the twenty dishes have their own photograph. Egusi Soup and the Egusi &
+Twelve of the twenty dishes have their own photograph. Egusi Soup and the Egusi &
 Pounded Yam feature card are the two entries still borrowing the hero's cutout,
 which is why the Kitchen row reads as two full-bleed photographs beside one
-floating plate; a full-frame egusi is the next photograph worth taking. Eight
-dishes are still engraved: Coconut Rice, Peppered Chicken, Turkey & Chips,
-Assorted Meat Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
+floating plate; a full-frame egusi is the next photograph worth taking. Seven
+dishes are still engraved: Peppered Chicken, Turkey & Chips, Assorted Meat
+Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a
@@ -153,8 +154,8 @@ background comes away with the cutout, but one lying on the food itself cannot b
 removed, and cropping it out is not a way around it either — either way the
 protected image ends up published with its mark gone. A watermarked source is
 turned away and a licensed copy asked for instead. One has been so far: a fried
-rice offered for Coconut Rice, carrying a photographer's mark across the pan rim
-and the rice.
+rice first offered for Coconut Rice, carrying a photographer's mark across the pan
+rim and the rice. A clean photograph replaced it.
 
 ## shadcn / component conventions
 

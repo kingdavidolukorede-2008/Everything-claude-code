@@ -70,6 +70,11 @@ export const DISH_PHOTOS: Record<string, DishPhoto> = {
     fit: 'cover',
     alt: 'Ayamase stew with assorted meat and boiled eggs, beside rice and fried plantain',
   },
+  'rg-coconut': {
+    src: '/images/photo/coconut-rice.webp',
+    fit: 'cover',
+    alt: 'Coconut rice with sweet peppers, peas, sweetcorn and green beans',
+  },
   'ss-egusi': {
     src: '/images/photo/egusi-pounded-yam.webp',
     fit: 'contain',
