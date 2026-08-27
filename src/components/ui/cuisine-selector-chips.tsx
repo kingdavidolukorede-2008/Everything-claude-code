@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, MotionConfig, motion } from 'framer-motion'
 import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -124,7 +124,9 @@ export function CuisineChips({
    * between renders so each toggle builds on the last one.
    */
   const latest = useRef(selected)
-  latest.current = selected
+  useEffect(() => {
+    latest.current = selected
+  })
 
   const toggle = (option: string) => {
     const current = latest.current

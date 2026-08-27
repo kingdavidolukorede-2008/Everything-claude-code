@@ -71,8 +71,37 @@ It is the only image on the site that needs no licence, and it ships at its
 native resolution, which is short of 2× the 524px display width; a
 higher-resolution original would sharpen it on retina screens.
 
-Together these four are the only photographs on the page; everything else is
+`party-jollof.webp` (800×800, WebP q74) is a full-frame photograph of a dish of
+party jollof, used by the Party Jollof menu card and the Kitchen feature card. It
+is not a cutout and is not meant to be one — the dish runs off every edge of the
+frame, so there is no whole plate to lift out. It carries the same light grade as
+the storefront, at contrast 1.06 and saturation 1.04.
+
+Together these five are the only photographs on the page; everything else is
 engraved.
+
+Dish photographs are registered in `src/data/photos.ts` and resolved by
+`dishImage()` in `src/utils/format.ts`. A dish with no entry falls back to its
+engraving at `/images/<id>.svg`, so the menu can be photographed one plate at a
+time without ever showing a gap — adding a dish means dropping the file in
+`public/images/photo/` and adding a line to that map, with no component changes.
+Each entry says whether the file wants `cover` (a full-frame photograph) or
+`contain` (a cutout on transparency, which the square and 4:3 card frames would
+otherwise crop into), and carries its own alt text; the fallback alt still reads
+"Engraving of …", which is only true while the dish is unphotographed.
+
+Photographed so far: Party Jollof, from its own full-frame photograph; Egusi Soup
+and the Egusi & Pounded Yam feature card, both still borrowing the hero's cutout.
+Grilled Catfish is the conspicuous gap — it sits between the other two in the
+Kitchen section's three-card row, which therefore shows all three treatments at
+once: a full-bleed photograph, an engraving, and a cutout floating on the card.
+
+Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
+cropping the dish, so it floats with the card colour showing around it, while a
+full-frame photograph fills the frame edge to edge. Cutouts earn their keep in
+the hero, where the plates drift over the background and need transparency; for
+menu and feature cards, a photograph that bleeds off its own edges is the better
+source.
 
 They needed two different cutout methods. The jollof and the shawarma arrived
 flattened onto a transparency checkerboard, so their alpha came from
