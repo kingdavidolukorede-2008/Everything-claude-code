@@ -61,8 +61,18 @@ item means adding a composition of the same id — nothing else to wire up.
 `public/images/photo/` holds photography rather than linework. The hero's three
 food subjects are supplied stock cutouts, backgrounds removed and re-encoded as
 transparent WebP at 2× their maximum display width: `jollof-rice.webp` (576×576),
-`shawarma-wrap.webp` (384×384) and `egusi-pounded-yam.webp` (384×384). They are
-the only photographs on the page; everything else is engraved.
+`shawarma-wrap.webp` (384×384) and `egusi-pounded-yam.webp` (384×384).
+
+`belle-food-storefront.webp` (722×542) is the odd one out: the restaurant's own
+photograph of its frontage at night, used by the About section. It is cropped to
+the 4:3 the section's frame expects and carries a light grade — contrast 1.10,
+saturation 1.08 — so it sits with the dark palette. Nothing else is retouched.
+It is the only image on the site that needs no licence, and it ships at its
+native resolution, which is short of 2× the 524px display width; a
+higher-resolution original would sharpen it on retina screens.
+
+Together these four are the only photographs on the page; everything else is
+engraved.
 
 They needed two different cutout methods. The jollof and the shawarma arrived
 flattened onto a transparency checkerboard, so their alpha came from

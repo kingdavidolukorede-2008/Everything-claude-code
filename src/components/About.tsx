@@ -21,8 +21,8 @@ export function About() {
           <Reveal>
             <div className="card overflow-hidden">
               <img
-                src="/images/about-interior.svg"
-                alt="Moody, gold-lit dining room at Belle Food"
+                src="/images/photo/belle-food-storefront.webp"
+                alt="Belle Food at night on Chevron Drive: the lit SHAWARMA sign over the counter, festoon lights strung across the frontage"
                 className="aspect-[4/3] w-full object-cover"
                 loading="lazy"
               />
