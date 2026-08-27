@@ -58,18 +58,22 @@ and read cleanly at thumbnail size; scenes are 1200×900. Each dish's artwork is
 resolved from its id by `plateFor()` in `src/utils/format.ts`, so adding a menu
 item means adding a composition of the same id — nothing else to wire up.
 
-`public/images/photo/` holds photography rather than linework. The hero's two
-largest plates are supplied stock cutouts, backgrounds removed and re-encoded as
-transparent WebP at 2× their maximum display width: `jollof-rice.webp` (576×576)
-and `egusi-pounded-yam.webp` (384×384). They are the only photographs on the
-page; everything else is engraved.
+`public/images/photo/` holds photography rather than linework. The hero's three
+food subjects are supplied stock cutouts, backgrounds removed and re-encoded as
+transparent WebP at 2× their maximum display width: `jollof-rice.webp` (576×576),
+`shawarma-wrap.webp` (384×384) and `egusi-pounded-yam.webp` (384×384). They are
+the only photographs on the page; everything else is engraved.
 
-The two needed different cutout methods. The jollof arrived flattened onto a
-transparency checkerboard, so its alpha came from flood-filling that neutral
-ground inward from the frame edge. The egusi is a white plate on a white
-background — barely ten luminance levels apart, so no fill can separate them —
-and its alpha is a circle fitted from the luminance profiles along the image's
-four centre axes.
+They needed two different cutout methods. The jollof and the shawarma arrived
+flattened onto a transparency checkerboard, so their alpha came from
+flood-filling that neutral ground inward from the frame edge. The egusi is a
+white plate on a white background — barely ten luminance levels apart, so no
+fill can separate them — and its alpha is a circle fitted from the luminance
+profiles along the image's four centre axes.
+
+Supplied photographs must arrive without watermarks. A watermark sitting on the
+background comes away with the cutout, but one lying on the food itself cannot
+be removed — ask for a licensed copy instead.
 
 To use real photography elsewhere, drop files at the same paths and update
 `plateFor()` for the extension.
