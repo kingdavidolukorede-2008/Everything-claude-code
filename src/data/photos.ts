@@ -25,6 +25,31 @@ export const DISH_PHOTOS: Record<string, DishPhoto> = {
     fit: 'cover',
     alt: 'A whole catfish baked in foil under a pepper-sauce crust, with rosemary, lemon and bowls of dipping sauce',
   },
+  'sc-snail': {
+    src: '/images/photo/peppered-snail.webp',
+    fit: 'cover',
+    alt: 'Peppered snail in a red pepper sauce with onions',
+  },
+  'sc-puffpuff': {
+    src: '/images/photo/puff-puff.webp',
+    fit: 'cover',
+    alt: 'Golden puff-puff piled in paper',
+  },
+  'sc-springrolls': {
+    src: '/images/photo/spring-rolls.webp',
+    fit: 'cover',
+    alt: 'A stack of crisp fried spring rolls',
+  },
+  'sc-suya': {
+    src: '/images/photo/chicken-suya.webp',
+    fit: 'cover',
+    alt: 'Spice-dusted chicken with sliced red onion and tomato',
+  },
+  'ss-eforiro': {
+    src: '/images/photo/efo-riro.webp',
+    fit: 'cover',
+    alt: 'Efo riro: spinach stew with assorted meat, stockfish and red pepper',
+  },
   'ss-egusi': {
     src: '/images/photo/egusi-pounded-yam.webp',
     fit: 'contain',

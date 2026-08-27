@@ -59,7 +59,7 @@ resolved from its id by `plateFor()` in `src/utils/format.ts`, so adding a menu
 item means adding a composition of the same id — nothing else to wire up.
 
 `public/images/photo/` holds photography rather than linework. The hero's three
-food subjects are supplied stock cutouts, backgrounds removed and re-encoded as
+food subjects are stock cutouts, backgrounds removed and re-encoded as
 transparent WebP at 2× their maximum display width: `jollof-rice.webp` (576×576),
 `shawarma-wrap.webp` (384×384) and `egusi-pounded-yam.webp` (384×384).
 
@@ -71,22 +71,40 @@ It is the only image on the site that needs no licence, and it ships at its
 native resolution, which is short of 2× the 524px display width; a
 higher-resolution original would sharpen it on retina screens.
 
-`party-jollof.webp` (800×800, WebP q74) is a full-frame photograph of a dish of
-party jollof, used by the Party Jollof menu card and the Kitchen feature card. It
-is not a cutout and is not meant to be one — the dish runs off every edge of the
-frame, so there is no whole plate to lift out. It carries the same light grade as
-the storefront, at contrast 1.06 and saturation 1.04.
+The rest are dish photographs, all full-frame and all WebP q74:
 
-`whole-catfish.webp` (800×800, WebP q74) is a whole catfish baked in foil, used
-by the Grilled Catfish menu card and the Whole Catfish feature card. It is the
-one photograph that ships ungraded: the foil is already within a few levels of
-clipping, and the standard contrast bump pushed blown highlights from 2.6% of the
-frame to 4.3%, eating the texture out of it. Cropped square from a portrait
-original, taken from 130px down, which is the window that still reads as a whole
-fish at the 112px menu thumbnail.
+| File | Size | Dish |
+| --- | --- | --- |
+| `party-jollof.webp` | 800 | Party Jollof (menu + Kitchen feature) |
+| `whole-catfish.webp` | 800 | Grilled Catfish / Whole Catfish (menu + Kitchen feature) |
+| `peppered-snail.webp` | 512 | Peppered Snail |
+| `puff-puff.webp` | 512 | Puff-Puff |
+| `spring-rolls.webp` | 512 | Spring Rolls |
+| `chicken-suya.webp` | 375 | Chicken Suya Skewers |
+| `efo-riro.webp` | 512 | Efo Riro |
 
-Together these six are the only photographs on the page; everything else is
-engraved.
+800px covers the Kitchen feature card at 2×; 512px covers the 112px menu
+thumbnail at better than 4×, which is all the dishes that are not featured need.
+`chicken-suya.webp` ships at 375 because that is its source's full height — it is
+not upscaled, and it would need a larger original before it could be featured.
+
+Cropping follows one rule: crop inside the plate. Several sources are a dish shot
+on a white ground, and a square taken from the whole frame brings that white into
+the card, where it glares against the wine. Cropping to a square that sits inside
+the vessel gives a card filled edge to edge with food instead. The snail and efo
+riro squares are inscribed in their bowls; the spring rolls are cropped into the
+pile rather than the plate; the suya crop also avoids the newsprint the bowl is
+lined with, so no lettering ends up on the page.
+
+Grading is a light contrast 1.06 / saturation 1.04, applied only when it does not
+cost highlights: the encoder measures blown pixels before and after and keeps the
+plain version when the graded one clips. `whole-catfish.webp` is the one that
+failed that check — its foil was already within a few levels of clipping, and the
+grade took blown highlights from 2.6% of the frame to 4.3% — so it ships as shot.
+`belle-food-storefront.webp` carries a slightly stronger 1.10 / 1.08.
+
+Everything above is the complete set of photographs on the page; every other
+image is engraved.
 
 Dish photographs are registered in `src/data/photos.ts` and resolved by
 `dishImage()` in `src/utils/format.ts`. A dish with no entry falls back to its
@@ -98,11 +116,13 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Photographed so far: Party Jollof and Grilled Catfish, each from its own
-full-frame photograph; Egusi Soup and the Egusi & Pounded Yam feature card, both
-still borrowing the hero's cutout. The Kitchen section's three-card row is now
-two full-bleed photographs and one cutout, so the egusi is the card that breaks
-it — a full-frame egusi is the next photograph worth taking.
+Seven dishes are photographed. Egusi Soup and the Egusi & Pounded Yam feature
+card are the two entries still borrowing the hero's cutout, which is why the
+Kitchen row reads as two full-bleed photographs beside one floating plate; a
+full-frame egusi is the next photograph worth taking. Twelve dishes are still
+engraved: Catfish Pepper Soup, Pounded Yam / Eba / Semo, Native Fried Rice,
+Ofada Rice & Ayamase, Coconut Rice, Peppered Chicken, Turkey & Chips, Assorted
+Meat Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a
