@@ -20,8 +20,12 @@ const HERO_IMAGES = [
   {
     src: '/images/photo/shawarma-wrap.webp',
     alt: 'A shawarma wrap cut in two, with beef, salad and garlic sauce',
+    // Wider than it is tall, so `object-contain` letterboxes it inside the
+    // square box: the wraps only ever fill about four fifths of the height.
+    // The box therefore runs a size class larger than the plates it sits
+    // among, to land at the same apparent size on the page.
     className:
-      'aspect-square w-28 sm:w-36 md:w-48 top-10 right-4 sm:right-10 md:top-16 md:right-16 animate-float',
+      'aspect-square w-32 sm:w-44 md:w-60 top-10 right-4 sm:right-10 md:top-16 md:right-16 animate-float',
   },
   {
     src: '/images/photo/egusi-pounded-yam.webp',
