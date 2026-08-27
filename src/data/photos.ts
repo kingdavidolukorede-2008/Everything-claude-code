@@ -20,6 +20,11 @@ export const DISH_PHOTOS: Record<string, DishPhoto> = {
     fit: 'cover',
     alt: 'A green oval dish of party jollof rice under charred, spice-rubbed chicken thighs',
   },
+  'gm-catfish': {
+    src: '/images/photo/whole-catfish.webp',
+    fit: 'cover',
+    alt: 'A whole catfish baked in foil under a pepper-sauce crust, with rosemary, lemon and bowls of dipping sauce',
+  },
   'ss-egusi': {
     src: '/images/photo/egusi-pounded-yam.webp',
     fit: 'contain',

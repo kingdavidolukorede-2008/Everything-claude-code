@@ -77,7 +77,15 @@ is not a cutout and is not meant to be one — the dish runs off every edge of t
 frame, so there is no whole plate to lift out. It carries the same light grade as
 the storefront, at contrast 1.06 and saturation 1.04.
 
-Together these five are the only photographs on the page; everything else is
+`whole-catfish.webp` (800×800, WebP q74) is a whole catfish baked in foil, used
+by the Grilled Catfish menu card and the Whole Catfish feature card. It is the
+one photograph that ships ungraded: the foil is already within a few levels of
+clipping, and the standard contrast bump pushed blown highlights from 2.6% of the
+frame to 4.3%, eating the texture out of it. Cropped square from a portrait
+original, taken from 130px down, which is the window that still reads as a whole
+fish at the 112px menu thumbnail.
+
+Together these six are the only photographs on the page; everything else is
 engraved.
 
 Dish photographs are registered in `src/data/photos.ts` and resolved by
@@ -90,11 +98,11 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Photographed so far: Party Jollof, from its own full-frame photograph; Egusi Soup
-and the Egusi & Pounded Yam feature card, both still borrowing the hero's cutout.
-Grilled Catfish is the conspicuous gap — it sits between the other two in the
-Kitchen section's three-card row, which therefore shows all three treatments at
-once: a full-bleed photograph, an engraving, and a cutout floating on the card.
+Photographed so far: Party Jollof and Grilled Catfish, each from its own
+full-frame photograph; Egusi Soup and the Egusi & Pounded Yam feature card, both
+still borrowing the hero's cutout. The Kitchen section's three-card row is now
+two full-bleed photographs and one cutout, so the egusi is the card that breaks
+it — a full-frame egusi is the next photograph worth taking.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a
