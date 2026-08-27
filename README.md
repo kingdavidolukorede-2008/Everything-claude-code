@@ -82,6 +82,10 @@ The rest are dish photographs, all full-frame and all WebP q74:
 | `spring-rolls.webp` | 512 | Spring Rolls |
 | `chicken-suya.webp` | 375 | Chicken Suya Skewers |
 | `efo-riro.webp` | 512 | Efo Riro |
+| `catfish-pepper-soup.webp` | 440 | Catfish Pepper Soup |
+| `pounded-yam.webp` | 512 | Pounded Yam / Eba / Semo |
+| `native-fried-rice.webp` | 512 | Native Fried Rice |
+| `ofada-ayamase.webp` | 420 | Ofada Rice & Ayamase |
 
 800px covers the Kitchen feature card at 2×; 512px covers the 112px menu
 thumbnail at better than 4×, which is all the dishes that are not featured need.
@@ -97,11 +101,18 @@ pile rather than the plate; the suya crop also avoids the newsprint the bowl is
 lined with, so no lettering ends up on the page.
 
 Grading is a light contrast 1.06 / saturation 1.04, applied only when it does not
-cost highlights: the encoder measures blown pixels before and after and keeps the
-plain version when the graded one clips. `whole-catfish.webp` is the one that
-failed that check — its foil was already within a few levels of clipping, and the
-grade took blown highlights from 2.6% of the frame to 4.3% — so it ships as shot.
+cost highlights: blown pixels are counted before and after, and the plain version
+wins when the graded one clips. `whole-catfish.webp` failed that check — its foil
+was already within a few levels of clipping, and the grade took blown highlights
+from 2.6% of the frame to 4.3% — so it ships as shot.
 `belle-food-storefront.webp` carries a slightly stronger 1.10 / 1.08.
+
+`pounded-yam.webp` needed the opposite treatment. Swallow is pale food on a white
+plate, and 36% of that frame came in fully blown — a third of the card would have
+been flat white burning a hole in a dark page. It gets a highlight rolloff instead
+of a contrast bump: everything above 195 is compressed into the top band and the
+whole image pulled down 7%, which takes blown pixels to zero while leaving the
+mid-tones alone, so the balls keep their shape and sheen.
 
 Everything above is the complete set of photographs on the page; every other
 image is engraved.
@@ -116,13 +127,12 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Seven dishes are photographed. Egusi Soup and the Egusi & Pounded Yam feature
-card are the two entries still borrowing the hero's cutout, which is why the
-Kitchen row reads as two full-bleed photographs beside one floating plate; a
-full-frame egusi is the next photograph worth taking. Twelve dishes are still
-engraved: Catfish Pepper Soup, Pounded Yam / Eba / Semo, Native Fried Rice,
-Ofada Rice & Ayamase, Coconut Rice, Peppered Chicken, Turkey & Chips, Assorted
-Meat Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
+Eleven of the twenty dishes have their own photograph. Egusi Soup and the Egusi &
+Pounded Yam feature card are the two entries still borrowing the hero's cutout,
+which is why the Kitchen row reads as two full-bleed photographs beside one
+floating plate; a full-frame egusi is the next photograph worth taking. Eight
+dishes are still engraved: Coconut Rice, Peppered Chicken, Turkey & Chips,
+Assorted Meat Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a
@@ -139,11 +149,12 @@ fill can separate them — and its alpha is a circle fitted from the luminance
 profiles along the image's four centre axes.
 
 Supplied photographs must arrive without watermarks. A watermark sitting on the
-background comes away with the cutout, but one lying on the food itself cannot
-be removed — ask for a licensed copy instead.
-
-To use real photography elsewhere, drop files at the same paths and update
-`plateFor()` for the extension.
+background comes away with the cutout, but one lying on the food itself cannot be
+removed, and cropping it out is not a way around it either — either way the
+protected image ends up published with its mark gone. A watermarked source is
+turned away and a licensed copy asked for instead. One has been so far: a fried
+rice offered for Coconut Rice, carrying a photographer's mark across the pan rim
+and the rice.
 
 ## shadcn / component conventions
 

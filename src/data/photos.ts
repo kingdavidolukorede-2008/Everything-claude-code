@@ -50,6 +50,26 @@ export const DISH_PHOTOS: Record<string, DishPhoto> = {
     fit: 'cover',
     alt: 'Efo riro: spinach stew with assorted meat, stockfish and red pepper',
   },
+  'ss-peppersoup': {
+    src: '/images/photo/catfish-pepper-soup.webp',
+    fit: 'cover',
+    alt: 'Catfish in a peppery broth with scent leaf and chilli',
+  },
+  'ss-swallow': {
+    src: '/images/photo/pounded-yam.webp',
+    fit: 'cover',
+    alt: 'Three moulded balls of swallow on a plate',
+  },
+  'rg-friedrice': {
+    src: '/images/photo/native-fried-rice.webp',
+    fit: 'cover',
+    alt: 'Native fried rice with beef, sweet peppers and scent leaf',
+  },
+  'rg-ofada': {
+    src: '/images/photo/ofada-ayamase.webp',
+    fit: 'cover',
+    alt: 'Ayamase stew with assorted meat and boiled eggs, beside rice and fried plantain',
+  },
   'ss-egusi': {
     src: '/images/photo/egusi-pounded-yam.webp',
     fit: 'contain',
