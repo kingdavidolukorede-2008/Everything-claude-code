@@ -6,8 +6,9 @@ import { FloatingFoodHero } from '@/components/ui/hero-section-7'
  * classes are the demo's verbatim; `aspect-square` is added to each because an
  * absolutely-positioned img given only a width collapses to zero height.
  *
- * The two largest plates are photographs rather than engravings — jollof rice
- * and egusi with pounded yam, the dishes this restaurant is actually known for.
+ * The three food subjects are photographs rather than engravings — jollof rice,
+ * a shawarma wrap and egusi with pounded yam, the dishes this restaurant is
+ * actually known for. Only the basil leaf and the tomato slices stay engraved.
  */
 const HERO_IMAGES = [
   {
@@ -17,8 +18,8 @@ const HERO_IMAGES = [
       'aspect-square w-40 sm:w-56 md:w-64 lg:w-72 top-10 left-4 sm:left-10 md:top-20 md:left-20 animate-float',
   },
   {
-    src: '/images/demo-steamer.svg',
-    alt: 'A bamboo steamer with dumplings',
+    src: '/images/photo/shawarma-wrap.webp',
+    alt: 'A shawarma wrap cut in two, with beef, salad and garlic sauce',
     className:
       'aspect-square w-28 sm:w-36 md:w-48 top-10 right-4 sm:right-10 md:top-16 md:right-16 animate-float',
   },
