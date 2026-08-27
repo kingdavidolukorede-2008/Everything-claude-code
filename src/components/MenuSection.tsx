@@ -6,18 +6,37 @@ import { formatNaira, plateFor } from '../utils/format'
 import { Container } from './Container'
 import { Reveal } from './Reveal'
 import { PlusIcon } from './Icons'
+import { CuisineChips, type ChipTheme } from './ui/cuisine-selector-chips'
 
-type Filter = 'All' | MenuCategory
-
-const FILTERS: Filter[] = ['All', ...MENU_CATEGORIES]
+/**
+ * The chip group ships in an orange-on-zinc palette; this is the same set of
+ * roles in Belle Food's. The three background values are animated, so they have
+ * to be literal colours — the rest ride on the theme's utility classes.
+ */
+const FILTER_THEME: Partial<ChipTheme> = {
+  selectedBg: '#2c2113',
+  selectedBgHover: '#352817',
+  selectedBgActive: '#221a0f',
+  idleBg: 'rgba(244, 232, 216, 0.03)',
+  idleBgHover: 'rgba(244, 232, 216, 0.07)',
+  idleBgActive: 'rgba(244, 232, 216, 0.10)',
+  selectedClassName: 'text-gold-soft ring-gold/40',
+  idleClassName: 'text-cream-dim ring-hairline',
+  badgeClassName: 'bg-gold',
+  iconClassName: 'text-ink',
+}
 
 export function MenuSection() {
-  const [filter, setFilter] = useState<Filter>('All')
+  const [filters, setFilters] = useState<MenuCategory[]>([])
   const cart = useCart()
 
+  // No selection reads as no filter, which is what the old 'All' chip did.
   const items = useMemo(
-    () => (filter === 'All' ? MENU_ITEMS : MENU_ITEMS.filter((item) => item.category === filter)),
-    [filter],
+    () =>
+      filters.length === 0
+        ? MENU_ITEMS
+        : MENU_ITEMS.filter((item) => filters.includes(item.category)),
+    [filters],
   )
 
   return (
@@ -59,22 +78,22 @@ export function MenuSection() {
           </Reveal>
         </div>
 
-        <div className="mt-16 flex flex-wrap gap-2" role="group" aria-label="Filter menu by category">
-          {FILTERS.map((f) => (
-            <button
-              key={f}
-              type="button"
-              onClick={() => setFilter(f)}
-              className={`font-mono text-xs uppercase tracking-[0.1em] px-4 py-2 rounded-sq border transition-colors ${
-                filter === f
-                  ? 'border-gold bg-gold text-ink'
-                  : 'border-hairline text-cream-dim hover:border-gold hover:text-gold-soft'
-              }`}
-              aria-pressed={filter === f}
-            >
-              {f}
-            </button>
-          ))}
+        <div className="mt-16">
+          <CuisineChips
+            options={MENU_CATEGORIES}
+            value={filters}
+            // Every option comes from MENU_CATEGORIES, so the strings coming
+            // back are categories.
+            onChange={(next) => setFilters(next as MenuCategory[])}
+            label="Filter menu by category"
+            theme={FILTER_THEME}
+            chipClassName="rounded-sq font-mono text-xs uppercase tracking-[0.1em]"
+          />
+          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.08em] text-cream-faint">
+            {filters.length === 0
+              ? `Showing all ${MENU_ITEMS.length} dishes — pick a course to narrow it down.`
+              : `Showing ${items.length} of ${MENU_ITEMS.length} dishes.`}
+          </p>
         </div>
 
         {/*

@@ -108,6 +108,31 @@ with the shadcn CLI without rewiring imports:
   `shadcn add`, and the boundary keeps "vendored, regenerable" separate from
   "ours".
 
+Two primitives are vendored in `src/components/ui/`:
+
+- `hero-section-7.tsx` — the floating-food hero, driven by `FloatingPlates.tsx`.
+- `cuisine-selector-chips.tsx` — a wrapping row of toggle chips that reflow with
+  a spring as each grows to fit its tick. It arrives as a full-page cuisine
+  picker; the default export keeps that demo intact, and the named `CuisineChips`
+  export is the reusable group. `MenuSection.tsx` uses it as the menu's category
+  filter, passing `MENU_CATEGORIES` and a `ChipTheme` that swaps the stock
+  orange-on-zinc for gold on wine. Selecting nothing shows everything, which is
+  what the old `All` chip did; unlike that filter, courses now combine.
+
+Both keep the vendored source recognisable so an upstream update can be diffed
+against it. Two deliberate departures in the chip group: `MotionConfig
+reducedMotion="user"`, because the site's global reduced-motion CSS only reaches
+CSS animation and never Framer Motion's JS-driven transforms; and a ref-tracked
+selection, because toggling off the rendered value drops a chip whenever two
+toggles land in the same React batch.
+
+`framer-motion` and `lucide-react` are the only runtime dependencies beyond React
+and the Tailwind toolchain. Framer Motion is not cheap — it takes the production
+bundle from 82&nbsp;kB gzipped to 125&nbsp;kB (271&nbsp;kB to 401&nbsp;kB raw), and
+its `layout` animation is the whole point of the chip group, so the lighter
+`LazyMotion`/`domAnimation` subset would not cover it. Hand-rolling the reflow in
+CSS would remove the dependency at the cost of the spring.
+
 Belle Food's own sections live directly in `src/components/` and use the house
 tokens (`bg-ink`, `text-cream`, `text-gold`) rather than the semantic ones.
 
