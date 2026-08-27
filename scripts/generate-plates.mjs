@@ -2,7 +2,7 @@
 // Run: node scripts/generate-plates.mjs
 import { mkdirSync, writeFileSync } from 'node:fs'
 import {
-  GOLD, SOFT, PEPPER, OUT, DET, FINE, HI,
+  GOLD, PEPPER, OUT, DET, FINE, HI,
   el, ci, pa, ln, grp, hatch, stipple,
   plate, bowl, glass, board, mound, dome, snail, fish, steam, leaf,
   citrus, chunks, skewer, spheres, cylinder, drumstick, pepperRing, resetIds, svg, svgCutout,
@@ -166,50 +166,6 @@ const dishes = {
     return plate(CX, PY, R) + fries + drumstick(CX - 168, PY - 40, 300, -14)
   },
 
-  'gm-platter': () =>
-    el(CX, PY, 322, 112, OUT) + el(CX, PY, 288, 92, DET) +
-    chunks(CX - 70, PY - 34, 132, 6, 31, 52) +
-    skewer(CX + 168, PY - 44, 250, 3, -28) +
-    pepperRing(CX - 224, PY + 44, 16) + pepperRing(CX + 42, PY + 62, 13) +
-    leaf(CX + 234, PY + 44, 84, -18),
-
-  'dr-chapman': () => {
-    const gy = 500, gh = 470, gw = 236
-    const top = gy - gh / 2
-    return (
-      glass(CX, gy, gw, gh) +
-      el(CX, top + 92, gw / 2 - 9, gw * 0.15, { ...HI, opacity: 0.75 }) +
-      stipple(`<path d="M ${CX - gw / 2 + 6} ${top + 92} L ${CX - gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw / 2 - 6} ${top + 92} Z"/>`, {
-        bbox: { x: CX - gw / 2, y: top + 92, width: gw, height: gh - 100 }, n: 90, seed: 41, r: 2.2, opacity: 0.3,
-      }) +
-      grp(`<rect x="-30" y="-30" width="60" height="60" rx="6" fill="none" stroke="${SOFT}" stroke-width="1.7" opacity="0.8"/>`, { transform: `translate(${CX - 48} ${gy - 40}) rotate(-16)` }) +
-      grp(`<rect x="-28" y="-28" width="56" height="56" rx="6" fill="none" stroke="${SOFT}" stroke-width="1.7" opacity="0.8"/>`, { transform: `translate(${CX + 44} ${gy + 26}) rotate(12)` }) +
-      citrus(CX + gw / 2 - 16, top + 8, 58) +
-      ln(CX + 34, top - 46, CX - 22, gy + 96, { ...DET, 'stroke-width': 5, opacity: 0.6 }) +
-      leaf(CX - 96, top + 52, 84, -46)
-    )
-  },
-
-  'dr-zobo': () => {
-    const gy = 500, gh = 470, gw = 236
-    const top = gy - gh / 2
-    let petals = ''
-    for (let i = 0; i < 5; i++) {
-      petals += grp(pa('M 0 0 q 26 -30 52 0 q -26 34 -52 0 Z', DET), {
-        transform: `translate(${CX + gw / 2 - 22} ${top + 10}) rotate(${i * 72}) translate(0 -8)`,
-      })
-    }
-    return (
-      glass(CX, gy, gw, gh) +
-      el(CX, top + 86, gw / 2 - 9, gw * 0.15, { ...HI, opacity: 0.75 }) +
-      hatch(`<path d="M ${CX - gw / 2 + 6} ${top + 86} L ${CX - gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw / 2 - 6} ${top + 86} Z"/>`, {
-        bbox: { x: CX - gw / 2, y: top + 86, width: gw, height: gh - 96 }, angle: 66, gap: 7, opacity: 0.3,
-      }) +
-      petals + ci(CX + gw / 2 - 22, top + 10, 12, DET) +
-      pa(`M ${CX - 112} ${top + 118} q -36 26 -18 62 q 22 30 54 10`, DET)
-    )
-  },
-
   'dr-malt': () => {
     const gy = 510, gh = 460, gw = 228
     const top = gy - gh / 2
@@ -224,21 +180,6 @@ const dishes = {
         bbox: { x: CX - gw / 2, y: top + 74, width: gw, height: gh - 84 }, angle: 72, gap: 6, opacity: 0.34,
       }) +
       bubbles
-    )
-  },
-
-  'dr-juice': () => {
-    const gy = 505, gh = 450, gw = 226
-    const top = gy - gh / 2
-    return (
-      glass(CX, gy, gw, gh) +
-      el(CX, top + 80, gw / 2 - 8, gw * 0.15, { ...HI, opacity: 0.8 }) +
-      stipple(`<path d="M ${CX - gw / 2 + 6} ${top + 80} L ${CX - gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw * 0.38} ${gy + gh / 2 - 6} L ${CX + gw / 2 - 6} ${top + 80} Z"/>`, {
-        bbox: { x: CX - gw / 2, y: top + 80, width: gw, height: gh - 90 }, n: 150, seed: 61, r: 2.4, opacity: 0.42,
-      }) +
-      grp(citrus(0, 0, 62), { transform: `translate(${CX + gw / 2 - 18} ${top + 6}) rotate(18)` }) +
-      ln(CX - 40, top - 52, CX + 18, gy + 92, { ...DET, 'stroke-width': 5, opacity: 0.6 }) +
-      leaf(CX - 108, top + 44, 78, -40)
     )
   },
 
@@ -506,7 +447,7 @@ const demo = {
 
 // ── write ─────────────────────────────────────────────────────────────────
 // Cut-outs (no ground) used by the floating-plates hero.
-const FLOATING = ['rg-jollof', 'gm-catfish', 'ss-egusi', 'sc-suya', 'dr-chapman', 'sc-snail']
+const FLOATING = ['rg-jollof', 'gm-catfish', 'ss-egusi', 'sc-suya', 'sc-snail']
 
 let n = 0
 for (const [id, build] of Object.entries(dishes)) {

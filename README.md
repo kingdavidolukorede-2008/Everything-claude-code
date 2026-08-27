@@ -128,12 +128,11 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Twelve of the twenty dishes have their own photograph. Egusi Soup and the Egusi &
-Pounded Yam feature card are the two entries still borrowing the hero's cutout,
+Twelve of the sixteen dishes have their own photograph. Egusi Soup and the Egusi
+& Pounded Yam feature card are the two entries still borrowing the hero's cutout,
 which is why the Kitchen row reads as two full-bleed photographs beside one
-floating plate; a full-frame egusi is the next photograph worth taking. Seven
-dishes are still engraved: Peppered Chicken, Turkey & Chips, Assorted Meat
-Platter, Chapman, Zobo, Chilled Malt and Fresh Juice.
+floating plate; a full-frame egusi is the next photograph worth taking. Three
+dishes are still engraved: Peppered Chicken, Turkey & Chips and Chilled Malt.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a

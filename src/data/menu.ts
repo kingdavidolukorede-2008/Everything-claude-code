@@ -125,43 +125,14 @@ export const MENU_ITEMS: MenuItem[] = [
     price: 8500,
     description: 'Grilled turkey with hand-cut fries.',
   },
-  {
-    id: 'gm-platter',
-    name: 'Assorted Meat Platter',
-    category: 'Grills & Mains',
-    price: 15000,
-    description: 'Beef, chicken, turkey and shaki, built for the table.',
-  },
 
   // Drinks
-  {
-    id: 'dr-chapman',
-    name: 'Chapman',
-    category: 'Drinks',
-    price: 2500,
-    description: 'The house mix, chilled and citrus-bright.',
-    houseFavourite: true,
-  },
-  {
-    id: 'dr-zobo',
-    name: 'Zobo',
-    category: 'Drinks',
-    price: 1500,
-    description: 'Hibiscus, ginger and clove, steeped overnight.',
-  },
   {
     id: 'dr-malt',
     name: 'Chilled Malt',
     category: 'Drinks',
     price: 1200,
     description: 'Ice-cold malt, straight from the fridge.',
-  },
-  {
-    id: 'dr-juice',
-    name: 'Fresh Juice',
-    category: 'Drinks',
-    price: 2000,
-    description: 'Seasonal fruit, pressed fresh to order.',
   },
 ]
 
@@ -219,7 +190,7 @@ export const MENU_OVERVIEW = [
   {
     number: '05',
     title: 'Drinks',
-    description: 'Chilled, citrus-bright, zero-proof — built for any hour.',
+    description: 'Ice-cold, zero-proof, poured at any hour of the night.',
   },
 ] as const
 
