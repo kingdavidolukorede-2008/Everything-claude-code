@@ -5,7 +5,10 @@ const SHOTS = [
   { src: '/images/gallery-1.svg', alt: 'Cinematic wide shot of the Belle Food dining room' },
   { src: '/images/gallery-2.svg', alt: 'The kitchen pass, plating a dish under warm light' },
   { src: '/images/gallery-3.svg', alt: 'A candle-lit table setting at Belle Food' },
-  { src: '/images/gallery-4.svg', alt: 'Belle Food glowing gold through the night' },
+  {
+    src: '/images/photo/forecourt-night.webp',
+    alt: "Belle Food's forecourt at night: the lit 24/7 BELLEFOOD sign above strings of festoon bulbs, with delivery bikes parked by the door",
+  },
 ]
 
 export function GallerySection() {

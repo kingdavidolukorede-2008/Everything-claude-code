@@ -51,7 +51,8 @@ node scripts/generate-plates.mjs    # rewrites public/images/
 - `scripts/engrave-lib.mjs` — drawing primitives (vessels, hatching, stipple,
   fish, mounds, skewers, steam, …) plus the stroke-weight hierarchy.
 - `scripts/generate-plates.mjs` — one composition per dish, plus the four
-  interior scenes and the About room.
+  interior scenes and the About room. `gallery-4.svg` is still generated but no
+  longer used: a photograph of the real forecourt took that tile.
 
 Dish plates are square (1000×1000) so they crop safely to the 4:3 featured cards
 and read cleanly at thumbnail size; scenes are 1200×900. Each dish's artwork is
@@ -63,13 +64,23 @@ food subjects are stock cutouts, backgrounds removed and re-encoded as
 transparent WebP at 2× their maximum display width: `jollof-rice.webp` (576×576),
 `shawarma-wrap.webp` (384×384) and `egusi-pounded-yam.webp` (384×384).
 
-`belle-food-storefront.webp` (722×542) is the odd one out: the restaurant's own
-photograph of its frontage at night, used by the About section. It is cropped to
-the 4:3 the section's frame expects and carries a light grade — contrast 1.10,
-saturation 1.08 — so it sits with the dark palette. Nothing else is retouched.
-It is the only image on the site that needs no licence, and it ships at its
-native resolution, which is short of 2× the 524px display width; a
-higher-resolution original would sharpen it on retina screens.
+Two of them are the restaurant's own photographs of itself, the only images on
+the site that need no licence.
+
+`belle-food-storefront.webp` (722×542) is the frontage from the street at night,
+used by the About section. It is cropped to the 4:3 the section's frame expects
+and carries a light grade — contrast 1.10, saturation 1.08 — so it sits with the
+dark palette. Nothing else is retouched. It ships at its native resolution, which
+is short of 2× the 524px display width; a higher-resolution original would
+sharpen it on retina screens.
+
+`forecourt-night.webp` (1200×900) is the forecourt looking back at the entrance,
+and it fills the fourth tile of the Look Inside gallery. It is a portrait phone
+frame, so the 4:3 is a horizontal band taken out of it: high enough to hold the
+whole lit sign, low enough to keep the delivery bikes, and stopping just above
+the parked car's number plate, which is a private vehicle's and does not belong
+on the page. It ships ungraded — the festoon bulbs are already at the clip point,
+and the standard grade took blown pixels from 0.60% of the frame to 1.12%.
 
 The rest are dish photographs, all WebP q74 and all full-frame but one:
 
@@ -118,8 +129,8 @@ of a contrast bump: everything above 195 is compressed into the top band and the
 whole image pulled down 7%, which takes blown pixels to zero while leaving the
 mid-tones alone, so the balls keep their shape and sheen.
 
-Everything above is the complete set of photographs on the page; every other
-image is engraved.
+Those are all the photographs on the page. Everything else is engraved: the two
+herb plates drifting in the hero, and three of the four Look Inside tiles.
 
 Dish photographs are registered in `src/data/photos.ts` and resolved by
 `dishImage()` in `src/utils/format.ts`. A dish with no entry falls back to its
