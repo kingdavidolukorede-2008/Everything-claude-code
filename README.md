@@ -71,7 +71,7 @@ It is the only image on the site that needs no licence, and it ships at its
 native resolution, which is short of 2× the 524px display width; a
 higher-resolution original would sharpen it on retina screens.
 
-The rest are dish photographs, all full-frame and all WebP q74:
+The rest are dish photographs, all WebP q74 and all full-frame but one:
 
 | File | Size | Dish |
 | --- | --- | --- |
@@ -87,6 +87,9 @@ The rest are dish photographs, all full-frame and all WebP q74:
 | `native-fried-rice.webp` | 512 | Native Fried Rice |
 | `ofada-ayamase.webp` | 420 | Ofada Rice & Ayamase |
 | `coconut-rice.webp` | 440 | Coconut Rice |
+| `peppered-chicken.webp` | 512 | Peppered Chicken |
+| `turkey-chips.webp` | 512 | Turkey & Chips |
+| `chilled-malt.webp` | 306×512 | Chilled Malt (cutout) |
 
 800px covers the Kitchen feature card at 2×; 512px covers the 112px menu
 thumbnail at better than 4×, which is all the dishes that are not featured need.
@@ -128,11 +131,17 @@ Each entry says whether the file wants `cover` (a full-frame photograph) or
 otherwise crop into), and carries its own alt text; the fallback alt still reads
 "Engraving of …", which is only true while the dish is unphotographed.
 
-Twelve of the sixteen dishes have their own photograph. Egusi Soup and the Egusi
-& Pounded Yam feature card are the two entries still borrowing the hero's cutout,
-which is why the Kitchen row reads as two full-bleed photographs beside one
-floating plate; a full-frame egusi is the next photograph worth taking. Three
-dishes are still engraved: Peppered Chicken, Turkey & Chips and Chilled Malt.
+Fifteen of the sixteen dishes have their own photograph, and no dish is engraved
+any more. Egusi Soup is the exception: it and the Egusi & Pounded Yam feature card
+still borrow the hero's cutout, which is why the Kitchen row reads as two
+full-bleed photographs beside one floating plate. A full-frame egusi is the last
+photograph the menu is waiting on.
+
+`chilled-malt.webp` is the one dish photograph that is not full-frame. Its source
+is a product shot of bottles standing on white, which no crop can turn into a
+filled square, so it is cut out and framed `contain` like the hero plates. It also
+carries the drink's own label, which is the only lettering on any photograph on
+the page.
 
 Full-frame is the format the cards want. A cutout has to be letterboxed to avoid
 cropping the dish, so it floats with the card colour showing around it, while a
@@ -141,12 +150,15 @@ the hero, where the plates drift over the background and need transparency; for
 menu and feature cards, a photograph that bleeds off its own edges is the better
 source.
 
-They needed two different cutout methods. The jollof and the shawarma arrived
+They needed three different cutout methods. The jollof and the shawarma arrived
 flattened onto a transparency checkerboard, so their alpha came from
 flood-filling that neutral ground inward from the frame edge. The egusi is a
 white plate on a white background — barely ten luminance levels apart, so no
 fill can separate them — and its alpha is a circle fitted from the luminance
-profiles along the image's four centre axes.
+profiles along the image's four centre axes. The malt bottles stand on white with
+a soft contact shadow, which a hard threshold leaves behind as a grey pool on the
+wine; its fill ramps alpha between luminance 196 and 238 instead of cutting at one
+level, so the shadow fades out with the ground.
 
 Supplied photographs must arrive without watermarks. A watermark sitting on the
 background comes away with the cutout, but one lying on the food itself cannot be

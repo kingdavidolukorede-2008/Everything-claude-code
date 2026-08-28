@@ -75,6 +75,21 @@ export const DISH_PHOTOS: Record<string, DishPhoto> = {
     fit: 'cover',
     alt: 'Coconut rice with sweet peppers, peas, sweetcorn and green beans',
   },
+  'gm-chicken': {
+    src: '/images/photo/peppered-chicken.webp',
+    fit: 'cover',
+    alt: 'Fried chicken pieces in a red pepper sauce, piled in a foil tray',
+  },
+  'gm-turkey': {
+    src: '/images/photo/turkey-chips.webp',
+    fit: 'cover',
+    alt: 'Turkey and fried fish in a red pepper sauce, in a black bowl',
+  },
+  'dr-malt': {
+    src: '/images/photo/chilled-malt.webp',
+    fit: 'contain',
+    alt: 'Chilled bottles and a can of malt drink, beaded with condensation',
+  },
   'ss-egusi': {
     src: '/images/photo/egusi-pounded-yam.webp',
     fit: 'contain',
