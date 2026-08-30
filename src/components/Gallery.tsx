@@ -24,7 +24,7 @@ export function GallerySection() {
 
         <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-4">
           {SHOTS.map((shot, i) => (
-            <Reveal key={shot.src} delay={i * 80} className={i % 3 === 0 ? 'sm:col-span-1' : ''}>
+            <Reveal key={shot.src} delay={i * 80}>
               <div className="card overflow-hidden">
                 <img
                   src={shot.src}

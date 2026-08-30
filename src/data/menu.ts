@@ -136,25 +136,26 @@ export const MENU_ITEMS: MenuItem[] = [
   },
 ]
 
+/**
+ * The feature cards share the cart with the menu, and the cart keys lines by
+ * `id` — so a featured dish that also appears on the menu has to be the same
+ * dish, not a restatement of it. Anything with a menu entry takes its name,
+ * category and price from there and only writes a longer description; the
+ * combination plate, which is a feature card and nothing else, is spelled out
+ * in full.
+ */
+function feature(id: string, description: string): MenuItem {
+  const item = MENU_ITEMS.find((menuItem) => menuItem.id === id)
+  if (!item) throw new Error(`No menu item with id "${id}"`)
+  return { ...item, description, houseFavourite: true }
+}
+
 export const FEATURED_DISHES: MenuItem[] = [
-  {
-    id: 'rg-jollof',
-    name: 'Party Jollof',
-    category: 'Rice & Grains',
-    price: 5500,
-    description:
-      'Smoky, oven-finished party jollof — the kind that makes a room go quiet for a minute.',
-    houseFavourite: true,
-  },
-  {
-    id: 'gm-catfish',
-    name: 'Whole Catfish',
-    category: 'Grills & Mains',
-    price: 12000,
-    description:
-      'Char-grilled whole catfish, glazed in pepper sauce, plated for sharing.',
-    houseFavourite: true,
-  },
+  feature(
+    'rg-jollof',
+    'Smoky, oven-finished party jollof — the kind that makes a room go quiet for a minute.',
+  ),
+  feature('gm-catfish', 'Char-grilled whole catfish, glazed in pepper sauce, plated for sharing.'),
   {
     id: 'feat-egusi-poundedyam',
     name: 'Egusi & Pounded Yam',

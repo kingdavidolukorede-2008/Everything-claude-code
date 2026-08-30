@@ -5,11 +5,15 @@ import { cn } from '@/lib/utils'
  * @property {string} src - The source URL for the image.
  * @property {string} alt - The alt text for the image for accessibility.
  * @property {string} className - Tailwind CSS classes for positioning, sizing, and animation.
+ * @property {string} [loading] - Native loading hint; defaults to lazy.
+ * @property {string} [fetchPriority] - Native priority hint for the images that open the page.
  */
 interface FloatingImageProps {
   src: string
   alt: string
   className: string
+  loading?: 'eager' | 'lazy'
+  fetchPriority?: 'high' | 'low' | 'auto'
 }
 
 /**
@@ -18,12 +22,15 @@ interface FloatingImageProps {
  * @property {string} description - The paragraph text below the heading.
  * @property {FloatingImageProps[]} images - An array of image objects to be displayed.
  * @property {string} [className] - Optional additional classes for the section container.
+ * @property {string} [titleAs] - Element for the title. Defaults to `h1`; pass
+ *   something else when the page already has its own `h1` further down.
  */
 export interface FloatingFoodHeroProps {
   title: string
   description: string
   images: FloatingImageProps[]
   className?: string
+  titleAs?: 'h1' | 'h2' | 'p'
 }
 
 /**
@@ -77,6 +84,7 @@ export function FloatingFoodHero({
   description,
   images,
   className,
+  titleAs: Title = 'h1',
 }: FloatingFoodHeroProps) {
   return (
     <section
@@ -96,7 +104,8 @@ export function FloatingFoodHero({
             key={image.src + index}
             src={image.src}
             alt={image.alt}
-            loading="lazy"
+            loading={image.loading ?? 'lazy'}
+            fetchPriority={image.fetchPriority ?? 'auto'}
             className={cn('absolute object-contain', image.className)}
             style={{ animationDelay: `${index * 300}ms` }}
           />
@@ -105,9 +114,9 @@ export function FloatingFoodHero({
 
       {/* Text content */}
       <div className="container relative z-20 mx-auto max-w-2xl px-4 text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
+        <Title className="text-4xl font-bold tracking-tight text-primary sm:text-5xl md:text-6xl">
           {title}
-        </h1>
+        </Title>
         <p className="mt-6 text-lg leading-8 text-muted-foreground">{description}</p>
       </div>
     </section>

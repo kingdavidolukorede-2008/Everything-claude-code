@@ -18,6 +18,9 @@ export const BUSINESS = {
   reviewCount: 17,
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=Abiola+Court%2C+10+Chevron+Drive%2C+Eti-Osa%2C+Lagos+105102',
+  // PLACEHOLDERS. Both are service homepages, not Belle Food's own pages, so
+  // the "Order on Glovo" and "Instagram" buttons currently dead-end. Replace
+  // with the restaurant's real store and profile URLs before going live.
   glovoUrl: 'https://glovoapp.com',
   instagramUrl: 'https://instagram.com',
 } as const

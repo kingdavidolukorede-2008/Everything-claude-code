@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useCart } from '../context/CartContext'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
+import { useDialog } from '../hooks/useDialog'
 import { dishImage, formatNaira } from '../utils/format'
 import { buildWhatsAppLink } from '../utils/whatsapp'
 import { BUSINESS } from '../data/business'
@@ -21,15 +22,7 @@ export function CartDrawer() {
   const [notes, setNotes] = useState('')
 
   useBodyScrollLock(cart.isOpen)
-
-  useEffect(() => {
-    if (!cart.isOpen) return
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') cart.close()
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [cart])
+  const dialogRef = useDialog<HTMLElement>(cart.isOpen, cart.close)
 
   if (!cart.isOpen) return null
 
@@ -69,9 +62,11 @@ export function CartDrawer() {
       />
 
       <aside
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Your order"
+        tabIndex={-1}
         className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-hidden border-l border-hairline bg-ink"
       >
         <div className="flex items-center justify-between border-b border-hairline px-6 py-5">
@@ -96,12 +91,14 @@ export function CartDrawer() {
             </p>
           ) : (
             <ul className="space-y-4">
-              {cart.lines.map((line) => (
+              {cart.lines.map((line) => {
+                const picture = dishImage(line.item.id, line.item.name)
+                return (
                 <li key={line.item.id} className="flex items-center gap-3">
                   <img
-                    src={dishImage(line.item.id, line.item.name).src}
+                    src={picture.src}
                     alt=""
-                    className={`h-16 w-16 shrink-0 rounded-sq ${dishImage(line.item.id, line.item.name).fit}`}
+                    className={`h-16 w-16 shrink-0 rounded-sq ${picture.fit}`}
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm text-cream">{line.item.name}</p>
@@ -137,7 +134,8 @@ export function CartDrawer() {
                     <TrashIcon className="h-3.5 w-3.5" />
                   </button>
                 </li>
-              ))}
+                )
+              })}
             </ul>
           )}
 

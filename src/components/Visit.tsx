@@ -1,6 +1,6 @@
 import { BUSINESS, DAYS } from '../data/business'
-import { useLagosClock } from '../hooks/useLagosClock'
 import { Container } from './Container'
+import { LagosClock } from './LagosClock'
 import { Reveal } from './Reveal'
 import { ClockIcon, InstagramIcon, MapPinIcon, PhoneIcon, WhatsAppIcon } from './Icons'
 import { buildWhatsAppLink } from '../utils/whatsapp'
@@ -10,8 +10,6 @@ interface VisitProps {
 }
 
 export function Visit({ onReserve }: VisitProps) {
-  const { time, dayLabel } = useLagosClock()
-
   return (
     <section id="visit" className="py-24 sm:py-32">
       <Container>
@@ -89,7 +87,7 @@ export function Visit({ onReserve }: VisitProps) {
                 <p className="eyebrow">Hours</p>
                 <span className="flex items-center gap-2 font-mono text-xs text-gold-soft">
                   <ClockIcon className="h-4 w-4" />
-                  {time} WAT · {dayLabel}
+                  <LagosClock withDay />
                 </span>
               </div>
 

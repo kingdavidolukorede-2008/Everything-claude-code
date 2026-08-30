@@ -1,16 +1,32 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
+import { useDialog } from '../hooks/useDialog'
 import { BUSINESS } from '../data/business'
 import { CloseIcon, PhoneIcon } from './Icons'
 
 interface ReserveModalProps {
-  open: boolean
   onClose: () => void
 }
 
 const GUEST_OPTIONS = Array.from({ length: 12 }, (_, i) => i + 1)
 
-export function ReserveModal({ open, onClose }: ReserveModalProps) {
+const LAGOS_DATE = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Africa/Lagos',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
+/** Today in Lagos as `YYYY-MM-DD` — the earliest date a table can be booked for. */
+function todayInLagos(): string {
+  return LAGOS_DATE.format(new Date())
+}
+
+/**
+ * Mounted only while open, so every booking starts from a blank form rather
+ * than the last one's answers.
+ */
+export function ReserveModal({ onClose }: ReserveModalProps) {
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [guests, setGuests] = useState(2)
@@ -18,28 +34,16 @@ export function ReserveModal({ open, onClose }: ReserveModalProps) {
   const [time, setTime] = useState('')
   const [notes, setNotes] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const earliest = todayInLagos()
 
-  useBodyScrollLock(open)
-
-  useEffect(() => {
-    if (!open) return
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
-  }, [open, onClose])
-
-  useEffect(() => {
-    if (!open) {
-      setSubmitted(false)
-    }
-  }, [open])
-
-  if (!open) return null
+  useBodyScrollLock(true)
+  const dialogRef = useDialog<HTMLDivElement>(true, onClose)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
+    // The date input's `min` covers typed entry too, but a stale tab left open
+    // past midnight can still submit yesterday.
+    if (date < earliest) return
     setSubmitted(true)
   }
 
@@ -53,9 +57,11 @@ export function ReserveModal({ open, onClose }: ReserveModalProps) {
       />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label="Reserve a table"
+        tabIndex={-1}
         className="relative w-full max-w-md border border-hairline bg-ink"
       >
         <div className="flex items-center justify-between border-b border-hairline px-6 py-5">
@@ -149,6 +155,7 @@ export function ReserveModal({ open, onClose }: ReserveModalProps) {
                 <input
                   id="rsv-date"
                   required
+                  min={earliest}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   type="date"

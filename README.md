@@ -87,7 +87,7 @@ The rest are dish photographs, all WebP q74 and all full-frame but one:
 | File | Size | Dish |
 | --- | --- | --- |
 | `party-jollof.webp` | 800 | Party Jollof (menu + Kitchen feature) |
-| `whole-catfish.webp` | 800 | Grilled Catfish / Whole Catfish (menu + Kitchen feature) |
+| `whole-catfish.webp` | 800 | Grilled Catfish (menu + Kitchen feature) |
 | `peppered-snail.webp` | 512 | Peppered Snail |
 | `puff-puff.webp` | 512 | Puff-Puff |
 | `spring-rolls.webp` | 512 | Spring Rolls |
@@ -240,8 +240,32 @@ renders in the house colours instead of default neutral.
 - **Reserve modal**: name, phone, guest count, date, time and notes, with a
   confirmation state and a call-to-confirm fallback.
 - **Live Africa/Lagos clock** in the hero and Visit section.
-- Mobile nav locks body scroll; both the cart drawer and reserve modal close
-  on `Escape` or overlay click.
+- Mobile nav locks body scroll. Both the cart drawer and the reserve modal are
+  real dialogs: `useDialog` moves focus inside on open, keeps Tab within them,
+  closes on `Escape` or an overlay click, and hands focus back to whatever
+  opened them.
+- The reserve modal is mounted only while it is open, so each booking starts
+  from a blank form, and its date field cannot be set earlier than today in
+  Lagos.
 - Money is formatted with `Intl.NumberFormat('en-NG', { currency: 'NGN' })`.
 - Respects `prefers-reduced-motion` throughout (marquee, dial spin, scroll
   reveals).
+
+### One dish, one identity
+
+The cart keys its lines by `MenuItem.id`, so a dish that appears both on the
+menu and as a Kitchen feature card has to be the *same* item, not a second
+description of it — otherwise adding it from both places merges the two under
+whichever name landed first. `FEATURED_DISHES` therefore reads its name,
+category and price out of `MENU_ITEMS` through the `feature()` helper and only
+overrides the description. `feat-egusi-poundedyam` is the exception: it is a
+combination plate that exists nowhere else on the menu, so it is spelled out in
+full.
+
+### Sharing
+
+`og:image` is `/images/og-belle-food.jpg`, a 1200×630 crop of the forecourt
+photograph. It has to be a raster file — no social scraper renders SVG — and it
+is site-root-relative because the deployed domain isn't known here. Making the
+two image URLs absolute `https://` ones is a deploy-time step; the stricter
+scrapers require it.

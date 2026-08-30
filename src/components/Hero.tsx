@@ -1,14 +1,13 @@
 import { BUSINESS } from '../data/business'
 import { useCart } from '../context/CartContext'
-import { useLagosClock } from '../hooks/useLagosClock'
 import { formatNaira } from '../utils/format'
 import { ClockIcon, PhoneIcon, StarIcon } from './Icons'
 import { DialSVG } from './DialSVG'
+import { LagosClock } from './LagosClock'
 import { Marquee } from './Marquee'
 
 export function Hero() {
   const cart = useCart()
-  const { time } = useLagosClock()
 
   return (
     <section id="belle" className="relative overflow-hidden pt-14 sm:pt-20">
@@ -33,7 +32,9 @@ export function Hero() {
 
           <div className="mt-6 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.1em] text-gold">
             <ClockIcon className="h-4 w-4" />
-            <span>{time} WAT</span>
+            <span>
+              <LagosClock />
+            </span>
             <span className="inline-flex items-center gap-1.5 text-gold-soft">
               <span className="h-1.5 w-1.5 rounded-full bg-[#7FBF6B]" aria-hidden="true" />
               Open now

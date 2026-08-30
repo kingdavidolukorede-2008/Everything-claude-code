@@ -40,7 +40,7 @@ function AppShell() {
       <Footer />
 
       <CartDrawer />
-      <ReserveModal open={reserveOpen} onClose={() => setReserveOpen(false)} />
+      {reserveOpen && <ReserveModal onClose={() => setReserveOpen(false)} />}
     </div>
   )
 }
