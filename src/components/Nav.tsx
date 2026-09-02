@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BUSINESS, NAV_LINKS } from '../data/business'
 import { useCart } from '../context/CartContext'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
@@ -12,6 +12,31 @@ export function Nav({ onReserve }: NavProps) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const cart = useCart()
   useBodyScrollLock(mobileOpen)
+
+  /**
+   * The open menu locks body scroll and is hidden above `lg`. Crossing that
+   * breakpoint with it open — rotating a tablet, dragging a window wider —
+   * would otherwise leave the page frozen with no visible control to unfreeze
+   * it, so widening closes the menu. Escape closes it too, as a panel over the
+   * page should.
+   */
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    const desktop = window.matchMedia('(min-width: 1024px)')
+    const close = () => setMobileOpen(false)
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') close()
+    }
+
+    if (desktop.matches) close()
+    desktop.addEventListener('change', close)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      desktop.removeEventListener('change', close)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [mobileOpen])
 
   function handleLinkClick() {
     setMobileOpen(false)
@@ -80,6 +105,7 @@ export function Nav({ onReserve }: NavProps) {
             className="flex h-10 w-10 items-center justify-center border border-hairline text-cream"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
+            aria-controls="mobile-menu"
           >
             {mobileOpen ? <CloseIcon className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
           </button>
@@ -87,7 +113,7 @@ export function Nav({ onReserve }: NavProps) {
       </div>
 
       {mobileOpen && (
-        <div className="border-t border-hairline bg-ink px-5 py-6 lg:hidden">
+        <div id="mobile-menu" className="border-t border-hairline bg-ink px-5 py-6 lg:hidden">
           <nav className="flex flex-col gap-5" aria-label="Mobile">
             {NAV_LINKS.map((link) => (
               <a
