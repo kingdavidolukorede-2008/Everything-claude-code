@@ -334,6 +334,56 @@ table.ledger td:last-child,table.ledger th:last-child{padding-right:0;text-align
 .cta .row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.7rem;align-items:center}
 .cta .fine{font-family:var(--mono);font-size:.73rem;color:var(--night-muted)}
 
+/* ---------- waitlist ---------- */
+.wl{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.92fr);gap:clamp(1.8rem,4.5vw,3.4rem);align-items:start}
+@media(max-width:900px){.wl{grid-template-columns:1fr}}
+.wl-copy h2{font-size:var(--s-3)}
+.wl-copy p{color:var(--night-muted);max-width:46ch;margin-top:.9rem}
+.wl-points{list-style:none;margin:1.5rem 0 0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+.wl-points li{display:flex;gap:.7rem;font-family:var(--mono);font-size:.78rem;line-height:1.5;color:var(--night-muted)}
+.wl-points li::before{content:"·";color:var(--sodium);flex:0 0 auto}
+.wl-form{background:var(--night-2);border:1px solid var(--night-line);display:flex;flex-direction:column}
+.wl-head{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.75rem 1.1rem;border-bottom:1px solid var(--night-line);
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;color:var(--night-muted);
+}
+.wl-count{margin-left:auto;letter-spacing:.05em;text-transform:none;font-variant-numeric:tabular-nums}
+.wl-body{padding:1.2rem 1.1rem 1.3rem;display:flex;flex-direction:column;gap:.95rem}
+.wl-row{display:grid;grid-template-columns:1fr 1fr;gap:.95rem}
+@media(max-width:480px){.wl-row{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:.35rem;min-width:0}
+.field label{font-family:var(--mono);font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:var(--night-muted)}
+.field input,.field select{
+  width:100%;
+  background:var(--night);
+  border:1px solid var(--night-line);
+  color:var(--night-ink);
+  font-family:var(--body);font-size:.95rem;
+  padding:.58rem .7rem;
+  border-radius:0;
+  appearance:none;
+}
+.field select{
+  font-family:var(--mono);font-size:.83rem;
+  background-image:linear-gradient(45deg,transparent 50%,var(--night-muted) 50%),linear-gradient(135deg,var(--night-muted) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 55%,calc(100% - 10px) 55%;
+  background-size:5px 5px,5px 5px;background-repeat:no-repeat;
+  padding-right:2rem;
+}
+.field option{background:var(--night);color:var(--night-ink)}
+.field input::placeholder{color:#5C6484}
+.field input:focus,.field select:focus{outline:none;border-color:var(--sodium)}
+.field.bad input{border-color:#B4526A}
+.wl-form .btn{justify-content:center;margin-top:.2rem}
+.wl-fine{font-family:var(--mono);font-size:.7rem;line-height:1.5;color:var(--night-muted)}
+.wl-fine.err{color:#F09AAC}
+.wl-fine a{color:var(--sodium)}
+.wl-done{padding:1.6rem 1.2rem 1.8rem;display:flex;flex-direction:column;gap:.8rem;text-align:left}
+.wl-done .pos{font-family:var(--display);font-weight:700;font-size:var(--s-3);letter-spacing:-.035em;color:var(--sodium);font-variant-numeric:tabular-nums;line-height:1}
+.wl-done h3{font-size:var(--s-1);color:var(--night-ink)}
+.wl-done p{font-family:var(--mono);font-size:.76rem;line-height:1.6;color:var(--night-muted)}
+
 /* ---------- footer ---------- */
 footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
 .foot-in{display:flex;flex-wrap:wrap;gap:.8rem 2rem;align-items:center}
@@ -356,7 +406,7 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
       <a class="hide-sm" href="#work">What we run</a>
       <a class="hide-sm" href="#build">How it's built</a>
       <a href="#pricing">Pricing</a>
-      <a class="btn btn-amber" href="#book">Book a walkthrough</a>
+      <a class="btn btn-amber" href="#waitlist">Join the waitlist</a>
     </nav>
   </div>
 </header>
@@ -371,10 +421,10 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
         <h1>Your business runs 9&#8209;to&#8209;5. Your <em>admin</em> doesn't have to.</h1>
         <p class="lede">We build the systems that chase quotes, clear the inbox, reconcile the books and book the jobs — while your team is asleep.</p>
         <div class="hero-cta">
-          <a class="btn btn-amber" href="#book">Book a 30-min walkthrough</a>
+          <a class="btn btn-amber" href="#waitlist">Join the waitlist</a>
           <a class="btn btn-ghost" href="#work">See what we run</a>
         </div>
-        <p class="hero-note">First workflow live in 3 weeks. Runs in your tools, your accounts.</p>
+        <p class="hero-note">Four builds a quarter · two slots left for Q1 · first workflow live in 3 weeks.</p>
       </div>
 
       <div class="log" aria-label="Example overnight shift log">
@@ -552,7 +602,7 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
             <li>Daily shift log to Slack or email</li>
             <li>Email support, next business day</li>
           </ul>
-          <a class="btn btn-ghost" href="#book">Start with one</a>
+          <a class="btn btn-ghost" href="#waitlist">Join the waitlist</a>
         </article>
         <article class="plan plan-lead">
           <span class="badge">Where most teams start</span>
@@ -565,7 +615,7 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
             <li>Monthly review against your time logs</li>
             <li>On-call for overnight breakages</li>
           </ul>
-          <a class="btn btn-amber" href="#book">Book a walkthrough</a>
+          <a class="btn btn-amber" href="#waitlist">Join the waitlist</a>
         </article>
         <article class="plan">
           <h3>Round the Clock</h3>
@@ -576,7 +626,7 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
             <li>Named engineer, four-hour response</li>
             <li>Quarterly on-site with your ops lead</li>
           </ul>
-          <a class="btn btn-ghost" href="#book">Talk it through</a>
+          <a class="btn btn-ghost" href="#waitlist">Join the waitlist</a>
         </article>
       </div>
     </div>
@@ -638,16 +688,63 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="cta" id="book">
-    <div class="wrap">
-      <p class="eyebrow" style="color:var(--night-muted)">Next step</p>
-      <h2 style="margin-top:.8rem">Bring us one week you'd rather not repeat.</h2>
-      <p>Thirty minutes, screen shared, on your real inbox and your real CRM. You'll leave with the three workflows we'd build first and what each is costing you now — whether or not you hire us.</p>
-      <div class="row">
-        <a class="btn btn-amber" href="mailto:hello@nightshift.work?subject=Walkthrough">hello@nightshift.work</a>
-        <span class="fine">Mon–Fri, replies within a working day · Lagos (WAT), covering EMEA and US East</span>
+  <!-- WAITLIST -->
+  <section class="cta" id="waitlist">
+    <div class="wrap wl">
+      <div class="wl-copy">
+        <p class="eyebrow" style="color:var(--night-muted)">The queue</p>
+        <h2 style="margin-top:.8rem">Four builds a quarter. Two slots left for Q1.</h2>
+        <p>We shadow one business at a time, so the calendar fills a quarter ahead. Join the queue and you get the walkthrough before the slots open — thirty minutes, screen shared, on your real inbox and your real CRM.</p>
+        <ul class="wl-points">
+          <li>One email when a slot opens. No card, no call script.</li>
+          <li>You leave with the three workflows we'd build first, in writing.</li>
+          <li>Unsubscribe from any email. We don't sell or share the list.</li>
+        </ul>
       </div>
+
+      <form class="wl-form" id="wl-form" novalidate data-endpoint="">
+        <div class="wl-head">
+          <span class="dot live" aria-hidden="true"></span>
+          <span>Join the waitlist</span>
+          <span class="wl-count" id="wl-count" hidden></span>
+        </div>
+        <div class="wl-body" id="wl-body">
+          <div class="field">
+            <label for="wl-email">Work email</label>
+            <input id="wl-email" name="email" type="email" autocomplete="email" placeholder="priya@ravellokitchens.com" required>
+          </div>
+          <div class="field">
+            <label for="wl-company">Company</label>
+            <input id="wl-company" name="company" type="text" autocomplete="organization" placeholder="Ravello Kitchens" required>
+          </div>
+          <div class="wl-row">
+            <div class="field">
+              <label for="wl-size">Team size</label>
+              <select id="wl-size" name="size">
+                <option value="5-15">5 – 15</option>
+                <option value="16-30" selected>16 – 30</option>
+                <option value="31-60">31 – 60</option>
+                <option value="60+">60+</option>
+                <option value="under-5">Under 5</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="wl-first">Hand over first</label>
+              <select id="wl-first" name="first_job">
+                <option value="quote-follow-up">Quote follow-up</option>
+                <option value="inbox-triage" selected>Inbox triage</option>
+                <option value="invoice-chasing">Invoice chasing</option>
+                <option value="intake-booking">Intake &amp; booking</option>
+                <option value="crm-hygiene">CRM hygiene</option>
+                <option value="job-packs">Job-pack assembly</option>
+                <option value="not-sure">Not sure yet</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-amber" type="submit" id="wl-submit">Take my slot</button>
+          <p class="wl-fine" id="wl-msg" role="status">We reply within a working day. Or skip the queue and write to <a href="mailto:hello@nightshift.work">hello@nightshift.work</a>.</p>
+        </div>
+      </form>
     </div>
   </section>
 </main>
@@ -662,17 +759,140 @@ footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;colo
 
 <script>
 (function(){
-  var c = document.getElementById('clock'), s = document.getElementById('shift');
-  if(!c) return;
+  /* --- header clock --- */
+  var c = document.getElementById('clock'), sh = document.getElementById('shift');
+  function pad(n){ return String(n).padStart(2,'0'); }
   function tick(){
     var d = new Date();
-    var p = function(n){ return String(n).padStart(2,'0'); };
-    c.textContent = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    c.textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
     var h = d.getHours();
-    s.textContent = (h >= 18 || h < 8) ? 'on shift' : 'day crew';
+    sh.textContent = (h >= 18 || h < 8) ? 'on shift' : 'day crew';
   }
-  tick();
-  setInterval(tick, 1000);
+  if(c){ tick(); setInterval(tick, 1000); }
+
+  /* --- waitlist --- */
+  var form = document.getElementById('wl-form');
+  if(!form) return;
+  var body   = document.getElementById('wl-body'),
+      msg    = document.getElementById('wl-msg'),
+      countEl= document.getElementById('wl-count'),
+      btn    = document.getElementById('wl-submit'),
+      emailF = document.getElementById('wl-email'),
+      compF  = document.getElementById('wl-company');
+
+  var store = null;           /* artifact db, when this view grants it */
+  var onList = 0;
+  var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  var MAILTO = 'hello@nightshift.work';
+
+  /* The page works with no backend at all. Where one exists it is used,
+     in order: the artifact store, then data-endpoint, then email. */
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('db').then(function(db){
+      if(!db) return;
+      store = db;
+      db.collection('signups').onSnapshot(function(snap){
+        onList = snap.size;
+        if(onList > 0){
+          countEl.hidden = false;
+          countEl.textContent = onList + (onList === 1 ? ' in the queue' : ' in the queue');
+        }
+      }, function(){ /* subscription gone; the form still submits */ });
+    }).catch(function(){});
+  }
+
+  function say(text, bad){
+    msg.innerHTML = text;
+    msg.classList.toggle('err', !!bad);
+  }
+  function mark(field, bad){
+    field.parentNode.classList.toggle('bad', bad);
+  }
+
+  function record(){
+    return {
+      email:     emailF.value.trim().toLowerCase(),
+      company:   compF.value.trim(),
+      team_size: document.getElementById('wl-size').value,
+      first_job: document.getElementById('wl-first').value,
+      joined_at: new Date().toISOString(),
+      source:    'landing-page'
+    };
+  }
+
+  function done(position, viaEmail){
+    var lines = viaEmail
+      ? '<p>We passed your details to your email client. Send that message and you are in the queue — reply lands within a working day.</p>'
+      : '<p>We will email you from ' + MAILTO + ' when a Q1 slot opens, and nowhere else. Nothing to do until then.</p>';
+    body.innerHTML =
+      '<div class="wl-done">' +
+        (position ? '<span class="pos">#' + position + '</span>' : '') +
+        '<h3>' + (position ? 'You are in the queue.' : 'Request sent.') + '</h3>' +
+        lines +
+      '</div>';
+  }
+
+  function failed(){
+    say('That did not save. Write to <a href="mailto:' + MAILTO + '">' + MAILTO + '</a> and we will add you by hand.', true);
+    btn.disabled = false;
+    btn.textContent = 'Take my slot';
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+
+    var email = emailF.value.trim(), company = compF.value.trim();
+    var badEmail = !EMAIL.test(email), badCompany = company.length < 2;
+    mark(emailF, badEmail); mark(compF, badCompany);
+    if(badEmail || badCompany){
+      say(badEmail ? 'That email address looks incomplete — check it and try again.'
+                   : 'Tell us the company name so we know who is asking.', true);
+      (badEmail ? emailF : compF).focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    say('Adding you to the queue…');
+    var rec = record();
+
+    if(store){
+      var id = rec.email.replace(/[^a-z0-9_.~:@+-]/g, '-').slice(0, 180);
+      store.doc('signups/' + id).set(rec)
+        .then(function(){ return store.collection('signups').get(); })
+        .then(function(snap){ done(snap.size); })
+        .catch(failed);
+      return;
+    }
+
+    var endpoint = form.dataset.endpoint;
+    if(endpoint){
+      fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(rec)
+      }).then(function(r){
+        if(!r.ok) throw new Error('HTTP ' + r.status);
+        done(null);
+      }).catch(failed);
+      return;
+    }
+
+    /* no store, no endpoint: hand it to the visitor's mail client */
+    var subject = 'Waitlist — ' + rec.company;
+    var lines = [
+      'Add us to the Q1 waitlist.',
+      '',
+      'Company:   ' + rec.company,
+      'Team size: ' + rec.team_size,
+      'Hand over: ' + rec.first_job,
+      'Email:     ' + rec.email
+    ].join('\n');
+    window.location.href = 'mailto:' + MAILTO +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body='    + encodeURIComponent(lines);
+    done(null, true);
+  });
 })();
 </script>
 </body>
