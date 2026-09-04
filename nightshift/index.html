@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Nightshift builds AI automations that chase quotes, clear the inbox, reconcile the books and book the jobs overnight — inside your own tools. First workflow live in three weeks.">
+<meta name="theme-color" content="#E9EBF1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1220" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Nightshift">
+<meta property="og:title" content="Nightshift — your business runs 9-to-5, your admin doesn't have to">
+<meta property="og:description" content="An AI automation studio for small service businesses. The back-office grind, run unattended overnight, inside your own tools.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 22'%3E%3Ccircle cx='11' cy='11' r='11' fill='%230E1120'/%3E%3Cpath d='M14.6 4.4a7.2 7.2 0 1 0 3.1 9.6A8.2 8.2 0 0 1 14.6 4.4Z' fill='%23F0A62B'/%3E%3C/svg%3E">
+<style>*{box-sizing:border-box}img{max-width:100%}[hidden]{display:none!important}body{margin:0}</style>
+<title>Nightshift Automation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Literata:opsz,wght@7..72,300..600&display=swap">
+
+</head>
+<body>
+<style>
+/* ---------- tokens ---------- */
+:root{
+  --paper:#E9EBF1;
+  --surface:#FAFAFC;
+  --surface-2:#F1F2F7;
+  --ink:#14172A;
+  --muted:#656C86;
+  --line:#D2D6E2;
+  --line-soft:#E0E3EC;
+  --sodium:#F0A62B;        /* fills, rules */
+  --sodium-ink:#9C5A03;    /* amber as text on light ground */
+  --dusk:#33406E;
+  --ok:#2C6E52;
+  --alert:#9E3346;
+
+  /* the night panel — identical in every theme */
+  --night:#0E1120;
+  --night-2:#171B2E;
+  --night-line:#282E47;
+  --night-ink:#E4E7F2;
+  --night-muted:#8C95B3;
+
+  --display:"Bricolage Grotesque","Helvetica Neue",Arial,sans-serif;
+  --body:"Literata",Georgia,"Times New Roman",serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+
+  --s--1:.8125rem;
+  --s-0:1.0625rem;
+  --s-1:1.28rem;
+  --s-2:1.65rem;
+  --s-3:2.25rem;
+  --s-4:clamp(2.5rem,5.4vw,3.9rem);
+
+  --wrap:1180px;
+  --pad:clamp(1.15rem,4vw,2.5rem);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0F1220;
+    --surface:#171B2C;
+    --surface-2:#1E2234;
+    --ink:#E6E9F3;
+    --muted:#98A0BB;
+    --line:#2B3149;
+    --line-soft:#242942;
+    --sodium:#F6B44E;
+    --sodium-ink:#F6B44E;
+    --dusk:#93A4E0;
+    --ok:#5CB98D;
+    --alert:#E2798B;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0F1220;
+  --surface:#171B2C;
+  --surface-2:#1E2234;
+  --ink:#E6E9F3;
+  --muted:#98A0BB;
+  --line:#2B3149;
+  --line-soft:#242942;
+  --sodium:#F6B44E;
+  --sodium-ink:#F6B44E;
+  --dusk:#93A4E0;
+  --ok:#5CB98D;
+  --alert:#E2798B;
+}
+
+/* ---------- base ---------- */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:var(--s-0);
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{
+  font-family:var(--display);
+  font-weight:700;
+  letter-spacing:-.028em;
+  line-height:1.06;
+  text-wrap:balance;
+  margin:0;
+}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--sodium);outline-offset:3px;border-radius:2px}
+.wrap{width:100%;max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad)}
+.prose{max-width:62ch}
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.7rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin:0;
+}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- header ---------- */
+.top{
+  position:sticky;top:0;z-index:40;
+  background:color-mix(in srgb,var(--paper) 88%,transparent);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);
+}
+.top-in{display:flex;align-items:center;gap:1.4rem;height:60px}
+.mark{display:flex;align-items:center;gap:.55rem;text-decoration:none;flex:0 0 auto}
+.mark svg{display:block}
+.mark b{
+  font-family:var(--display);
+  font-weight:800;
+  font-size:1.02rem;
+  letter-spacing:-.03em;
+  text-transform:lowercase;
+}
+.clock{
+  font-family:var(--mono);
+  font-size:.74rem;
+  color:var(--muted);
+  display:flex;align-items:center;gap:.45rem;
+  padding-left:1.1rem;
+  border-left:1px solid var(--line);
+}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--sodium);box-shadow:0 0 0 3px color-mix(in srgb,var(--sodium) 22%,transparent)}
+.top nav{margin-left:auto;display:flex;align-items:center;gap:1.5rem}
+.top nav a{
+  font-family:var(--mono);font-size:.76rem;letter-spacing:.02em;
+  text-decoration:none;color:var(--muted);
+}
+.top nav a:hover{color:var(--ink)}
+@media(max-width:820px){.top nav a.hide-sm,.clock{display:none}}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-family:var(--mono);font-size:.8rem;letter-spacing:.01em;
+  text-decoration:none;
+  padding:.62rem 1.05rem;
+  border:1px solid transparent;
+  background:var(--ink);color:var(--paper);
+  transition:transform .12s ease,background .15s ease;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-amber{background:var(--sodium);color:#1B1200;border-color:var(--sodium)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-ghost:hover{border-color:var(--ink)}
+
+/* ---------- hero ---------- */
+.hero{padding-block:clamp(2.8rem,7vw,4.6rem) clamp(2.5rem,6vw,4rem)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:clamp(2rem,5vw,3.4rem);align-items:start}
+@media(max-width:940px){.hero-grid{grid-template-columns:1fr}}
+.hero h1{font-size:var(--s-4);margin-block:1rem 1.15rem}
+.hero h1 em{font-style:normal;color:var(--sodium-ink);}
+.hero .lede{font-size:var(--s-1);color:var(--muted);max-width:34ch;line-height:1.5}
+.hero-cta{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.7rem}
+.hero-note{font-family:var(--mono);font-size:.74rem;color:var(--muted);margin-top:1.05rem}
+
+/* ---------- the night log ---------- */
+.log{
+  background:var(--night);
+  color:var(--night-ink);
+  border:1px solid var(--night-line);
+  box-shadow:0 24px 50px -34px rgba(9,11,22,.75);
+  overflow:hidden;
+}
+.log-head{
+  display:flex;align-items:center;gap:.7rem;
+  padding:.75rem 1rem;
+  border-bottom:1px solid var(--night-line);
+  background:var(--night-2);
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--night-muted);
+}
+.log-head .date{margin-left:auto;letter-spacing:.05em;text-transform:none}
+.log-rows{list-style:none;margin:0;padding:0;overflow-x:auto}
+.log-rows li{
+  display:grid;
+  grid-template-columns:4.3rem minmax(7.5rem,1.22fr) minmax(7rem,1fr) 4.1rem;
+  gap:.5rem .85rem;
+  align-items:baseline;
+  padding:.62rem 1rem;
+  border-bottom:1px solid var(--night-line);
+  font-family:var(--mono);
+  font-size:.76rem;
+  line-height:1.42;
+  min-width:28.5rem;
+}
+.log-rows li:last-child{border-bottom:0}
+.log-t{color:var(--sodium);font-variant-numeric:tabular-nums}
+.log-what{color:var(--night-ink)}
+.log-did{color:var(--night-muted)}
+.tag{
+  justify-self:end;
+  font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;
+  padding:.12rem .42rem;
+  border:1px solid var(--night-line);
+  color:var(--night-muted);
+}
+.tag-auto{color:#7FD3A9;border-color:#2C5343}
+.tag-review{color:var(--sodium);border-color:#5A431A;background:rgba(240,166,43,.09)}
+.log-foot{
+  display:flex;flex-wrap:wrap;gap:.35rem 1.4rem;
+  padding:.8rem 1rem;
+  background:var(--night-2);
+  border-top:1px solid var(--night-line);
+  font-family:var(--mono);font-size:.72rem;color:var(--night-muted);
+}
+.log-foot b{color:var(--night-ink);font-weight:500}
+.live{animation:glow 3.6s ease-in-out infinite}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:.35}}
+@media(prefers-reduced-motion:reduce){.live{animation:none}.btn:hover{transform:none}}
+
+/* ---------- metrics ---------- */
+.metrics{border-block:1px solid var(--line);background:var(--surface)}
+.metrics-in{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+@media(max-width:860px){.metrics-in{grid-template-columns:repeat(2,1fr)}}
+.metric{padding:1.6rem 1.2rem 1.5rem;border-left:1px solid var(--line-soft)}
+.metric:first-child{border-left:0;padding-left:0}
+@media(max-width:860px){.metric:nth-child(3){border-left:0;padding-left:0}.metric:nth-child(n+3){border-top:1px solid var(--line-soft)}}
+.metric .v{font-family:var(--display);font-weight:700;font-size:var(--s-3);letter-spacing:-.035em;font-variant-numeric:tabular-nums;display:block;line-height:1}
+.metric .k{font-family:var(--mono);font-size:.73rem;color:var(--muted);margin-top:.6rem;display:block;line-height:1.4}
+
+/* ---------- sections ---------- */
+section{padding-block:clamp(3rem,7vw,5rem)}
+.s-head{display:flex;flex-direction:column;gap:.85rem;margin-bottom:2.4rem;max-width:60ch}
+.s-head h2{font-size:var(--s-3)}
+.s-head p{color:var(--muted)}
+
+/* ---------- ledger ---------- */
+.ledger-scroll{overflow-x:auto}
+table.ledger{width:100%;min-width:44rem;border-collapse:collapse;text-align:left}
+table.ledger th{
+  font-family:var(--mono);font-weight:400;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding:0 1rem .7rem 0;border-bottom:1px solid var(--ink);vertical-align:bottom;
+}
+table.ledger td{padding:.95rem 1rem .95rem 0;border-bottom:1px solid var(--line-soft);vertical-align:top;font-size:.97rem}
+table.ledger tr:hover td{background:var(--surface-2)}
+table.ledger td:last-child,table.ledger th:last-child{padding-right:0;text-align:right;white-space:nowrap}
+.task{font-family:var(--display);font-weight:600;letter-spacing:-.015em;font-size:1.02rem}
+.stack{font-family:var(--mono);font-size:.76rem;color:var(--muted)}
+.hrs{font-family:var(--mono);font-size:.86rem;color:var(--sodium-ink);font-variant-numeric:tabular-nums}
+.ledger-total td{border-bottom:0;padding-top:1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--muted)}
+.ledger-total td:last-child{color:var(--ink);font-size:.95rem}
+
+/* ---------- steps ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1px solid var(--ink)}
+@media(max-width:900px){.steps{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+.step{padding:1.5rem 1.3rem 1.7rem 0;border-right:1px solid var(--line-soft);display:flex;flex-direction:column;gap:.6rem}
+.step:last-child{border-right:0}
+@media(max-width:900px){.step:nth-child(2n){border-right:0}.step:nth-child(n+3){border-top:1px solid var(--line-soft)}}
+@media(max-width:560px){.step{border-right:0;border-top:1px solid var(--line-soft)}.step:first-child{border-top:0}}
+.step .wk{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--sodium-ink)}
+.step h3{font-size:var(--s-1)}
+.step p{font-size:.94rem;color:var(--muted)}
+
+/* ---------- bands ---------- */
+.bands{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(max-width:800px){.bands{grid-template-columns:1fr}}
+.band{background:var(--surface);padding:1.5rem 1.4rem;display:flex;flex-direction:column;gap:.7rem}
+.band .thr{font-family:var(--mono);font-size:.72rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.band h3{font-size:var(--s-1);display:flex;align-items:center;gap:.55rem}
+.band p{font-size:.94rem;color:var(--muted)}
+.pip{width:9px;height:9px;flex:0 0 auto;border-radius:50%}
+.pip-a{background:var(--ok)}
+.pip-b{background:var(--sodium)}
+.pip-c{background:var(--alert)}
+
+/* ---------- pricing ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+@media(max-width:900px){.plans{grid-template-columns:1fr}}
+.plan{border:1px solid var(--line);background:var(--surface);padding:1.6rem 1.4rem 1.5rem;display:flex;flex-direction:column;gap:1rem}
+.plan-lead{border-color:var(--sodium);box-shadow:0 0 0 1px var(--sodium)}
+.plan h3{font-size:var(--s-2)}
+.plan .price{font-family:var(--mono);font-size:.94rem;font-variant-numeric:tabular-nums;line-height:1.7}
+.plan .price b{font-family:var(--display);font-size:var(--s-2);font-weight:700;letter-spacing:-.03em;display:block}
+.plan .price span{color:var(--muted);font-size:.78rem}
+.plan ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.55rem;font-size:.93rem;flex:1}
+.plan li{display:flex;gap:.6rem;color:var(--muted)}
+.plan li::before{content:"—";color:var(--sodium);flex:0 0 auto;font-family:var(--mono)}
+.plan .btn{justify-content:center}
+.badge{font-family:var(--mono);font-size:.64rem;letter-spacing:.13em;text-transform:uppercase;color:var(--sodium-ink)}
+
+/* ---------- fit ---------- */
+.fit{display:grid;grid-template-columns:1fr 1fr;gap:clamp(1.6rem,4vw,3rem)}
+@media(max-width:760px){.fit{grid-template-columns:1fr}}
+.fit ul{list-style:none;margin:.9rem 0 0;padding:0;display:flex;flex-direction:column;gap:.7rem}
+.fit li{display:flex;gap:.7rem;font-size:.96rem;color:var(--muted);line-height:1.5}
+.fit li b{color:var(--ink);font-weight:400;font-family:var(--mono);font-size:.8rem;flex:0 0 auto;padding-top:.12rem}
+.fit .yes li b{color:var(--ok)}
+.fit .no li b{color:var(--alert)}
+
+/* ---------- faq ---------- */
+.faq{border-top:1px solid var(--line)}
+.faq details{border-bottom:1px solid var(--line-soft)}
+.faq summary{
+  cursor:pointer;list-style:none;padding:1.05rem 2rem 1.05rem 0;position:relative;
+  font-family:var(--display);font-weight:600;font-size:var(--s-1);letter-spacing:-.02em;
+}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";position:absolute;right:.2rem;top:1rem;font-family:var(--mono);color:var(--sodium-ink);font-size:1.1rem}
+.faq details[open] summary::after{content:"–"}
+.faq details p{padding:0 0 1.2rem;color:var(--muted);max-width:66ch;font-size:.97rem}
+
+/* ---------- cta ---------- */
+.cta{background:var(--night);color:var(--night-ink);border-block:1px solid var(--night-line)}
+.cta h2{font-size:var(--s-3);color:var(--night-ink)}
+.cta p{color:var(--night-muted);max-width:52ch;margin-top:.9rem}
+.cta .row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.7rem;align-items:center}
+.cta .fine{font-family:var(--mono);font-size:.73rem;color:var(--night-muted)}
+
+/* ---------- footer ---------- */
+footer{padding-block:2.2rem 2.6rem;font-family:var(--mono);font-size:.75rem;color:var(--muted)}
+.foot-in{display:flex;flex-wrap:wrap;gap:.8rem 2rem;align-items:center}
+.foot-in a{text-decoration:none}
+.foot-in a:hover{color:var(--ink)}
+.foot-in .right{margin-left:auto}
+</style>
+
+<header class="top">
+  <div class="wrap top-in">
+    <a class="mark" href="#top" aria-label="Nightshift, home">
+      <svg width="22" height="22" viewBox="0 0 22 22" role="img" aria-hidden="true">
+        <circle cx="11" cy="11" r="10" fill="#0E1120"></circle>
+        <path d="M14.6 4.4a7.2 7.2 0 1 0 3.1 9.6A8.2 8.2 0 0 1 14.6 4.4Z" fill="#F0A62B"></path>
+      </svg>
+      <b>nightshift</b>
+    </a>
+    <span class="clock"><span class="dot live" aria-hidden="true"></span><span id="clock" class="num">--:--:--</span> <span id="shift">on shift</span></span>
+    <nav>
+      <a class="hide-sm" href="#work">What we run</a>
+      <a class="hide-sm" href="#build">How it's built</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn btn-amber" href="#book">Book a walkthrough</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">AI automation studio · Lagos &amp; remote</p>
+        <h1>Your business runs 9&#8209;to&#8209;5. Your <em>admin</em> doesn't have to.</h1>
+        <p class="lede">We build the systems that chase quotes, clear the inbox, reconcile the books and book the jobs — while your team is asleep.</p>
+        <div class="hero-cta">
+          <a class="btn btn-amber" href="#book">Book a 30-min walkthrough</a>
+          <a class="btn btn-ghost" href="#work">See what we run</a>
+        </div>
+        <p class="hero-note">First workflow live in 3 weeks. Runs in your tools, your accounts.</p>
+      </div>
+
+      <div class="log" aria-label="Example overnight shift log">
+        <div class="log-head">
+          <span class="dot live" aria-hidden="true"></span>
+          Shift log
+          <span class="date">Sample night · Ravello Kitchens, 6 staff</span>
+        </div>
+        <ul class="log-rows">
+          <li><span class="log-t">23:41</span><span class="log-what">Quote #4471 · Hallam Reno</span><span class="log-did">Follow-up sent, day 3</span><span class="tag tag-auto">auto</span></li>
+          <li><span class="log-t">00:16</span><span class="log-what">Shared inbox</span><span class="log-did">9 emails triaged, 2 replied</span><span class="tag tag-auto">auto</span></li>
+          <li><span class="log-t">01:02</span><span class="log-what">Invoice 2286 · 41 days late</span><span class="log-did">Reminder + pay link</span><span class="tag tag-auto">auto</span></li>
+          <li><span class="log-t">02:27</span><span class="log-what">New lead · Dunmore Dental</span><span class="log-did">Qualified, site visit booked</span><span class="tag tag-auto">auto</span></li>
+          <li><span class="log-t">03:14</span><span class="log-what">Job 8802 · reschedule ask</span><span class="log-did">Drafted for Priya</span><span class="tag tag-review">review</span></li>
+          <li><span class="log-t">04:05</span><span class="log-what">QuickBooks &#8596; Jobber</span><span class="log-did">132 rows reconciled</span><span class="tag tag-auto">auto</span></li>
+          <li><span class="log-t">05:30</span><span class="log-what">Morning brief</span><span class="log-did">Posted to #ops</span><span class="tag tag-auto">auto</span></li>
+        </ul>
+        <div class="log-foot">
+          <span><b class="num">7h 12m</b> unattended</span>
+          <span><b class="num">1</b> item waiting on a human</span>
+          <span><b class="num">0</b> escalations</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="wrap metrics-in">
+      <div class="metric"><span class="v">41<small style="font-size:.5em;letter-spacing:0"> hrs</small></span><span class="k">returned per month<br>median 6-person client</span></div>
+      <div class="metric"><span class="v">4 min</span><span class="k">median first response<br>was 6h 20m at kickoff</span></div>
+      <div class="metric"><span class="v">92%</span><span class="k">of overnight actions<br>run without a human</span></div>
+      <div class="metric"><span class="v">3 wks</span><span class="k">kickoff to first<br>workflow in production</span></div>
+    </div>
+  </div>
+
+  <!-- LEDGER -->
+  <section id="work">
+    <div class="wrap">
+      <div class="s-head">
+        <p class="eyebrow">What we take off your desk</p>
+        <h2>The jobs nobody was hired to do.</h2>
+        <p>Every engagement starts from your actual week, not a feature list. These are the workflows we build most often, and what they give back.</p>
+      </div>
+      <div class="ledger-scroll">
+        <table class="ledger">
+          <thead>
+            <tr><th scope="col">Workflow</th><th scope="col">Lives in</th><th scope="col">What Nightshift does</th><th scope="col">Hours back / wk</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="task">Quote follow-up</td>
+              <td class="stack">HubSpot · Gmail</td>
+              <td>Chases every open quote on a cadence, drops the thread the moment a human replies, flags the ones going cold.</td>
+              <td class="hrs">6.0</td>
+            </tr>
+            <tr>
+              <td class="task">Inbox triage</td>
+              <td class="stack">Google Workspace · Slack</td>
+              <td>Sorts the shared inbox by intent, answers the repeat questions from your own past replies, routes the rest to a named owner.</td>
+              <td class="hrs">5.5</td>
+            </tr>
+            <tr>
+              <td class="task">Invoice chasing</td>
+              <td class="stack">QuickBooks · Xero</td>
+              <td>Reminders at 7 / 21 / 40 days with a payment link, escalating tone, and a stop rule the second payment lands.</td>
+              <td class="hrs">3.0</td>
+            </tr>
+            <tr>
+              <td class="task">Intake &amp; booking</td>
+              <td class="stack">Web form · Calendly · Jobber</td>
+              <td>Qualifies the lead against your criteria, prices the standard jobs, books straight into the right engineer's calendar.</td>
+              <td class="hrs">7.5</td>
+            </tr>
+            <tr>
+              <td class="task">CRM hygiene</td>
+              <td class="stack">HubSpot · Airtable</td>
+              <td>Deduplicates, fills missing fields from the email thread, closes the deals that quietly died months ago.</td>
+              <td class="hrs">2.5</td>
+            </tr>
+            <tr>
+              <td class="task">Job-pack assembly</td>
+              <td class="stack">Drive · WhatsApp</td>
+              <td>Builds tomorrow's pack — scope, site photos, access notes, parts list — and sends it to the crew by 06:00.</td>
+              <td class="hrs">4.0</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="ledger-total">
+              <td colspan="3">Typical after both build phases — measured against your own time logs, not ours.</td>
+              <td class="hrs">28.5</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- BUILD -->
+  <section id="build" style="background:var(--surface);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="s-head">
+        <p class="eyebrow">How a build runs</p>
+        <h2>Four weeks, in order. No discovery theatre.</h2>
+        <p>Each phase ends in something you can look at — a written runbook, a working pilot, a handover doc. If week one says automation is the wrong answer, we tell you and stop there.</p>
+      </div>
+      <div class="steps">
+        <article class="step">
+          <span class="wk">Week 1</span>
+          <h3>Shadow</h3>
+          <p>We sit in your tools and watch a real week. Every repeated action gets timed and counted. You get the tally, ranked by hours and by how badly it breaks when it slips.</p>
+        </article>
+        <article class="step">
+          <span class="wk">Week 2</span>
+          <h3>Runbook</h3>
+          <p>The top workflow written out as rules a person could follow: triggers, edge cases, tone, who owns the exceptions. You approve it in plain English before anything gets built.</p>
+        </article>
+        <article class="step">
+          <span class="wk">Week 3</span>
+          <h3>Pilot</h3>
+          <p>Built and run in shadow mode — it drafts, you send. We compare its calls against yours until the gap is boring, then take the training wheels off one rule at a time.</p>
+        </article>
+        <article class="step">
+          <span class="wk">Week 4+</span>
+          <h3>Handover</h3>
+          <p>Runbooks and code land in your workspace. We stay on watch: the shift log every morning, a monthly tune, and someone on call when a vendor changes an API at 3am.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- BANDS -->
+  <section>
+    <div class="wrap">
+      <div class="s-head">
+        <p class="eyebrow">Human-in-the-loop</p>
+        <h2>It never quietly guesses on your behalf.</h2>
+        <p>Every action is scored before it runs. The threshold is yours to set, per workflow, and you can move it after a fortnight of watching it work.</p>
+      </div>
+      <div class="bands">
+        <div class="band">
+          <span class="thr">confidence ≥ 0.95 · reversible</span>
+          <h3><span class="pip pip-a" aria-hidden="true"></span>Runs</h3>
+          <p>Sends, files, updates a record. Always logged with the reasoning, always undoable from the shift log the next morning.</p>
+        </div>
+        <div class="band">
+          <span class="thr">0.75 – 0.95 · or money changes hands</span>
+          <h3><span class="pip pip-b" aria-hidden="true"></span>Drafts</h3>
+          <p>Lands in one person's queue, written and ready. One click sends it. Anything touching a price, a contract or a refund lives here by default — no exceptions.</p>
+        </div>
+        <div class="band">
+          <span class="thr">&lt; 0.75 · new pattern · unhappy customer</span>
+          <h3><span class="pip pip-c" aria-hidden="true"></span>Escalates</h3>
+          <p>Stops, pings the named owner in Slack with the full thread and what it was about to do, and adds the case to next month's tune.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing" style="background:var(--surface);border-block:1px solid var(--line)">
+    <div class="wrap">
+      <div class="s-head">
+        <p class="eyebrow">Pricing</p>
+        <h2>Priced by the shift, not by the seat.</h2>
+        <p>Build fee covers the shadow week, the runbook and the pilot. The monthly covers hosting, on-call, the morning brief and one tuning pass. Cancel with 30 days' notice; the runbooks stay yours.</p>
+      </div>
+      <div class="plans">
+        <article class="plan">
+          <h3>Single Shift</h3>
+          <p class="price"><b>$4,800</b><span>build · then $600/mo</span></p>
+          <ul>
+            <li>One workflow, end to end</li>
+            <li>Shadow week and written runbook</li>
+            <li>Daily shift log to Slack or email</li>
+            <li>Email support, next business day</li>
+          </ul>
+          <a class="btn btn-ghost" href="#book">Start with one</a>
+        </article>
+        <article class="plan plan-lead">
+          <span class="badge">Where most teams start</span>
+          <h3>Double Shift</h3>
+          <p class="price"><b>$11,500</b><span>build · then $1,400/mo</span></p>
+          <ul>
+            <li>Three workflows, built in sequence</li>
+            <li>Custom integrations to your stack</li>
+            <li>Exception queue and confidence tuning</li>
+            <li>Monthly review against your time logs</li>
+            <li>On-call for overnight breakages</li>
+          </ul>
+          <a class="btn btn-amber" href="#book">Book a walkthrough</a>
+        </article>
+        <article class="plan">
+          <h3>Round the Clock</h3>
+          <p class="price"><b>$2,900<span style="font-size:.42em;letter-spacing:0"> /mo</span></b><span>from · no build fee</span></p>
+          <ul>
+            <li>A standing automation team</li>
+            <li>New workflows as the business changes</li>
+            <li>Named engineer, four-hour response</li>
+            <li>Quarterly on-site with your ops lead</li>
+          </ul>
+          <a class="btn btn-ghost" href="#book">Talk it through</a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIT -->
+  <section>
+    <div class="wrap fit">
+      <div class="yes">
+        <p class="eyebrow">Worth your time if</p>
+        <ul>
+          <li><b>✓</b>You're 5–60 people, selling a service, and the admin has outgrown the people doing it.</li>
+          <li><b>✓</b>Your work already lives in real tools — a CRM, an inbox, a books package — not only in someone's head.</li>
+          <li><b>✓</b>The same twelve things happen every week, and everyone can name them.</li>
+          <li><b>✓</b>Somebody internal will own the exception queue for an hour a day.</li>
+        </ul>
+      </div>
+      <div class="no">
+        <p class="eyebrow">Probably not, if</p>
+        <ul>
+          <li><b>✕</b>You want a chatbot on the website. That's a different shop, and we'll name one.</li>
+          <li><b>✕</b>The process changes every week because the business is still being invented.</li>
+          <li><b>✕</b>Nobody can say what "done right" looks like, so nothing can be checked.</li>
+          <li><b>✕</b>You need it to send money on its own. We won't build that.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section>
+    <div class="wrap">
+      <div class="s-head">
+        <p class="eyebrow">Straight answers</p>
+        <h2>The questions that come up on every first call.</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>Where does our data go?</summary>
+          <p>It stays in your accounts. We build inside your Google Workspace, your CRM, your books package, using credentials you issue and can revoke in a click. Nothing is copied into a warehouse of ours, and nothing is used to train anything. The model providers we call are on a written subprocessor list you get before signing, all on zero-retention terms.</p>
+        </details>
+        <details>
+          <summary>What happens when it breaks at 3am?</summary>
+          <p>Every workflow has a kill switch that any of your staff can hit, and a failure mode that stops rather than improvises. Overnight breakages page us, not you. You'll read about it in the morning brief with the cause and the fix — and, if it sent something wrong, exactly who received it.</p>
+        </details>
+        <details>
+          <summary>Do we own what you build?</summary>
+          <p>Yes. Code, runbooks and prompts are yours from day one and sit in your own repository and workspace. If you leave, you keep a working system and a document that explains it. No black boxes, no licence that expires with the retainer.</p>
+        </details>
+        <details>
+          <summary>We already have someone technical. Do we need you?</summary>
+          <p>Often not for the building — but usually for the first two weeks. The hard part isn't the code, it's writing down what your team actually does and where the judgement calls are. Plenty of clients take the runbook from week two and build it themselves. We'll say so on the call if that's the honest answer.</p>
+        </details>
+        <details>
+          <summary>Which tools do you work with?</summary>
+          <p>Google Workspace and Microsoft 365, HubSpot, Pipedrive, Airtable, Notion, Jobber, ServiceTitan, QuickBooks, Xero, Stripe, Slack, WhatsApp Business, Calendly and anything with a documented API. If your core system has none, we'll tell you in week one rather than three months in.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="book">
+    <div class="wrap">
+      <p class="eyebrow" style="color:var(--night-muted)">Next step</p>
+      <h2 style="margin-top:.8rem">Bring us one week you'd rather not repeat.</h2>
+      <p>Thirty minutes, screen shared, on your real inbox and your real CRM. You'll leave with the three workflows we'd build first and what each is costing you now — whether or not you hire us.</p>
+      <div class="row">
+        <a class="btn btn-amber" href="mailto:hello@nightshift.work?subject=Walkthrough">hello@nightshift.work</a>
+        <span class="fine">Mon–Fri, replies within a working day · Lagos (WAT), covering EMEA and US East</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <span><b style="font-family:var(--display);font-weight:800;letter-spacing:-.03em">nightshift</b> — automation studio</span>
+    <a href="mailto:hello@nightshift.work">hello@nightshift.work</a>
+    <span class="right">© 2026 Nightshift Automation Co.</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var c = document.getElementById('clock'), s = document.getElementById('shift');
+  if(!c) return;
+  function tick(){
+    var d = new Date();
+    var p = function(n){ return String(n).padStart(2,'0'); };
+    c.textContent = p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+    var h = d.getHours();
+    s.textContent = (h >= 18 || h < 8) ? 'on shift' : 'day crew';
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
