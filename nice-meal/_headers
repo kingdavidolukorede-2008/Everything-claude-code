@@ -1,0 +1,19 @@
+# Netlify / Cloudflare Pages response headers.
+#
+# These are the headers a <meta> tag cannot set. The browser ignores
+# http-equiv="X-Frame-Options" completely, and ignores frame-ancestors,
+# sandbox and report-uri inside a meta CSP — so clickjacking protection
+# only actually applies when it arrives as a real header, from here.
+#
+# GitHub Pages serves no custom headers; the meta CSP in each page is the
+# fallback there and covers everything except frame-ancestors.
+
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+/assets/img/*
+  Cache-Control: public, max-age=31536000, immutable
