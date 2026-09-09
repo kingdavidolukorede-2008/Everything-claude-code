@@ -8,6 +8,15 @@
   --dark2: #1c0d00;
   --spice: #c8600a;
   --spice-light: #e07a2a;
+  /* --spice reads at only 3.78:1 against the creams and behind cream text, so
+     it fails WCAG AA everywhere it carries small type or sits under a label.
+     --spice-ink is the same hue and saturation, dark enough to clear 4.5:1 both
+     ways; --spice stays for large display type and for hairlines and rules,
+     where contrast minimums do not apply. */
+  --spice-ink: #a75008;
+  --spice-ink-hover: #8a4206;
+  /* --text-light holds up on the dark grounds but not on cream or white. */
+  --text-soft: #7d6349;
   --cream: #fdf5ea;
   --cream2: #f5e6cf;
   --cream3: #ede0cc;
@@ -34,19 +43,33 @@ body {
 
 img { max-width: 100%; }
 
-/* Keyboard focus is visible everywhere, on both grounds. */
+/* Keyboard focus is visible on every ground the site uses: the ink accent
+   clears 3:1 on cream, white and both darks, and the dark surfaces swap in the
+   lighter accent, which reads better there than merely passing. */
 :focus-visible {
-  outline: 2px solid var(--spice-light);
+  outline: 2px solid var(--spice-ink);
   outline-offset: 3px;
   border-radius: 2px;
 }
+nav :focus-visible,
+footer :focus-visible,
+#order :focus-visible,
+#location :focus-visible,
+.page-head :focus-visible,
+.menu-card :focus-visible { outline-color: var(--spice-light); }
+/* The skip link's own ground is the ink accent, so its ring has to be cream. */
+.skip-link:focus-visible { outline-color: var(--cream); }
+
+/* The nav is fixed, so an anchor jump would otherwise park the target's
+   heading underneath it. */
+[id] { scroll-margin-top: 84px; }
 
 .skip-link {
   position: absolute;
   left: 16px;
   top: -60px;
   z-index: 200;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   font-size: 13px;
   font-weight: 700;
@@ -79,12 +102,13 @@ nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 48px;
-  transition: background 0.4s, padding 0.4s;
-}
-nav.scrolled {
   background: var(--dark);
   padding: 12px 48px;
+  transition: background 0.4s, padding 0.4s;
+}
+nav.at-top {
+  background: transparent;
+  padding: 18px 48px;
 }
 .nav-logo {
   font-family: var(--serif);
@@ -111,9 +135,10 @@ nav.scrolled {
   transition: opacity 0.2s, color 0.2s;
 }
 .nav-links a:hover { opacity: 1; color: var(--spice-light); }
+.nav-links a[aria-current="page"] { opacity: 1; color: var(--spice-light); }
 .nav-actions { display: flex; align-items: center; gap: 12px; }
 .nav-order {
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   font-family: var(--sans);
   font-size: 13px;
@@ -126,7 +151,7 @@ nav.scrolled {
   transition: background 0.2s;
   white-space: nowrap;
 }
-.nav-order:hover { background: var(--spice-light); }
+.nav-order:hover { background: var(--spice-ink-hover); }
 
 /* Mobile disclosure button — hidden until the link row collapses. */
 .nav-toggle {
@@ -235,7 +260,7 @@ nav.scrolled {
   display: block;
   width: 28px;
   height: 1px;
-  background: var(--spice);
+  background: currentColor;
 }
 .hero-h1 {
   font-family: var(--serif);
@@ -269,7 +294,7 @@ nav.scrolled {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   font-family: var(--sans);
   font-size: 14px;
@@ -281,7 +306,7 @@ nav.scrolled {
   text-decoration: none;
   transition: background 0.2s, transform 0.15s;
 }
-.btn-primary:hover { background: var(--spice-light); transform: translateY(-2px); }
+.btn-primary:hover { background: var(--spice-ink-hover); transform: translateY(-2px); }
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -354,7 +379,7 @@ section { padding: var(--section-gap) 48px; }
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: var(--spice);
+  color: var(--spice-ink);
   margin-bottom: 16px;
 }
 .section-eyebrow::before {
@@ -362,7 +387,8 @@ section { padding: var(--section-gap) 48px; }
   display: block;
   width: 24px;
   height: 1px;
-  background: var(--spice);
+  /* currentColor keeps the rule with its eyebrow on every ground. */
+  background: currentColor;
 }
 .section-title {
   font-family: var(--serif);
@@ -456,7 +482,7 @@ section { padding: var(--section-gap) 48px; }
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--spice);
+  color: var(--spice-ink);
   margin-bottom: 10px;
 }
 .menu-name {
@@ -477,7 +503,7 @@ section { padding: var(--section-gap) 48px; }
 .menu-price {
   font-size: 15px;
   font-weight: 700;
-  color: var(--spice);
+  color: var(--spice-ink);
 }
 .menu-card--img .menu-cat,
 .menu-card--gradient .menu-cat,
@@ -496,7 +522,7 @@ section { padding: var(--section-gap) 48px; }
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   padding: 4px 9px;
   border-radius: 1px;
@@ -505,7 +531,7 @@ section { padding: var(--section-gap) 48px; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   font-size: 13px;
   font-weight: 700;
@@ -518,7 +544,7 @@ section { padding: var(--section-gap) 48px; }
   margin-top: 8px;
   transition: background 0.2s;
 }
-.menu-full-link:hover { background: var(--spice-light); }
+.menu-full-link:hover { background: var(--spice-ink-hover); }
 
 /* ── ORDER ── */
 #order { background: var(--dark); }
@@ -590,12 +616,12 @@ section { padding: var(--section-gap) 48px; }
   line-height: 1.7;
 }
 .order-callbox {
-  background: var(--spice);
+  background: var(--spice-ink);
   border-radius: 4px;
   padding: 22px 24px;
   text-align: center;
 }
-.order-callbox p { font-size: 12px; color: rgba(253,245,234,0.75); margin-bottom: 6px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.order-callbox p { font-size: 12px; color: var(--cream); margin-bottom: 6px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
 .order-callbox a { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--cream); text-decoration: none; letter-spacing: -0.5px; }
 .order-callbox a:hover { color: var(--white); }
 
@@ -626,10 +652,10 @@ section { padding: var(--section-gap) 48px; }
   margin-bottom: 20px;
   font-style: italic;
 }
-.review-stars { color: var(--spice); font-size: 13px; letter-spacing: 2px; margin-bottom: 8px; }
+.review-stars { color: var(--spice-ink); font-size: 13px; letter-spacing: 2px; margin-bottom: 8px; }
 .review-card footer { background: none; border: 0; padding: 0; margin: 0; }
 .review-name { display: block; font-size: 13px; font-weight: 700; color: var(--text); font-style: normal; }
-.review-source { font-size: 11px; color: var(--text-light); }
+.review-source { font-size: 11px; color: var(--text-soft); }
 .reviews-cta { margin-top: 40px; text-align: center; }
 .reviews-cta p { font-size: 15px; color: var(--text-muted); margin-bottom: 16px; font-weight: 300; }
 .reviews-cta .btn-primary { display: inline-flex; }
@@ -655,7 +681,7 @@ section { padding: var(--section-gap) 48px; }
   position: absolute;
   bottom: 20px;
   left: 20px;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   font-size: 11px;
   font-weight: 700;
@@ -714,7 +740,7 @@ section { padding: var(--section-gap) 48px; }
   font-family: var(--serif);
   font-size: 22px;
   font-style: italic;
-  color: var(--spice);
+  color: var(--spice-ink);
   margin-top: 28px;
 }
 
@@ -890,7 +916,7 @@ body > footer {
   font-size: 13px;
   font-weight: 300;
   font-style: italic;
-  color: var(--text-light);
+  color: var(--text-soft);
 }
 .menu-item {
   display: grid;
@@ -911,7 +937,7 @@ body > footer {
 .menu-item-price {
   font-size: 15px;
   font-weight: 700;
-  color: var(--spice);
+  color: var(--spice-ink);
   white-space: nowrap;
 }
 .menu-item-desc {
@@ -943,7 +969,7 @@ body > footer {
   font-weight: 700;
   letter-spacing: 1px;
   text-transform: uppercase;
-  background: var(--spice);
+  background: var(--spice-ink);
   color: var(--cream);
   padding: 3px 8px;
   border-radius: 1px;
@@ -966,34 +992,34 @@ body > footer {
   margin-bottom: 20px;
 }
 .menu-outro .btn-primary { display: inline-flex; }
-.menu-noscript {
-  max-width: 900px;
-  margin: 0 auto 40px;
-  background: var(--cream2);
-  border-left: 3px solid var(--spice);
-  padding: 20px 24px;
-  font-size: 14px;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
-.menu-noscript a { color: var(--spice); font-weight: 700; }
 
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+@keyframes revealIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+/* Content is visible the moment it parses. The entrance is layered on top by
+   the browser's own scroll timeline, so no script stands between a visitor and
+   the page — a blocked or failed script simply means no animation. */
+.reveal { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: revealIn 1s linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+  }
+}
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  nav { padding: 16px 24px; }
-  nav.scrolled { padding: 12px 24px; }
+  nav { padding: 12px 24px; }
+  nav.at-top { padding: 16px 24px; }
   .nav-toggle { display: inline-flex; }
 
   /* The link row becomes a panel dropped from under the bar. */
@@ -1062,7 +1088,6 @@ body > footer {
   }
   /* Anything that animates in must still be visible when it does not animate. */
   .hero-eyebrow, .hero-h1, .hero-sub, .hero-ctas, .hero-stars { opacity: 1; animation: none; }
-  .reveal { opacity: 1; transform: none; }
 }
 
 /* ── PRINT ── */
@@ -1081,6 +1106,8 @@ body > footer {
   .menu-card--img .menu-desc, .menu-card--gradient .menu-desc { color: #333; }
   .menu-card--img .menu-cat, .menu-card--gradient .menu-cat,
   .menu-card--img .menu-price, .menu-card--gradient .menu-price { color: #000; }
-  .reveal { opacity: 1; transform: none; }
+  /* A print context has no scrollport, so the scroll-driven entrance would
+     otherwise hold every section at its opening keyframe and print blank. */
+  .reveal { opacity: 1 !important; transform: none !important; animation: none !important; }
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 10px; color: #555; }
 }

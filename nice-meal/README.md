@@ -54,8 +54,18 @@ what a visitor actually sees — search engines penalise markup that does not.
 HTML files and in the `telephone` field of the homepage JSON-LD.
 
 **Colour and type**: the `:root` token block at the top of `assets/css/styles.css`.
-`--spice` is the darker, text-safe orange; `--spice-light` is for larger text and
-graphics. Keep small body text on `--text` / `--text-muted` to hold contrast.
+The accent comes in three weights and they are not interchangeable:
+
+| token | value | use it for |
+|---|---|---|
+| `--spice` | `#c8600a` | display type (32px+) and hairlines — 3.78:1, below AA for small text |
+| `--spice-ink` | `#a75008` | **any small accent text, and any fill with text on it** — clears 4.5:1 both ways |
+| `--spice-light` | `#e07a2a` | accent on the dark grounds only — 2.78:1 on cream |
+
+Likewise `--text-light` (`#9a7a5a`) is for the dark grounds; quiet text on cream or
+white takes `--text-soft` (`#7d6349`). Reaching for the wrong one is the easiest way
+to reintroduce a contrast failure, so the page is scanned with axe-core after
+palette changes.
 
 ## Photography
 
@@ -110,15 +120,30 @@ few inline `style` attributes.
 
 ## Accessibility and behaviour notes
 
-- Skip link, visible `:focus-visible` rings, and headings in document order.
+Both pages pass axe-core with zero violations across WCAG 2.0/2.1 A and AA plus
+axe's best-practice rules, at 1280px and 390px.
+
+- Skip link, headings in document order, and a focus ring that clears the 3:1
+  WCAG 1.4.11 minimum on every ground the site uses — `--spice-ink` by default,
+  `--spice-light` inside the dark sections where it reads better.
+- `scroll-margin-top` on every `[id]` so an anchor jump clears the fixed nav
+  instead of parking the heading behind it.
 - The mobile menu is a real disclosure: `aria-expanded`, `aria-controls`, Escape to
   close, scrim click to close, focus returned to the button, scroll lock released on
   resize back to desktop. The original had none — below 900px it simply hid the nav.
+- **Nothing readable depends on JavaScript.** The nav bar is solid by default and
+  script only lifts it at the top of the page, where the hero behind it is dark;
+  the section entrance is a scroll-driven CSS animation (`animation-timeline:
+  view()`) behind an `@supports` guard, so a browser without it — or a visitor
+  whose script request fails — gets the content immediately rather than a page of
+  invisible sections. Verified by loading the site with `app.js` blocked.
 - Every photo carries alt text; the hero copy of the dining-room photo is `alt=""`
   because the same image is described in full in the About section.
 - `prefers-reduced-motion: reduce` disables the entrance animations *and* forces the
   revealed content visible, so nothing animated is left invisible.
-- A print stylesheet drops the chrome and prints the menu.
+- A print stylesheet drops the chrome and prints the menu. It also forces the
+  scroll-driven entrance off: a print context has no scrollport, so without that
+  override the sections print blank.
 
 ## Content to confirm before this goes live
 

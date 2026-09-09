@@ -1,13 +1,18 @@
-/* Nice Meal — nav state, mobile disclosure, scroll reveal.
-   Loaded with `defer` on both pages; every block guards its own elements. */
+/* Nice Meal — nav state and the mobile menu disclosure.
+   Loaded with `defer` on both pages; every block guards its own elements.
+   Nothing here decides whether content is visible: the section entrance is a
+   scroll-driven CSS animation, so the page reads fine without this file. */
 (function () {
   'use strict';
 
-  /* ── Sticky nav background ────────────────────────────────────────────── */
+  /* ── Sticky nav background ──────────────────────────────────────────────
+     The bar is solid by default so it stays legible over the cream sections
+     with or without this file; here we only lift it at the top of the page,
+     where the hero behind it is dark. */
   var navbar = document.getElementById('navbar');
   if (navbar) {
     var setScrolled = function () {
-      navbar.classList.toggle('scrolled', window.scrollY > 60);
+      navbar.classList.toggle('at-top', window.scrollY <= 60);
     };
     setScrolled();
     // Passive: this listener never calls preventDefault, so the browser
@@ -70,26 +75,4 @@
     else if (wide.addListener) wide.addListener(onWide);
   }
 
-  /* ── Scroll reveal ────────────────────────────────────────────────────── */
-  var reveals = document.querySelectorAll('.reveal');
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  if (reveals.length && 'IntersectionObserver' in window && !reduced) {
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry, i) {
-        if (!entry.isIntersecting) return;
-        setTimeout(function () { entry.target.classList.add('visible'); }, i * 80);
-        observer.unobserve(entry.target);
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-    Array.prototype.forEach.call(reveals, function (el) { observer.observe(el); });
-  } else {
-    // No observer, or the visitor asked for less motion: show everything.
-    Array.prototype.forEach.call(reveals, function (el) { el.classList.add('visible'); });
-  }
-
-  /* ── Photographs are not draggable out of the page ────────────────────── */
-  document.addEventListener('dragstart', function (e) {
-    if (e.target && e.target.tagName === 'IMG') e.preventDefault();
-  });
 })();
