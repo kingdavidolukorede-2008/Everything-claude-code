@@ -16,4 +16,17 @@ done
 # pass for the wrong reason.
 psql -q -U postgres -d "$DB" \
   -c "grant select, insert, update, delete on all tables in schema public to anon, authenticated;"
-psql -q -U postgres -d "$DB" -f test/01_tests.sql | sed -n '/results/,$p'
+# The suite runs with ON_ERROR_STOP off, so that one refused statement cannot
+# abort the rest. The cost is that a statement which errors is skipped rather
+# than failed — it never reaches _results and never gets counted. So the run is
+# only trustworthy if psql reported no errors at all: anything genuinely
+# expected to be refused goes through _denied(), which catches it in plpgsql
+# and records a PASS.
+out=$(psql -U postgres -d "$DB" -f test/01_tests.sql 2>&1)
+echo "$out" | sed -n '/results/,$p'
+if echo "$out" | grep -q '^psql:.*ERROR:'; then
+  echo
+  echo "A statement errored instead of being checked, so it was skipped:"
+  echo "$out" | grep '^psql:.*ERROR:'
+  exit 1
+fi

@@ -8,8 +8,9 @@ const { WebSocketServer } = require('ws');
 const { Pool } = require('pg');
 
 const PORT = Number(process.env.PORT || 8199);
-const ROOT = path.resolve(__dirname, '..');            // the kitchen/ folder
-const SITE = path.resolve(__dirname, '..', '..');       // nice-meal/, for ../favicon.svg
+// Serve the whole site, so /kitchen/ and /admin/ sit at the paths they will be
+// deployed to and every relative link in them resolves the way it really will.
+const SITE = path.resolve(__dirname, '..');
 // Host, port and user come from the usual PG* environment variables.
 const pool = new Pool({ database: process.env.DB || 'nm_dash' });
 
@@ -54,6 +55,43 @@ async function asRole(role, uid, fn) {
   } finally { c.release(); }
 }
 
+/* Call a Postgres function the way PostgREST does: by name, with named
+   arguments, so the database resolves the parameter types itself rather than
+   this file having to know them. Set-returning functions come back as an array
+   of objects and everything else as one JSON value, which is the shape
+   PostgREST produces and therefore the shape the dashboards expect. */
+const fnMeta = new Map();
+async function callFunction(c, fn, args) {
+  if (!fnMeta.has(fn)) {
+    const m = await c.query(
+      `select p.proretset from pg_proc p
+         join pg_namespace n on n.oid = p.pronamespace
+        where n.nspname = 'public' and p.proname = $1 limit 1`, [fn]);
+    if (!m.rows.length) throw new Error('unknown function ' + fn);
+    fnMeta.set(fn, m.rows[0].proretset);
+  }
+  const keys = Object.keys(args || {});
+  const named = keys.map((k, i) => `${k} := $${i + 1}`).join(', ');
+  const values = keys.map((k) => {
+    const v = args[k];
+    // jsonb parameters arrive as objects or as arrays of objects; Postgres
+    // arrays (order_status[]) arrive as arrays of strings and go through as-is.
+    if (v !== null && typeof v === 'object') {
+      const isPgArray = Array.isArray(v) && v.every((x) => typeof x !== 'object' || x === null);
+      if (!isPgArray) return JSON.stringify(v);
+    }
+    return v;
+  });
+
+  if (fnMeta.get(fn)) {
+    const r = await c.query(
+      `select coalesce(jsonb_agg(to_jsonb(t)), '[]'::jsonb) as r from public.${fn}(${named}) t`, values);
+    return r.rows[0].r;
+  }
+  const r = await c.query(`select to_jsonb(public.${fn}(${named})) as r`, values);
+  return r.rows[0].r;
+}
+
 function send(res, code, body, type) {
   const payload = type ? body : JSON.stringify(body);
   res.writeHead(code, {
@@ -73,7 +111,9 @@ function readBody(req) {
   });
 }
 
-const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml' };
+const MIME = { '.html': 'text/html', '.css': 'text/css', '.js': 'text/javascript',
+               '.svg': 'image/svg+xml', '.webp': 'image/webp', '.jpg': 'image/jpeg',
+               '.png': 'image/png', '.json': 'application/json' };
 
 const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
@@ -97,6 +137,12 @@ const server = http.createServer(async (req, res) => {
     } catch (e) { return send(res, 400, { message: e.message }); }
   }
   if (p === '/__test/api') { apiDown = u.searchParams.get('up') !== '1'; return send(res, 200, { apiDown }); }
+  // How the runner reclaims the port from a stub left over by an earlier run,
+  // without having to go hunting through /proc for it.
+  if (p === '/__test/quit') {
+    send(res, 200, { bye: true });
+    return setTimeout(() => process.exit(0), 50);
+  }
   if (p === '/__test/drop') { for (const s of wss.clients) s.terminate(); return send(res, 200, { dropped: true }); }
   if (p === '/__test/ttl') { tokenTtl = Number(u.searchParams.get('s') || 3600); return send(res, 200, { tokenTtl }); }
   if (p === '/__test/menu') {
@@ -140,21 +186,16 @@ const server = http.createServer(async (req, res) => {
 
     if (p.startsWith('/rest/v1/rpc/')) {
       const fn = p.slice('/rest/v1/rpc/'.length);
+      if (!/^[a-z_]+$/.test(fn)) return send(res, 404, { message: 'no such function' });
       const args = await readBody(req);
       try {
-        const out = await asRole(role, uid, async (c) => {
-          if (fn === 'kitchen_board') return (await c.query('select * from public.kitchen_board()')).rows;
-          if (fn === 'acknowledge_order') {
-            return (await c.query('select public.acknowledge_order($1) as r', [args.p_order_id])).rows[0].r;
-          }
-          if (fn === 'set_order_status') {
-            return (await c.query('select public.set_order_status($1,$2::order_status,$3) as r',
-              [args.p_order_id, args.p_status, args.p_cancel_reason || null])).rows[0].r;
-          }
-          throw new Error('unknown function ' + fn);
-        });
+        const out = await asRole(role, uid, (c) => callFunction(c, fn, args));
         return send(res, 200, out);
-      } catch (e) { return send(res, 400, { message: e.message, code: e.code }); }
+      } catch (e) {
+        // PostgREST surfaces a Postgres RAISE as `message`, which is what the
+        // dashboards put on screen.
+        return send(res, 400, { message: e.message, code: e.code });
+      }
     }
 
     const table = p.slice('/rest/v1/'.length);
@@ -169,21 +210,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── static ────────────────────────────────────────────────────────────
-  if (p === '/config.js') {
+  // Each dashboard's config.js is replaced with test values and a much faster
+  // clock, so a suite does not have to wait out a fifteen-second poll.
+  if (p === '/kitchen/config.js' || p === '/admin/config.js') {
     return send(res, 200,
       `window.NM_CONFIG={SUPABASE_URL:'http://127.0.0.1:${PORT}',SUPABASE_ANON_KEY:'test-anon',` +
       `POLL_SECONDS:${process.env.POLL || 3},ALERT_REPEAT_SECONDS:${process.env.REPEAT || 4},` +
       `STALE_SECONDS:${process.env.STALE || 8},` +
       `WARN_MINUTES:10,LATE_MINUTES:20};`, 'text/javascript');
   }
-  // index.html points at ../favicon.svg, which is a sibling of kitchen/ in the
-  // real deployment but outside this stub's root.
-  const file = p === '/favicon.svg'
-    ? path.join(SITE, 'favicon.svg')
-    : path.join(ROOT, p === '/' ? 'index.html' : p);
-  if (!file.startsWith(ROOT) && !file.startsWith(SITE)) {
-    res.writeHead(403); return res.end();
-  }
+
+  let rel = p === '/' ? '/index.html' : p;
+  if (rel.charAt(rel.length - 1) === '/') { rel += 'index.html'; }
+  const file = path.join(SITE, rel);
+  if (!file.startsWith(SITE)) { res.writeHead(403); return res.end(); }
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); return res.end('not found'); }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });

@@ -14,8 +14,10 @@ kitchen/
   config.js             your Supabase URL and anon key — the one file you edit
   assets/kitchen.css
   assets/kitchen.js     the board, the alert, the status changes
-  assets/nm-client.js   a small hand-written Supabase client
 ```
+
+The small hand-written Supabase client it uses is shared with the admin
+dashboard and lives in [`../assets/js/nm-client.js`](../assets/js/nm-client.js).
 
 ## Setting it up
 
@@ -46,9 +48,13 @@ kitchen/
    values ('<the user id you just created>', 'kitchen', 'Front counter tablet');
    ```
 
-   `kitchen` sees this board. `admin` sees this board and, later, the admin
-   screens. Signing in without a `staff` row gets a plain "this account is not
-   set up as kitchen staff" rather than a permanently empty board.
+   `kitchen` sees this board. `admin` sees this board and the
+   [admin dashboard](../admin) as well. Signing in without a `staff` row gets a
+   plain "this account is not set up as kitchen staff" rather than a
+   permanently empty board.
+
+   Once one administrator exists, the rest of this step is easier from the
+   admin dashboard's Staff tab than from SQL.
 
    To revoke access — a phone lost, someone leaving — set `is_active = false`
    on their row. It takes effect on the next request, everywhere, without
@@ -137,26 +143,25 @@ or someone wanders behind it, what they get is a list of what is being cooked.
 ## Testing it without Supabase
 
 ```bash
-cd test && npm install
+cd ../test && npm install
 cd .. && PGHOST=/tmp PGPORT=5433 ./test/run.sh
 ```
 
 80 checks that drive this dashboard in a real browser against a local Postgres
 running the real migrations, plus an accessibility pass. See
-[`test/README.md`](test/README.md) for what they cover and where the stand-in
-for Supabase stops being a faithful one.
+[`../test/README.md`](../test/README.md) for what they cover and where the
+stand-in for Supabase stops being a faithful one.
 
-`../backend/test/run.sh` covers the database itself — 43 more, mostly about
+`../backend/test/run.sh` covers the database itself — 91 more, mostly about
 who can read what.
 
 ## Still to build
 
 - **Checkout on the website.** There is no way for a customer to place an
   order from the site yet — it still points at Glovo and the phone. Until that
-  ships, this board fills up from orders staff enter themselves, which needs
-  the admin screen below.
-- **The admin dashboard**: live orders with the money and the address, order
-  history, menu and price management, sold-out switches, the pause switch,
-  sales reports, and staff accounts.
+  ships, this board fills up from orders staff type in on the
+  [admin dashboard](../admin), which is built.
 - **Set the delivery fees.** All seven areas are seeded at ₦0 because the
-  website never quoted one. Do this before accepting a delivery order.
+  website never quoted one. The [admin dashboard](../admin) has the table and
+  warns you how many are still unset. Do this before accepting a delivery
+  order.

@@ -4,11 +4,11 @@ Supabase (Postgres + Realtime + Auth). Orders come off the website, land on the
 kitchen screen within a second with an audible alert, and the owner gets history
 and reports. No online payment: a web order is a ticket, paid on handover.
 
-**Status.** The database is built and tested — schema, security, order pricing,
-the kitchen feed and the reporting functions. The **kitchen dashboard** on top
-of it is built and tested too: [`../kitchen`](../kitchen). The other two screens
-— website checkout and the admin dashboard — are not written yet, so orders
-currently have to be entered by staff rather than placed by customers.
+**Status.** The database is built and tested, and so are both staff screens:
+the [kitchen dashboard](../kitchen) and the [admin dashboard](../admin). What is
+still missing is checkout on the public website — until that ships, orders reach
+the kitchen because a member of staff typed them in on the admin screen, not
+because a customer placed one.
 
 ```
 migrations/
@@ -17,9 +17,10 @@ migrations/
   0003_kitchen.sql    the order feed, the kitchen board, the reports
   0004_rls.sql        row level security
   0005_seed.sql       the menu exactly as the website states it
+  0006_admin.sql      the admin queries, each behind its own is_admin() check
 test/
   00_supabase_stub.sql  enough of Supabase to run locally
-  01_tests.sql          43 checks, most of them about who can see what
+  01_tests.sql          91 checks, most of them about who can see what
   run.sh                applies everything to a scratch db and runs them
 ```
 
@@ -71,6 +72,15 @@ report and the ticket numbers restart when the shop does.
 `name_at_order` and `unit_price_kobo`. Reprice the jollof next month and last
 month's receipts do not change. Tested.
 
+## Asking who you are
+
+`me()` returns the caller's own `staff` row, and both dashboards use it to
+decide what to show. Reading the `staff` table directly does not answer the
+question: the policy on it is "your own row, or *everything* if you are an
+admin", so selecting a single row from it hands an administrator an arbitrary
+colleague's — and a screen that reads a role off that shows the wrong one. This
+was a real bug, caught by the browser tests; it is now covered in SQL too.
+
 ## Who can see what
 
 This is the part worth reading twice. There are two staff roles and they are
@@ -86,6 +96,12 @@ separated in the database, not in the interface.
 | Move an order along | — | `set_order_status()` | same |
 | Revenue and reports | — | **nothing** | read |
 | Pause ordering | — | — | write |
+| Take a phone or counter order | — | — | `place_order(… 'phone')` |
+| Add or deactivate staff | — | — | write |
+
+Every `admin_*` function begins with an `is_admin()` check, so kitchen staff are
+refused each one individually rather than being kept out by an interface that
+merely does not link to them.
 
 The kitchen tablet sits unattended on a counter, so it holds no path to a
 customer's phone number, a delivery address, or the day's takings.
@@ -152,6 +168,14 @@ Because the front end can be bypassed:
 - Quantities are 1–50; an order is 1–40 lines.
 - Four orders from one phone number inside two minutes are refused. With no
   payment step, nothing else stands between a bored stranger and the kitchen.
+  Signed-in staff are exempt: a busy counter legitimately puts several orders
+  through the shop's own callback number in a minute.
+- A non-`web` channel — "this came in by phone" — can only be set by staff. It
+  is the one fact about an order that cannot be reconstructed afterwards.
+- Pausing stops the website, not the shop: `place_order()` still accepts a staff
+  order while `accepting_orders` is off.
+- The last active administrator cannot be deactivated or demoted. It is the one
+  change no screen could undo.
 - A completed or cancelled order cannot be reopened, and a cancellation needs a
   reason.
 - `total_kobo = subtotal_kobo + delivery_fee_kobo` is a check constraint, not a
@@ -160,8 +184,9 @@ Because the front end can be bypassed:
 ## Still to decide
 
 - **Delivery fees are seeded at ₦0** for all seven areas. The website never
-  quoted a fee, so nothing was invented on the restaurant's behalf. Set them
-  before taking a delivery order.
+  quoted a fee, so nothing was invented on the restaurant's behalf. The admin
+  dashboard's Menu & shop tab has the table, and warns how many are still
+  unset. Set them before taking a delivery order.
 - **The menu now exists in two places** — these tables and the static HTML.
   Until the site reads from here, a price changed in one is wrong in the other.
   The plan is for the marketing pages to keep their static markup for search

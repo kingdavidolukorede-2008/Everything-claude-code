@@ -31,6 +31,15 @@
 # Note the difference from the public site: no img-src for photographs, because
 # there are none, and no font-src, because the dashboard uses system faces so a
 # tablet never waits on a font server to show that an order has arrived.
+/admin/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  X-Robots-Tag: noindex, nofollow
+  Content-Security-Policy: default-src 'self'; connect-src 'self' https://*.supabase.co wss://*.supabase.co; img-src 'self'; style-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+  Cache-Control: no-cache
+
 /kitchen/*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

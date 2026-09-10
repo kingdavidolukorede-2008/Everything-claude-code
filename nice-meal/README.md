@@ -15,11 +15,15 @@ _headers                security + caching headers for Netlify / Cloudflare Page
 
 backend/                the ordering database — Supabase migrations and tests
 kitchen/                the kitchen dashboard, served at /kitchen/
+admin/                  the admin dashboard, served at /admin/
+assets/js/nm-client.js  the small Supabase client both dashboards share
+test/                   browser tests for both dashboards
 ```
 
 The marketing pages above are self-contained: they need no database, no keys and
 no network, and they keep working exactly as they are if the two folders below
-them are never deployed. `backend/` and `kitchen/` each have their own README.
+them are never deployed. `backend/`, `kitchen/` and `admin/` each have their
+own README.
 
 ## Running it
 

@@ -2,6 +2,7 @@
 const { chromium } = require('playwright');
 const { Pool } = require('pg');
 const BASE = 'http://127.0.0.1:8199';
+const APP  = BASE + '/kitchen/';   // where it actually deploys
 // Host, port and user come from the usual PG* environment variables.
 const pool = new Pool({ database: process.env.DB || 'nm_dash' });
 
@@ -71,7 +72,7 @@ async function signIn(page, email) {
   page.on('response', r => { if (r.status() >= 400) badResponses.push(r.status() + ' ' + r.url()); });
 
   console.log('\n== sign in ==');
-  await page.goto(BASE + '/', { waitUntil: 'load' });
+  await page.goto(APP, { waitUntil: 'load' });
   await page.waitForSelector('#view-signin:not([hidden])');
   ok('sign-in shows when there is no session', await page.isVisible('#signin-form'));
 
@@ -306,7 +307,7 @@ async function signIn(page, email) {
     window.WebSocket = function () { this.readyState = 0; this.close = function () {}; this.send = function () {}; };
   });
   const p2 = await ctx2.newPage();
-  await p2.goto(BASE + '/', { waitUntil: 'load' });
+  await p2.goto(APP, { waitUntil: 'load' });
   await signIn(p2, 'kitchen@nicemeal.test');
   await p2.waitForSelector('#view-board:not([hidden])', { timeout: 5000 });
   const o4 = await place({ name: 'Poll Test' });
@@ -327,7 +328,7 @@ async function signIn(page, email) {
   const p3 = await ctx3.newPage();
   const refreshes = [];
   p3.on('request', r => { if (/grant_type=refresh_token/.test(r.url())) refreshes.push(r.url()); });
-  await p3.goto(BASE + '/', { waitUntil: 'load' });
+  await p3.goto(APP, { waitUntil: 'load' });
   await signIn(p3, 'kitchen@nicemeal.test');
   await p3.waitForSelector('#view-board:not([hidden])', { timeout: 5000 });
   const tok1 = await p3.evaluate(() => JSON.parse(localStorage.getItem('nm.session')).access_token);
@@ -348,7 +349,7 @@ async function signIn(page, email) {
   const ctx4 = await browser.newContext({ viewport: { width: 1400, height: 900 } });
   await ctx4.addInitScript(spyAudio);
   const p4 = await ctx4.newPage();
-  await p4.goto(BASE + '/', { waitUntil: 'load' });
+  await p4.goto(APP, { waitUntil: 'load' });
   await signIn(p4, 'kitchen@nicemeal.test');
   await p4.waitForSelector('#view-board:not([hidden])', { timeout: 5000 });
   await p4.waitForTimeout(3000);

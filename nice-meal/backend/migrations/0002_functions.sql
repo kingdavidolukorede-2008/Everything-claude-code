@@ -25,7 +25,27 @@ returns boolean language sql stable security definer set search_path = public, p
   );
 $$;
 
+-- Who the caller is, as far as this shop is concerned. Returns null for
+-- somebody who is signed in but is not staff.
+--
+-- This exists because reading `staff` through the API does not answer the
+-- question. The policy on that table is "your own row, or everything if you
+-- are an admin" — so selecting a single row from it hands an administrator an
+-- arbitrary colleague's row and, if the screen then reads a role off it, the
+-- wrong one. Asking for auth.uid()'s row specifically is the only version that
+-- is right for both kinds of caller.
+create or replace function public.me()
+returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
+  select to_jsonb(s) from public.staff s where s.user_id = auth.uid();
+$$;
+revoke all on function public.me() from public;
+grant execute on function public.me() to authenticated;
+
 -- ── Placing an order ────────────────────────────────────────────────────────
+-- p_channel is last and defaults to 'web' so the website calls this exactly as
+-- it always did. Only staff may pass anything else: an order typed in over the
+-- phone or at the counter is recorded as such, because "how did this reach us"
+-- is the one thing the reports cannot reconstruct afterwards.
 create or replace function public.place_order(
   p_customer_name    text,
   p_customer_phone   text,
@@ -33,7 +53,8 @@ create or replace function public.place_order(
   p_items            jsonb,
   p_delivery_area_id uuid default null,
   p_address          text default null,
-  p_notes            text default null
+  p_notes            text default null,
+  p_channel          order_channel default 'web'
 ) returns jsonb
 language plpgsql security definer set search_path = public, pg_temp as $$
 declare
@@ -56,12 +77,20 @@ declare
   v_lines           jsonb := '[]'::jsonb;
   v_group           record;
   v_chosen          int;
+  v_staff           boolean := public.is_staff();
 begin
+  if p_channel <> 'web' and not v_staff then
+    raise exception 'Not authorised.' using errcode = '42501';
+  end if;
+
   select * into v_settings from public.settings where id;
   if not found then
     raise exception 'Ordering is not configured yet.' using errcode = 'P0002';
   end if;
-  if not v_settings.accepting_orders then
+  -- The pause switch stops the website, not the shop. Staff can still take a
+  -- call and type the order in, which is exactly what happens when a kitchen
+  -- pauses online ordering to catch up.
+  if not v_settings.accepting_orders and not v_staff then
     raise exception 'The kitchen is not taking orders right now%',
       coalesce(': ' || v_settings.pause_reason, '.') using errcode = 'P0001';
   end if;
@@ -75,7 +104,9 @@ begin
 
   -- No payment stands between a stranger and the kitchen printer, so throttle
   -- by phone number. Three orders in two minutes is far past normal use.
-  if (select count(*) from public.orders o
+  -- Staff are exempt: they are signed in, and a busy counter legitimately puts
+  -- several orders through the shop's own callback number in a minute.
+  if not v_staff and (select count(*) from public.orders o
       where o.customer_phone = p_customer_phone
         and o.placed_at > now() - interval '2 minutes') >= 3 then
     raise exception 'Too many orders from this number just now. Please call us instead.'
@@ -182,7 +213,7 @@ begin
     customer_name, customer_phone, delivery_area_id, address, notes,
     subtotal_kobo, delivery_fee_kobo, total_kobo
   ) values (
-    v_code, v_day, v_seq, 'web', p_fulfilment,
+    v_code, v_day, v_seq, p_channel, p_fulfilment,
     btrim(p_customer_name), btrim(p_customer_phone),
     case when p_fulfilment = 'delivery' then p_delivery_area_id end,
     case when p_fulfilment = 'delivery' then btrim(p_address) end,
@@ -211,8 +242,8 @@ begin
 end;
 $$;
 
-revoke all on function public.place_order(text, text, fulfilment_type, jsonb, uuid, text, text) from public;
-grant execute on function public.place_order(text, text, fulfilment_type, jsonb, uuid, text, text) to anon, authenticated;
+revoke all on function public.place_order(text, text, fulfilment_type, jsonb, uuid, text, text, order_channel) from public;
+grant execute on function public.place_order(text, text, fulfilment_type, jsonb, uuid, text, text, order_channel) to anon, authenticated;
 
 -- ── A customer checking their own order ─────────────────────────────────────
 -- Code plus token, so the sequential codes cannot be walked.

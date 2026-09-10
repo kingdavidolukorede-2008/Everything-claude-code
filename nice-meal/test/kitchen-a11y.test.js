@@ -3,6 +3,7 @@ const { chromium } = require('playwright');
 const fs = require('fs');
 const AXE = fs.readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const BASE = 'http://127.0.0.1:8199';
+const APP  = BASE + '/kitchen/';
 
 async function place() {
   const menu = await (await fetch(BASE + '/__test/menu')).json();
@@ -23,7 +24,7 @@ async function place() {
   for (const width of [1400, 900, 390]) {
     const ctx = await b.newContext({ viewport: { width, height: 900 }, bypassCSP: true });
     const p = await ctx.newPage();
-    await p.goto(BASE + '/', { waitUntil: 'load' });
+    await p.goto(APP, { waitUntil: 'load' });
 
     // 1. the sign-in screen
     await p.addScriptTag({ content: AXE });

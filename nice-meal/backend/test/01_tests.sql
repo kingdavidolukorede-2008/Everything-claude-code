@@ -25,7 +25,9 @@ grant execute on function _denied(text, text) to anon, authenticated;
 -- ── Fixtures ────────────────────────────────────────────────────────────────
 insert into auth.users (id, email) values
   ('11111111-1111-1111-1111-111111111111', 'kitchen@nicemeal.test'),
-  ('22222222-2222-2222-2222-222222222222', 'admin@nicemeal.test')
+  ('22222222-2222-2222-2222-222222222222', 'admin@nicemeal.test'),
+  -- Signed up, never made staff.
+  ('33333333-3333-3333-3333-333333333333', 'nobody@nicemeal.test')
 on conflict do nothing;
 insert into public.staff (user_id, role, display_name) values
   ('11111111-1111-1111-1111-111111111111', 'kitchen', 'Kitchen tablet'),
@@ -78,10 +80,13 @@ select _check('anon cannot read order items',
   (select count(*) from order_items) = 0);
 select _check('anon cannot read the kitchen feed',
   (select count(*) from order_events) = 0);
-select _check('anon gets nothing from the board',
-  (select count(*) from kitchen_board()) = 0);
-select _check('anon gets nothing from sales',
-  (select count(*) from sales_summary(current_date, current_date)) = 0);
+-- These two are refused at the grant, before row level security is consulted
+-- at all — execute was never given to anon. Asserting "returns no rows" would
+-- raise instead of returning, and with ON_ERROR_STOP off that statement would
+-- be skipped and quietly counted as nothing.
+select _denied('anon is refused the kitchen board outright', $q$ select kitchen_board() $q$);
+select _denied('anon is refused the sales figures outright',
+  $q$ select sales_summary(current_date, current_date) $q$);
 select _check('anon can read the live menu', (select count(*) from menu_items) = 7);
 
 -- Business rules
@@ -268,6 +273,209 @@ select _check('repricing does not rewrite history',
   'menu now ' || (select price_kobo from menu_items where name='White Rice & Stew')::text
   || ', historic line ' || coalesce((select min(unit_price_kobo)::text from order_items
                                      where name_at_order='White Rice & Stew'),'none'));
+reset role;
+
+-- ════════════════════════════════════════════════════════════════════════════
+-- The admin functions (0006)
+--
+-- These are the ones that expose every phone number and every naira the shop
+-- has taken, so most of what follows is about who is refused.
+-- ════════════════════════════════════════════════════════════════════════════
+
+-- ── Nobody signed in ────────────────────────────────────────────────────────
+set role anon;
+select set_config('request.jwt.claim.sub', '', false);
+select _denied('anon cannot list orders',      $q$ select admin_orders() $q$);
+select _denied('anon cannot read the menu tree',$q$ select admin_menu() $q$);
+select _denied('anon cannot run a report',     $q$ select admin_report(current_date, current_date) $q$);
+select _denied('anon cannot list staff',       $q$ select admin_staff() $q$);
+select _denied('anon cannot change a price',   $q$
+  select admin_set_item((select id from menu_items limit 1), 100) $q$);
+select _denied('anon cannot resume ordering',  $q$ select admin_set_settings(true) $q$);
+select _denied('anon cannot add themselves as staff', $q$
+  select admin_add_staff('kitchen@nicemeal.test', 'admin', 'Sneaky') $q$);
+-- The channel says how an order reached the shop; a stranger must not be able
+-- to dress a web order up as one taken at the counter.
+select _denied('anon cannot claim an order came in by phone', $q$
+  do $x$ declare i uuid; begin
+    select id into i from menu_items where name = 'White Rice & Stew';
+    perform place_order('Faker','08037777777','pickup',
+      jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+      null, null, null, 'phone');
+  end $x$ $q$);
+reset role;
+
+-- ── Kitchen staff: signed in, but not an administrator ──────────────────────
+set role authenticated;
+select set_config('request.jwt.claim.sub', '11111111-1111-1111-1111-111111111111', false);
+select _denied('kitchen staff cannot list orders with the money on them',
+  $q$ select admin_orders() $q$);
+select _denied('kitchen staff cannot run a report', $q$ select admin_report(current_date, current_date) $q$);
+select _denied('kitchen staff cannot list staff',   $q$ select admin_staff() $q$);
+select _denied('kitchen staff cannot change a price', $q$
+  select admin_set_item((select id from menu_items limit 1), 100) $q$);
+select _denied('kitchen staff cannot resume ordering', $q$ select admin_set_settings(true) $q$);
+select _denied('kitchen staff cannot promote themselves', $q$
+  select admin_set_staff('11111111-1111-1111-1111-111111111111', 'admin') $q$);
+select _check('kitchen staff asking who they are get their own row',
+  (me()->>'role') = 'kitchen', coalesce(me()::text, 'null'));
+reset role;
+
+-- Signed in, but never made staff.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '33333333-3333-3333-3333-333333333333', false);
+select _check('an account that is not staff gets nothing back from me()', me() is null,
+  coalesce(me()::text, 'null'));
+select _check('and sees no orders on the kitchen board',
+  (select count(*) from kitchen_board()) = 0);
+reset role;
+
+-- ── The administrator ───────────────────────────────────────────────────────
+set role authenticated;
+select set_config('request.jwt.claim.sub', '22222222-2222-2222-2222-222222222222', false);
+
+select _check('admin sees orders with the phone number and the total',
+  (admin_orders()->>'total')::int > 0
+  and (admin_orders()->'rows'->0->>'customer_phone') is not null
+  and (admin_orders()->'rows'->0->>'total_kobo') is not null);
+
+select _check('the order list carries its lines',
+  jsonb_array_length(admin_orders()->'rows'->0->'items') > 0);
+
+select _check('searching by phone number narrows the list',
+  (admin_orders(null, null, null, '08031234567')->>'total')::int
+    < (admin_orders()->>'total')::int);
+
+select _check('filtering by status narrows the list',
+  (admin_orders(null, null, array['cancelled']::order_status[])->>'total')::int
+    < (admin_orders()->>'total')::int);
+
+select _check('the menu tree includes what is switched off',
+  exists (select 1 from jsonb_array_elements(admin_menu()->'categories') c,
+                        jsonb_array_elements(c->'items') i
+          where (i->>'is_available')::boolean = false),
+  'Beans & Plantain was marked sold out at the top of this file');
+
+select _check('the menu tree carries the delivery areas and the settings',
+  jsonb_array_length(admin_menu()->'areas') > 0
+  and (admin_menu()->'settings'->>'accepting_orders') is not null);
+
+-- Setting the fees is the one thing that has to happen before a delivery order
+-- can be taken: they are all seeded at zero.
+do $$ declare a uuid; f int; begin
+  select id into a from delivery_areas order by name limit 1;
+  perform admin_set_area(a, 50000);
+  select fee_kobo into f from delivery_areas where id = a;
+  perform _check('admin can set a delivery fee', f = 50000, 'fee is ' || f);
+end $$;
+select _denied('a negative delivery fee is refused', $q$
+  select admin_set_area((select id from delivery_areas order by name limit 1), -100) $q$);
+
+do $$ declare i uuid; p int; av boolean; begin
+  select id into i from menu_items where name = 'Fried Rice & Chicken';
+  perform admin_set_item(i, 260000);
+  select price_kobo into p from menu_items where id = i;
+  perform _check('admin can change a price through the function', p = 260000, 'price is ' || p);
+  perform admin_set_item(i, null, false);
+  select price_kobo, is_available into p, av from menu_items where id = i;
+  perform _check('marking a dish sold out leaves its price alone',
+    av = false and p = 260000, 'available ' || av || ', price ' || p);
+end $$;
+select _denied('a price of zero is refused', $q$
+  select admin_set_item((select id from menu_items where name = 'Fried Rice & Chicken'), 0) $q$);
+
+-- The pause reason must not outlive the pause.
+do $$ declare s public.settings%rowtype; begin
+  perform admin_set_settings(false, 'Swamped, back in 20 minutes');
+  select * into s from settings;
+  perform _check('admin can pause ordering with a reason',
+    s.accepting_orders = false and s.pause_reason like 'Swamped%', coalesce(s.pause_reason, 'null'));
+  perform admin_set_settings(true);
+  select * into s from settings;
+  perform _check('resuming clears the stale reason',
+    s.accepting_orders and s.pause_reason is null, coalesce(s.pause_reason, 'null'));
+end $$;
+
+select _check('a report totals only completed orders',
+  (admin_report(current_date - 7, current_date)->'totals'->>'orders')::int
+    = (select count(*) from orders where status = 'completed' and day between current_date - 7 and current_date));
+select _check('a report counts cancellations separately from revenue',
+  (admin_report(current_date - 7, current_date)->>'cancelled')::int
+    = (select count(*) from orders where status = 'cancelled' and day between current_date - 7 and current_date));
+select _check('a report breaks the takings down by how the order arrived',
+  jsonb_typeof(admin_report(current_date - 7, current_date)->'by_channel') = 'array');
+select _denied('a backwards date range is refused', $q$
+  select admin_report(current_date, current_date - 7) $q$);
+
+-- me() has to answer for the caller, not for whoever happens to sort first.
+-- The policy on `staff` returns every row to an administrator, so a plain
+-- select limited to one row hands them a colleague's.
+select _check('an admin asking who they are gets their own row',
+  (me()->>'role') = 'admin' and (me()->>'display_name') = 'Owner',
+  coalesce(me()::text, 'null'));
+select _check('and a select on staff would not have told them that',
+  (select count(*) from staff) > 1,
+  'admin can see ' || (select count(*) from staff)::text || ' staff rows');
+
+select _check('admin sees the staff list with emails',
+  jsonb_array_length(admin_staff()) = 2
+  and exists (select 1 from jsonb_array_elements(admin_staff()) s
+              where s->>'email' = 'kitchen@nicemeal.test'));
+select _check('the staff list marks which row is you',
+  exists (select 1 from jsonb_array_elements(admin_staff()) s
+          where (s->>'is_you')::boolean and s->>'role' = 'admin'));
+select _denied('staff cannot be added for an email with no account', $q$
+  select admin_add_staff('nobody-at-all@nicemeal.test', 'kitchen', 'Ghost') $q$);
+select _denied('somebody who is already staff cannot be added twice', $q$
+  select admin_add_staff('kitchen@nicemeal.test', 'kitchen', 'Again') $q$);
+
+-- The one change no screen could undo.
+select _denied('the last administrator cannot lock themselves out', $q$
+  select admin_set_staff('22222222-2222-2222-2222-222222222222', null, false) $q$);
+select _check('and they are still an active admin afterwards',
+  (select is_active and role = 'admin' from staff
+   where user_id = '22222222-2222-2222-2222-222222222222'));
+
+do $$ declare n int; begin
+  perform admin_set_staff('11111111-1111-1111-1111-111111111111', null, false);
+  select count(*) into n from staff where user_id = '11111111-1111-1111-1111-111111111111' and not is_active;
+  perform _check('a kitchen account can be deactivated', n = 1);
+  perform admin_set_staff('11111111-1111-1111-1111-111111111111', null, true);
+end $$;
+
+-- ── Orders taken by staff, not by the website ───────────────────────────────
+do $$ declare i uuid; r jsonb; begin
+  select id into i from menu_items where name = 'White Rice & Stew';
+  r := place_order('Walk-in customer','08030000001','dine_in',
+        jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+        null, null, null, 'walk_in');
+  perform _check('staff can record how an order arrived',
+    (select channel from orders where code = r->>'code') = 'walk_in');
+end $$;
+
+-- Pausing stops the website. It must not stop the telephone.
+do $$ declare i uuid; r jsonb; begin
+  perform admin_set_settings(false, 'Website paused');
+  select id into i from menu_items where name = 'White Rice & Stew';
+  r := place_order('Phone order','08030000002','pickup',
+        jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+        null, null, null, 'phone');
+  perform _check('a paused shop still lets staff take a phone order', r->>'code' is not null);
+  perform admin_set_settings(true);
+end $$;
+
+-- The throttle exists because a stranger faces no payment. Staff are signed in.
+do $$ declare i uuid; k int := 0; begin
+  select id into i from menu_items where name = 'White Rice & Stew';
+  for k in 1..4 loop
+    perform place_order('Counter rush','08030000003','pickup',
+      jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+      null, null, null, 'walk_in');
+  end loop;
+  perform _check('staff are not throttled the way an anonymous browser is',
+    (select count(*) from orders where customer_phone = '08030000003') = 4);
+end $$;
+
 reset role;
 
 \echo ''

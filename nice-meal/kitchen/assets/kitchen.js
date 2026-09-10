@@ -721,9 +721,10 @@
      account would reach a permanently empty board with no explanation —
      kitchen_board() returns nothing rather than refusing. */
   function checkStaff() {
-    return client.select('staff', 'select=role,display_name,is_active&limit=1')
-      .then(function (rows) {
-        var row = rows && rows[0];
+    // me() rather than a select on `staff`: an admin's policy on that table
+    // returns every row, so picking one off the top gives back somebody else.
+    return client.rpc('me', {})
+      .then(function (row) {
         if (!row || !row.is_active) {
           throw new Error('This account is not set up as kitchen staff. Ask an administrator to add it.');
         }
