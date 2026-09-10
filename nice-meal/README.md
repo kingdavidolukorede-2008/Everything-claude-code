@@ -12,7 +12,14 @@ assets/js/app.js        nav state, mobile disclosure, scroll reveal
 assets/img/             8 photographs, two widths each, WebP + JPEG
 favicon.svg             "NM" mark
 _headers                security + caching headers for Netlify / Cloudflare Pages
+
+backend/                the ordering database — Supabase migrations and tests
+kitchen/                the kitchen dashboard, served at /kitchen/
 ```
+
+The marketing pages above are self-contained: they need no database, no keys and
+no network, and they keep working exactly as they are if the two folders below
+them are never deployed. `backend/` and `kitchen/` each have their own README.
 
 ## Running it
 

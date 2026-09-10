@@ -5,8 +5,10 @@ kitchen screen within a second with an audible alert, and the owner gets history
 and reports. No online payment: a web order is a ticket, paid on handover.
 
 **Status.** The database is built and tested — schema, security, order pricing,
-the kitchen feed and the reporting functions. The three screens that sit on top
-of it (website checkout, kitchen dashboard, admin dashboard) are not written yet.
+the kitchen feed and the reporting functions. The **kitchen dashboard** on top
+of it is built and tested too: [`../kitchen`](../kitchen). The other two screens
+— website checkout and the admin dashboard — are not written yet, so orders
+currently have to be entered by staff rather than placed by customers.
 
 ```
 migrations/
@@ -118,6 +120,9 @@ website → place_order()  →  orders ─trigger─→ order_events ─realtime
 acknowledged and finished.
 
 ### Two things the screen must get right
+
+Both are now handled in [`../kitchen`](../kitchen), and both are worth restating
+here because any future screen built on this feed faces them again.
 
 **The sound needs an explicit unlock.** Browsers refuse to play audio until
 someone has interacted with the page, and that permission is lost on every
