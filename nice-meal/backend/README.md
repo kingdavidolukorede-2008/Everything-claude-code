@@ -4,11 +4,11 @@ Supabase (Postgres + Realtime + Auth). Orders come off the website, land on the
 kitchen screen within a second with an audible alert, and the owner gets history
 and reports. No online payment: a web order is a ticket, paid on handover.
 
-**Status.** The database is built and tested, and so are both staff screens:
-the [kitchen dashboard](../kitchen) and the [admin dashboard](../admin). What is
-still missing is checkout on the public website — until that ships, orders reach
-the kitchen because a member of staff typed them in on the admin screen, not
-because a customer placed one.
+**Status.** All four screens are built and tested: the
+[checkout](../ORDERING.md) on the public site, the
+[kitchen dashboard](../kitchen), and the [admin dashboard](../admin). A customer
+can place an order on the website and it appears on the kitchen screen within a
+second or two, or staff can type one in over the phone.
 
 ```
 migrations/
@@ -18,9 +18,10 @@ migrations/
   0004_rls.sql        row level security
   0005_seed.sql       the menu exactly as the website states it
   0006_admin.sql      the admin queries, each behind its own is_admin() check
+  0007_checkout.sql   public_menu(), the checkout's one read
 test/
   00_supabase_stub.sql  enough of Supabase to run locally
-  01_tests.sql          91 checks, most of them about who can see what
+  01_tests.sql          97 checks, most of them about who can see what
   run.sh                applies everything to a scratch db and runs them
 ```
 
@@ -88,7 +89,7 @@ separated in the database, not in the interface.
 
 | | website visitor | kitchen | admin |
 |---|---|---|---|
-| Menu, prices, delivery areas | read | read | read + write |
+| Menu, prices, delivery areas | read, via `public_menu()` | read | read + write |
 | Place an order | via `place_order()` | — | — |
 | Their own order's status | via `get_order_status()` | — | — |
 | `orders` / `order_items` tables | **no access at all** | **no access at all** | read |

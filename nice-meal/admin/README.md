@@ -5,14 +5,13 @@ take an order over the phone, the menu and the prices, the takings, and who is
 allowed in.
 
 Static HTML, CSS and JavaScript — no build step, no framework. It shares the
-Supabase client in [`../assets/js/nm-client.js`](../assets/js/nm-client.js)
-with the kitchen screen, and needs the database in
-[`../backend`](../backend) applied first.
+Supabase client in [`../assets/js/nm-client.js`](../assets/js/nm-client.js) and
+the keys in [`../config.js`](../config.js) with the checkout and the kitchen
+screen, and needs the database in [`../backend`](../backend) applied first.
 
 ```
 admin/
   index.html              the five tabs
-  config.js               your Supabase URL and anon key
   assets/admin.css
   assets/admin.js         shell, router, session, shared helpers
   assets/admin-orders.js  the order list, one order in detail, taking an order
@@ -23,8 +22,9 @@ admin/
 ## Setting it up
 
 The same two steps as the kitchen screen: apply the backend, then put your
-Supabase project URL and `anon` key in `config.js`. Both belong in a public
-file; **never** put the `service_role` key there.
+Supabase project URL and `anon` key in [`../config.js`](../config.js) — one
+file, shared with the checkout and the kitchen screen. Both values belong in a
+public file; **never** put the `service_role` key there.
 
 Then make sure your own account has `role = 'admin'` in the `staff` table.
 Signing in with a kitchen account gets a plain "this account is not an
@@ -44,7 +44,9 @@ it, exactly as the kitchen can — useful when someone rings to change something
 The default view is the last seven days; **Today** and **All time** are one tap
 each.
 
-**Take an order.** For a call or someone at the counter. Pick dishes, make the
+**Take an order.** For a call or someone at the counter. Customers order
+themselves through the [checkout](../ORDERING.md); this is for the ones who
+ring up or walk in. Pick dishes, make the
 required choices, set quantities, add line notes; then the customer's name and
 number, and an address if it is going out. It records whether the order came in
 by phone or over the counter, which is the one thing the reports cannot work out

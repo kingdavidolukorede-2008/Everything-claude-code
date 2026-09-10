@@ -1,8 +1,9 @@
 # Nice Meal — kitchen dashboard
 
-The screen that sits on the counter. An order placed anywhere — the website,
-or typed in by staff — appears here within a second or two, sounds an alert,
-and stays lit until somebody moves it along.
+The screen that sits on the counter. An order placed anywhere — by a customer
+on the [website](../ORDERING.md), or typed in by staff on the
+[admin dashboard](../admin) — appears here within a second or two, sounds an
+alert, and stays lit until somebody moves it along.
 
 Static HTML, CSS and JavaScript. No build step, no framework, no npm install;
 it deploys next to the website as a folder. The only dependency is the
@@ -11,7 +12,6 @@ database in [`../backend`](../backend), which must be applied first.
 ```
 kitchen/
   index.html            the screen
-  config.js             your Supabase URL and anon key — the one file you edit
   assets/kitchen.css
   assets/kitchen.js     the board, the alert, the status changes
 ```
@@ -24,8 +24,9 @@ dashboard and lives in [`../assets/js/nm-client.js`](../assets/js/nm-client.js).
 1. **Apply the backend** to your Supabase project — see
    [`../backend/README.md`](../backend/README.md). Nothing here works without it.
 
-2. **Fill in `config.js`.** From Supabase, Project Settings → API, copy the
-   Project URL and the `anon` `public` key:
+2. **Fill in `../config.js`.** One file, shared by the checkout and both
+   dashboards. From Supabase, Project Settings → API, copy the Project URL and
+   the `anon` `public` key:
 
    ```js
    SUPABASE_URL: 'https://abcdefgh.supabase.co',
@@ -152,15 +153,11 @@ running the real migrations, plus an accessibility pass. See
 [`../test/README.md`](../test/README.md) for what they cover and where the
 stand-in for Supabase stops being a faithful one.
 
-`../backend/test/run.sh` covers the database itself — 91 more, mostly about
+`../backend/test/run.sh` covers the database itself — 97 more, mostly about
 who can read what.
 
-## Still to build
+## Still to do
 
-- **Checkout on the website.** There is no way for a customer to place an
-  order from the site yet — it still points at Glovo and the phone. Until that
-  ships, this board fills up from orders staff type in on the
-  [admin dashboard](../admin), which is built.
 - **Set the delivery fees.** All seven areas are seeded at ₦0 because the
   website never quoted one. The [admin dashboard](../admin) has the table and
   warns you how many are still unset. Do this before accepting a delivery

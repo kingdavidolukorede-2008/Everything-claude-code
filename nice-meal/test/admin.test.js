@@ -185,8 +185,13 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   console.log('\n== taking an order over the phone ==');
   await page.click('.tab[data-view="new"]');
   await page.waitForSelector('#v-new:not([hidden])');
-  await page.waitForTimeout(900);
-  ok('the dish picker is populated', (await page.locator('.pick').count()) > 0);
+  // Wait for the menu to arrive rather than for a fixed delay: the tab's enter
+  // hook fires an RPC the router does not await, and under load that can take
+  // longer than any number picked here would allow for.
+  await page.waitForSelector('.pick', { timeout: 10000 }).catch(() => {});
+  ok('the dish picker is populated', (await page.locator('.pick').count()) > 0,
+    'cards=' + (await page.locator('.pick').count())
+    + ' error=' + (await page.textContent('#app-error').catch(() => '')));
 
   const jollofCard = page.locator('.pick', { hasText: 'Jollof Rice & Protein' });
   await jollofCard.locator('button[data-add]').click();
@@ -235,7 +240,7 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   console.log('\n== the menu screen ==');
   await page.click('.tab[data-view="menu"]');
   await page.waitForSelector('#v-menu:not([hidden])');
-  await page.waitForTimeout(900);
+  await page.waitForSelector('#areas-body tr', { timeout: 10000 }).catch(() => {});
 
   ok('the zero-fee warning is showing, because the seed ships them at zero',
     await page.isVisible('#fee-warning'),
@@ -337,7 +342,7 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   console.log('\n== reports ==');
   await page.click('.tab[data-view="reports"]');
   await page.waitForSelector('#v-reports:not([hidden])');
-  await page.waitForTimeout(1200);
+  await page.waitForSelector('#report-totals .stat', { timeout: 10000 }).catch(() => {});
   const dbTotals = (await q(
     `select count(*)::int orders, coalesce(sum(total_kobo),0)::int gross
        from orders where status='completed' and day between $1::date and $2::date`,
@@ -360,7 +365,7 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   console.log('\n== staff ==');
   await page.click('.tab[data-view="staff"]');
   await page.waitForSelector('#v-staff:not([hidden])');
-  await page.waitForTimeout(900);
+  await page.waitForSelector('#staff-body tr', { timeout: 10000 }).catch(() => {});
   ok('both accounts are listed', (await page.locator('#staff-body tr').count()) === 2);
   ok('your own row is marked', /\(you\)/.test(await page.textContent('#staff-body')));
   ok('emails are shown', /kitchen@nicemeal.test/.test(await page.textContent('#staff-body')));

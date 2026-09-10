@@ -44,7 +44,7 @@ echo "database $DB rebuilt"
 NO_PROXY=127.0.0.1,localhost node stub-supabase.js > stub.log 2>&1 &
 up=""
 for _ in $(seq 1 20); do
-  if curl -sf --noproxy '*' -m 1 "http://127.0.0.1:$PORT/kitchen/config.js" > /dev/null; then up=1; break; fi
+  if curl -sf --noproxy '*' -m 1 "http://127.0.0.1:$PORT/config.js" > /dev/null; then up=1; break; fi
   sleep 0.5
 done
 # Say so here rather than letting every browser step time out against nothing.
@@ -57,7 +57,14 @@ echo "stub listening on $PORT"
 
 # ── Run ─────────────────────────────────────────────────────────────────────
 status=0
-for suite in kitchen.test.js kitchen-a11y.test.js admin.test.js admin-a11y.test.js; do
+# Order matters. The kitchen suite asserts an empty board, so it runs before
+# anything places an order; the checkout suite reads the seeded menu, so it runs
+# before the admin suite starts repricing it. Each suite puts back whatever it
+# changed, but the cheapest way to keep them independent is to run them in an
+# order where they do not need to.
+for suite in kitchen.test.js kitchen-a11y.test.js \
+             checkout.test.js site-a11y.test.js \
+             admin.test.js admin-a11y.test.js; do
   [ -f "$suite" ] || continue
   echo
   echo "═══ $suite ═══"

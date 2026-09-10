@@ -33,22 +33,11 @@
     return n;
   }
 
-  /* Money is stored in kobo and must never become a float on the way to the
-     screen: divide once, at the last moment, and only for display. */
-  function naira(kobo) {
-    var k = Math.round(Number(kobo) || 0);
-    var whole = Math.floor(Math.abs(k) / 100);
-    var part = Math.abs(k) % 100;
-    var s = '₦' + whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    if (part) { s += '.' + (part < 10 ? '0' : '') + part; }
-    return (k < 0 ? '-' : '') + s;
-  }
-
-  function kobo(nairaValue) {
-    var n = Number(nairaValue);
-    if (!isFinite(n)) { return null; }
-    return Math.round(n * 100);
-  }
+  /* Money formatting lives in nm-client.js, which every screen loads, so a
+     customer's confirmation and this order list write the same amount the same
+     way. */
+  var naira = global.NM.naira;
+  var kobo = global.NM.kobo;
 
   /* The Lagos business day as YYYY-MM-DD, whatever the browser thinks today
      is. en-CA is the shortest way to that format. */

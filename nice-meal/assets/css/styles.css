@@ -31,6 +31,13 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* The browser's own `[hidden] { display: none }` is a plain element rule, so
+   any class that sets `display` outranks it and the element stays on screen
+   with nothing but the attribute to say otherwise. Cheap insurance, because the
+   failure is invisible: a "hidden" grid that is still laid out, or a hidden
+   overlay still swallowing every tap. */
+[hidden] { display: none !important; }
+
 html { scroll-behavior: smooth; }
 
 body {

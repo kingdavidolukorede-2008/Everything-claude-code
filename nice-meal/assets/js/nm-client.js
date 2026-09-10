@@ -72,6 +72,26 @@
     });
   }
 
+  /* ── Money ──────────────────────────────────────────────────────────────
+     Kobo in, naira on screen. It lives here, in the file every screen loads,
+     so a customer's confirmation and the owner's order list write the same
+     amount the same way — divide once, at the last moment, and only for
+     display. */
+  function naira(k) {
+    var n = Math.round(Number(k) || 0);
+    var whole = Math.floor(Math.abs(n) / 100);
+    var part = Math.abs(n) % 100;
+    var s = '₦' + whole.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    if (part) { s += '.' + (part < 10 ? '0' : '') + part; }
+    return (n < 0 ? '-' : '') + s;
+  }
+
+  function kobo(nairaValue) {
+    var n = Number(nairaValue);
+    if (!isFinite(n)) { return null; }
+    return Math.round(n * 100);
+  }
+
   /* An Error carrying whatever the server was willing to explain. Postgres
      RAISE messages come back in `message`; that is what place_order and
      set_order_status use to say "Order NM-0910-07 is already completed", and
@@ -431,4 +451,6 @@
 
   global.NM = global.NM || {};
   global.NM.Client = Client;
+  global.NM.naira = naira;
+  global.NM.kobo = kobo;
 }(window));

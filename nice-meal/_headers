@@ -31,6 +31,22 @@
 # Note the difference from the public site: no img-src for photographs, because
 # there are none, and no font-src, because the dashboard uses system faces so a
 # tablet never waits on a font server to show that an order has arrived.
+# The checkout is the only public page that talks to a server, so it is the only
+# public page whose connect-src is open — and only to Supabase over https. No
+# wss: a customer's page subscribes to nothing.
+/order.html
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Content-Security-Policy: default-src 'self'; connect-src 'self' https://*.supabase.co; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self'; script-src 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# The project keys, shared by the checkout and both dashboards. Always
+# revalidated: a rotated key has to reach a tablet that has been on a counter
+# for six months.
+/config.js
+  Cache-Control: no-cache
+
 /admin/*
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff

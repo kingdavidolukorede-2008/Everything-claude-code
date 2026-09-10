@@ -212,11 +212,12 @@ const server = http.createServer(async (req, res) => {
   // ── static ────────────────────────────────────────────────────────────
   // Each dashboard's config.js is replaced with test values and a much faster
   // clock, so a suite does not have to wait out a fifteen-second poll.
-  if (p === '/kitchen/config.js' || p === '/admin/config.js') {
+  if (p === '/config.js') {
     return send(res, 200,
       `window.NM_CONFIG={SUPABASE_URL:'http://127.0.0.1:${PORT}',SUPABASE_ANON_KEY:'test-anon',` +
       `POLL_SECONDS:${process.env.POLL || 3},ALERT_REPEAT_SECONDS:${process.env.REPEAT || 4},` +
       `STALE_SECONDS:${process.env.STALE || 8},` +
+      `PHONE:'0915 742 8604',PHONE_TEL:'+2349157428604',` +
       `WARN_MINUTES:10,LATE_MINUTES:20};`, 'text/javascript');
   }
 

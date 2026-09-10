@@ -1,14 +1,15 @@
-# Browser tests — both dashboards
+# Browser tests — the checkout and both dashboards
 
-159 checks that drive the real screens in a real browser, against the real
+228 checks that drive the real screens in a real browser, against the real
 migrations on a real Postgres. No mocked database, no mocked queries: an order
 placed in these tests goes through `place_order()`, gets priced by the
 database, trips the trigger, and comes back out through `kitchen_board()` and
 `admin_orders()` under row level security, exactly as it will in the
 restaurant.
 
-The dashboards are served at `/kitchen/` and `/admin/`, the paths they actually
-deploy to, so every relative link in them is exercised as it really is.
+The whole site is served the way it deploys — the checkout at `/order.html`, the
+dashboards at `/kitchen/` and `/admin/` — so every relative link in them is
+exercised as it really is.
 
 ```bash
 npm install
@@ -23,23 +24,30 @@ run.sh                rebuilds the database, starts the stub, runs every suite
 stub-supabase.js      a stand-in for Supabase
 seed.sql              three test accounts: kitchen, admin, and a non-staff one
 kitchen.test.js       80 checks
+checkout.test.js      69 checks
 admin.test.js         79 checks
 kitchen-a11y.test.js  axe-core over the kitchen screen
+site-a11y.test.js     axe-core over the three public pages
 admin-a11y.test.js    axe-core over all five admin tabs
 ```
 
-Both accessibility suites run at 1400/1500px, 900px and 390px, on WCAG 2.0 A/AA
-and 2.1 A/AA.
+They run in a set order, and `run.sh` says why: the kitchen suite asserts an
+empty board so it goes before anything places an order, and the checkout suite
+reads the seeded menu so it goes before the admin suite starts repricing it.
+Each suite restores what it changed; the order just means they do not have to.
+
+All three accessibility suites run at three widths, on WCAG 2.0 A/AA and 2.1
+A/AA — plus axe's best-practice rules on the marketing pages.
 
 ## What the stub is, and what it is not
 
 Supabase is three services behind one URL: GoTrue for auth, PostgREST for the
 API, Realtime for the socket. `stub-supabase.js` answers the handful of routes
-this dashboard uses, in the shapes those three services use, and passes
+these screens use, in the shapes those three services use, and passes
 everything else through to a local Postgres running the migrations from
-[`../../backend`](../../backend).
+[`../backend`](../backend).
 
-So it is a genuine test of the dashboard's behaviour and of the database's
+So it is a genuine test of each screen's behaviour and of the database's
 rules, and **not** a test of Supabase's own semantics. It does not verify JWTs
 — it reads the claims and trusts them — and it polls `order_events` where real
 Realtime reads the write-ahead log. If the dashboard broke against real
@@ -103,11 +111,42 @@ seams.
   switch back rather than leave the screen lying.
 - **A customer name containing markup**, in the list and in the detail panel.
 
+## What the checkout suite covers
+
+- **The menu** — that all of it arrives in one call, grouped into courses.
+- **Adding a dish** — one press for a dish with no choices; for one with
+  choices, the first press opens them and adding without answering is refused in
+  words, on the dish, while the customer is still looking at it.
+- **Quantities** — that the same dish with the same choices merges into one line
+  rather than repeating, and that taking the last one off removes it.
+- **What is off today** — a sold-out dish is listed, marked, and not addable; a
+  switched-off choice cannot be picked and says why.
+- **The minimum order** and the **free-delivery threshold**, including that no
+  delivery line is shown at all for a pickup.
+- **What the form refuses before sending** — a one-letter name, a phone number
+  that could not be called, a delivery with no address — and that none of it
+  reached the database.
+- **Placing it** — that the order is recorded as a website order, that the
+  confirmation quotes **the database's** price rather than the browser's
+  preview, that the address and note survive, and that it lands on the kitchen
+  board.
+- **Finding it again** — remembered on the device, status fetched, status
+  following what the kitchen does. And that the order code *alone* opens
+  nothing: codes are sequential, so the random token is what protects them.
+- **The three ways it can fail** — paused, unreachable, and never configured —
+  each of which must end with the telephone in front of the customer.
+- **That the rest of the site does not depend on any of it**: the homepage and
+  the full menu are loaded with the API switched off and must render intact.
+- **A dish name containing markup**, which must render as characters.
+
 ## The accessibility suites
 
 `kitchen-a11y.test.js` covers the sign-in screen, the board with a ticket on it,
 and the open cancel sheet. `admin-a11y.test.js` covers the sign-in screen, the
 order list, an order open, the cancel prompt, and all five tabs.
+`site-a11y.test.js` covers the homepage, the full menu, and the checkout in
+every state — choosing, options open, a validation error showing, the details
+step, paused, and unreachable.
 
 Both hover each kind of button and re-run. That is not thoroughness for its own
 sake: a hover that lightens a coloured fill under white text loses contrast
@@ -126,3 +165,9 @@ because the cards are lighter than the page.
 **Never dim a container with `opacity`.** A sold-out dish card at `opacity:
 0.55` composited every colour inside it toward the background and quietly took
 the price and the group labels below AA. Dim with colour instead.
+
+**A button style belongs to the ground it was designed for.** The site's
+secondary button is cream-on-transparent, built for the dark hero. Reused on the
+checkout's white cards it measured **1.22:1** — not low-contrast but genuinely
+invisible. This suite caught 258 violations on its first run, almost all of them
+that one button repeated down the page.

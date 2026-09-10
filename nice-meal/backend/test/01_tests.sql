@@ -89,6 +89,53 @@ select _denied('anon is refused the sales figures outright',
   $q$ select sales_summary(current_date, current_date) $q$);
 select _check('anon can read the live menu', (select count(*) from menu_items) = 7);
 
+-- ── What the checkout is handed (0007) ──────────────────────────────────────
+select _check('anon can load the whole menu in one call',
+  jsonb_array_length(public_menu()->'categories') > 0
+  and jsonb_array_length(public_menu()->'areas') > 0);
+
+select _check('a sold-out dish is shown, and marked, rather than hidden',
+  exists (select 1 from jsonb_array_elements(public_menu()->'categories') c,
+                        jsonb_array_elements(c->'items') i
+          where i->>'name' = 'Beans & Plantain' and (i->>'is_available')::boolean = false),
+  'Beans & Plantain was marked sold out at the top of this file');
+
+-- public_menu() is an invoker function on purpose: the policies decide what is
+-- public, not a WHERE clause that could drift away from them.
+--
+-- The role juggling below is not decoration. Taking a dish off the menu has to
+-- happen as somebody allowed to do it — an UPDATE that row level security
+-- refuses is a silent zero-row no-op, not an error, so doing it as anon would
+-- leave the dish exactly where it was and the check would "pass" for the wrong
+-- reason.
+reset role;
+update public.menu_items set is_active = false where name = 'Banga Soup & Starch';
+set role anon;
+select set_config('request.jwt.claim.sub', '', false);
+select _check('a dish taken off the menu disappears from the checkout',
+  not exists (select 1 from jsonb_array_elements(public_menu()->'categories') c,
+                           jsonb_array_elements(c->'items') i
+              where i->>'name' = 'Banga Soup & Starch'));
+reset role;
+update public.menu_items set is_active = true where name = 'Banga Soup & Starch';
+set role anon;
+select set_config('request.jwt.claim.sub', '', false);
+select _check('and comes back when it is put back on',
+  exists (select 1 from jsonb_array_elements(public_menu()->'categories') c,
+                        jsonb_array_elements(c->'items') i
+          where i->>'name' = 'Banga Soup & Starch'));
+
+-- The settings row carries operational fields; only the handful a customer
+-- needs should cross to the browser.
+select _check('the checkout is given only the settings it needs',
+  (select array_agg(k order by k) from jsonb_object_keys(public_menu()->'settings') k)
+  = array['accepting_orders','free_delivery_threshold_kobo','min_order_kobo',
+          'pause_reason','prep_time_minutes'],
+  (select string_agg(k, ',' order by k) from jsonb_object_keys(public_menu()->'settings') k));
+
+select _check('the checkout never sees an order through that call',
+  not (public_menu() ? 'orders'));
+
 -- Business rules
 select _denied('rejects a dish that is sold out', $q$
   do $x$ declare i uuid; begin

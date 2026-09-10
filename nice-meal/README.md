@@ -7,23 +7,27 @@ or serve the folder.
 ```
 index.html              homepage: markup, meta, Restaurant JSON-LD
 nice-meal-menu.html     full menu page, with Menu JSON-LD
+order.html              the checkout — see ORDERING.md
 assets/css/styles.css   tokens → base → nav → hero → sections → footer → motion → responsive → print
 assets/js/app.js        nav state, mobile disclosure, scroll reveal
+assets/js/order.js      the checkout's three steps
 assets/img/             8 photographs, two widths each, WebP + JPEG
 favicon.svg             "NM" mark
 _headers                security + caching headers for Netlify / Cloudflare Pages
 
+config.js               your Supabase URL and anon key — the one file you edit
 backend/                the ordering database — Supabase migrations and tests
 kitchen/                the kitchen dashboard, served at /kitchen/
 admin/                  the admin dashboard, served at /admin/
-assets/js/nm-client.js  the small Supabase client both dashboards share
-test/                   browser tests for both dashboards
+assets/js/nm-client.js  the small Supabase client all three screens share
+test/                   browser tests for the checkout and both dashboards
 ```
 
-The marketing pages above are self-contained: they need no database, no keys and
-no network, and they keep working exactly as they are if the two folders below
-them are never deployed. `backend/`, `kitchen/` and `admin/` each have their
-own README.
+**`index.html` and `nice-meal-menu.html` are self-contained.** They hold no
+keys, make no requests, and render identically with the database switched off —
+there is a test that loads them with the API down. Only `order.html` talks to a
+server. `ORDERING.md`, `backend/`, `kitchen/` and `admin/` each document their
+own part.
 
 ## Running it
 
@@ -129,10 +133,18 @@ those three. `script-src` is `'self'` with no `'unsafe-inline'` — all JavaScri
 in `assets/js/app.js`. `style-src` keeps `'unsafe-inline'` because the design uses a
 few inline `style` attributes.
 
+`order.html` is the exception, and the only one: it opens `connect-src` to
+Supabase over https, because it is the only public page that talks to a server.
+The rule is scoped to that one path in `_headers`, so the marketing pages keep
+`connect-src 'none'`.
+
 ## Accessibility and behaviour notes
 
-Both pages pass axe-core with zero violations across WCAG 2.0/2.1 A and AA plus
-axe's best-practice rules, at 1280px and 390px.
+All three pages pass axe-core with zero violations across WCAG 2.0/2.1 A and AA
+plus axe's best-practice rules, at 1280px, 900px and 390px — and the checkout in
+every state it can be in: choosing, with a dish's options open, with a validation
+error showing, at the details step, paused, and unreachable. `test/site-a11y.test.js`
+runs it.
 
 - Skip link, headings in document order, and a focus ring that clears the 3:1
   WCAG 1.4.11 minimum on every ground the site uses — `--spice-ink` by default,
