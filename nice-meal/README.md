@@ -177,9 +177,9 @@ These come from the copy as supplied and are worth a second look:
    *"Monday – Sunday, 8:00 am – 11:00 pm"*. The visible copy is left exactly as
    written; the JSON-LD follows the hours table (Mo–Su 08:00–23:00). Pick one and
    fix all four places.
-2. **Glovo and Facebook links are generic** — `https://glovoapp.com` and
-   `https://facebook.com`, not the restaurant's own store and page. Replace with the
-   real URLs.
+2. **The Facebook link is generic** — `https://facebook.com`, not the restaurant's own
+   page. Replace with the real URL. (The Glovo links are gone: every route to food now
+   goes to this site's own ordering page or to the full menu.)
 3. **No `aggregateRating` in the JSON-LD.** The page shows "4.6 stars on Google", but
    Google requires a rating *count* alongside the value and only accepts ratings the
    site itself collected. Add it once you have a review count you can stand behind.
