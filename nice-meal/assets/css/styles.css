@@ -959,8 +959,18 @@ body > footer {
   line-height: 1.7;
   max-width: 640px;
 }
+/* The question above the pills is the one the checkout actually asks, worded
+   the way the database words it. Without it a row reading only "Fried" and
+   "Grilled" leaves the visitor to guess what is being chosen. */
+.menu-item-choice { grid-column: 1 / -1; }
+.menu-item-choice-q {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--text-soft);
+  margin-top: 8px;
+}
 .menu-item-options {
-  grid-column: 1 / -1;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;

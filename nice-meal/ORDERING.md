@@ -30,11 +30,14 @@ worst possible moment.
 
 **A pick records which dish, and nothing else.** Not the choice, not the price.
 The static menu is a second copy of the kitchen's menu and the two can drift —
-they already have, in this repository: the menu page lists *"Fried chicken /
-Grilled chicken"* where the database's own options are *"Fried"* and *"Grilled"*.
-Matching a choice across that gap would fail silently for one dish in seven. So
-the choices are asked for here, against options read from the database a moment
-earlier.
+they had, in this repository: the menu page offered *"Fried chicken / Grilled
+chicken"* where the database's own options were *"Fried"* and *"Grilled"*.
+Matching a choice across that gap would have failed silently for one dish in
+seven. The page now prints the database's own questions and option names, and
+`test/picks.test.js` compares the two against `public_menu()` so that editing
+either one alone fails the suite. That closes today's gap; it does not make a
+second copy of a menu safe to trust, so the choices are still asked for here,
+against options read from the database a moment earlier.
 
 On arrival this page says what happened to every pick:
 

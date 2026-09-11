@@ -64,17 +64,27 @@ the customer as not on today's menu:
   <h3 class="menu-item-name">Ofada Rice &amp; Ayamase <span class="menu-tag">New</span></h3>
   <p class="menu-item-price">From ₦3,000</p>
   <p class="menu-item-desc">Local ofada rice with green pepper sauce.</p>
-  <ul class="menu-item-options"><li>Beef</li><li>Assorted</li></ul>
+  <div class="menu-item-choice">
+    <p class="menu-item-choice-q" id="choice-ofada">Choose your protein</p>
+    <ul class="menu-item-options" aria-labelledby="choice-ofada"><li>Beef</li><li>Assorted</li></ul>
+  </div>
 </article>
 ```
 
-`.menu-tag` and `.menu-item-options` are both optional; the options list is a
-description of what the dish comes with, not the picker — the real choices are
-read from the database at the checkout.
+`.menu-tag` is optional. `.menu-item-choice` is there for any dish the kitchen
+asks a question about, and **it is not decoration: it must repeat the database's
+own words.** The heading is the option group's `name` and each `<li>` is an
+option's `name`, spelled and ordered as `public_menu()` returns them — because
+that is what the customer is asked at the checkout, and being asked something
+other than what you read is how an order goes wrong. `test/picks.test.js`
+compares the two and fails if they drift, so a dish added here without its real
+choices is caught before a customer meets it. The `id`/`aria-labelledby` pair
+keeps the question attached to the list for a screen reader; give each dish its
+own `id`.
 
-`.menu-tag` and `.menu-item-options` are both optional. Mirror the change in the
-`Menu` JSON-LD at the bottom of the same file so the structured data keeps matching
-what a visitor actually sees — search engines penalise markup that does not.
+Mirror any change in the `Menu` JSON-LD at the bottom of the same file so the
+structured data keeps matching what a visitor actually sees — search engines
+penalise markup that does not.
 
 **Phone number**: `tel:+2349157428604` and the printed `0915 742 8604`, in both
 HTML files and in the `telephone` field of the homepage JSON-LD.
@@ -191,14 +201,9 @@ These come from the copy as supplied and are worth a second look:
 2. **The Facebook link is generic** — `https://facebook.com`, not the restaurant's own
    page. Replace with the real URL. (The Glovo links are gone: every route to food now
    goes to this site's own ordering page or to the full menu.)
-3. **The menu page's option lists disagree with the kitchen's.** It offers
-   *"Fried chicken"* and *"Grilled chicken"*; the database's options for that dish
-   are *"Fried"* and *"Grilled"*. Nothing breaks — the checkout asks with the
-   database's own wording — but the two should be made to match. The same risk
-   applies to every dish name, which is why a pick carries a dish and not a choice.
-4. **No `aggregateRating` in the JSON-LD.** The page shows "4.6 stars on Google", but
+3. **No `aggregateRating` in the JSON-LD.** The page shows "4.6 stars on Google", but
    Google requires a rating *count* alongside the value and only accepts ratings the
    site itself collected. Add it once you have a review count you can stand behind.
-5. **The map is a placeholder card**, not an embedded map — deliberately, since an
+4. **The map is a placeholder card**, not an embedded map — deliberately, since an
    embedded Google map would need `frame-src` opened up and would load third-party
    trackers. It links out to Google Maps instead.

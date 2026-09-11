@@ -4,8 +4,10 @@
  * and they stay that way: this file talks to localStorage and nothing else.
  * What it collects is deliberately thin — a dish name and how many — because
  * the static menu is a second copy of the kitchen's menu and the two can drift.
- * They already have: this page lists "Fried chicken / Grilled chicken" where
- * the database's own options are "Fried" and "Grilled".
+ * They had: the menu page offered "Fried chicken / Grilled chicken" where the
+ * database's own options were "Fried" and "Grilled". The pages now print the
+ * database's wording and a test holds them to it, which closes that gap without
+ * making a second copy of a menu safe to trust.
  *
  * So a pick records WHICH DISH, never which choice and never a price. The
  * checkout loads the real menu from the database and asks the questions there,

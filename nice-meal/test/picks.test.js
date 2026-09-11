@@ -113,6 +113,48 @@ async function add(page, name, times = 1) {
     (await page.locator('.menu-item .pick-add').count()) === 7,
     String(await page.locator('.menu-item .pick-add').count()));
 
+  console.log('\n== the printed choices are the kitchen\'s own ==');
+  // This page is a second copy of the kitchen's menu, and a copy drifts: it
+  // once offered "Fried chicken" and "Grilled chicken" where the database's
+  // options for that dish were "Fried" and "Grilled". Nothing broke — the
+  // checkout asks with the database's own wording — but the customer read one
+  // menu and was then asked another.
+  //
+  // Compared against public_menu() itself rather than against a list retyped
+  // here, because that is the exact payload the checkout is served: question
+  // text, option names, and the order of both. Editing either menu alone fails
+  // this, which is the point.
+  const served = (await q('select public.public_menu() as menu'))[0].menu;
+  const fromDb = {};
+  served.categories.forEach(c => c.items.forEach(i => {
+    fromDb[i.name] = i.groups.map(g => ({ question: g.name, options: g.options.map(o => o.name) }));
+  }));
+
+  const printed = await page.$$eval('[data-dish]', arts => arts.map(a => ({
+    dish: a.getAttribute('data-dish'),
+    groups: [].slice.call(a.querySelectorAll('.menu-item-choice')).map(box => ({
+      question: box.querySelector('.menu-item-choice-q').textContent.trim(),
+      options: [].slice.call(box.querySelectorAll('.menu-item-options li')).map(li => li.textContent.trim())
+    }))
+  })));
+
+  printed.forEach(row => {
+    const want = fromDb[row.dish] || [];
+    ok('the page asks of ' + row.dish + ' exactly what the checkout asks',
+      JSON.stringify(row.groups) === JSON.stringify(want),
+      'page ' + JSON.stringify(row.groups) + '   database ' + JSON.stringify(want));
+  });
+  const missing = Object.keys(fromDb).filter(n => !printed.some(p => p.dish === n));
+  ok('and nothing the kitchen sells is left off the page', missing.length === 0, missing.join(', '));
+
+  // A bare list of "Fried, Grilled" read aloud without its question is the same
+  // gap all over again, for someone who cannot see the heading above it.
+  ok('each printed list of choices is named by its question',
+    await page.$$eval('.menu-item-options', uls => uls.every(ul => {
+      const heading = document.getElementById(ul.getAttribute('aria-labelledby') || '');
+      return !!heading && heading.closest('.menu-item-choice') === ul.closest('.menu-item-choice');
+    })));
+
   await add(page, 'Beans & Plantain', 2);
   ok('the bar counts across both pages', (await page.textContent('#pick-count')) === '3 dishes picked',
     await page.textContent('#pick-count'));
