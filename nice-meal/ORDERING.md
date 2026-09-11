@@ -13,8 +13,45 @@ uses the shared Supabase client in
 order.html              the checkout
 assets/css/order.css    on top of styles.css, using its tokens
 assets/js/order.js      the three steps, the basket, tracking
+assets/js/picks.js      "Add to order" on the homepage and the full menu
 config.js               your Supabase URL and anon key — shared with both dashboards
 ```
+
+## Starting an order from the menu pages
+
+Every dish on the homepage and on the full menu has an **Add to order** button,
+and a bar along the bottom counts what has been picked. Pressing **Go to
+checkout** carries it here.
+
+**The bar shows a count and no money.** The prices on those pages are typed into
+the HTML; the prices a customer pays come from the database. A running total
+there would be quoting the wrong source, and the customer would find out at the
+worst possible moment.
+
+**A pick records which dish, and nothing else.** Not the choice, not the price.
+The static menu is a second copy of the kitchen's menu and the two can drift —
+they already have, in this repository: the menu page lists *"Fried chicken /
+Grilled chicken"* where the database's own options are *"Fried"* and *"Grilled"*.
+Matching a choice across that gap would fail silently for one dish in seven. So
+the choices are asked for here, against options read from the database a moment
+earlier.
+
+On arrival this page says what happened to every pick:
+
+| What it found | What it does |
+|---|---|
+| A dish with no choices | Adds it, at the database's price |
+| A dish that needs a choice | Opens that dish with its real options showing, and says so |
+| A dish sold out today | Names it, and leaves it out |
+| A dish no longer on the menu | Names it, and leaves it out |
+
+Picks are spent when they are applied, so a reload does not quietly re-stock a
+basket somebody had just emptied.
+
+**`index.html` and `nice-meal-menu.html` still make no requests.** `picks.js`
+talks to `localStorage` and nothing else; their CSP keeps `connect-src 'none'`,
+and there is a test that picks a dish and asserts that not one request left the
+page.
 
 ## How it works
 

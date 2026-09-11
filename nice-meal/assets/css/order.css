@@ -35,6 +35,22 @@
 .notice--warn { border-left-color: #a86a10; }
 .notice-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
 
+/* ── What was carried over from the menu pages ───────────────────────────*/
+
+/* Quieter than a .notice: this is a receipt for something that already
+   worked, not a problem to solve. It only says more when part of the
+   handover could not be completed. */
+.carried {
+  background: var(--cream2);
+  border-left: 4px solid var(--spice-ink);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
 /* ── Recent orders from this device ──────────────────────────────────────*/
 
 .recent { margin-bottom: 34px; }

@@ -10,6 +10,7 @@ nice-meal-menu.html     full menu page, with Menu JSON-LD
 order.html              the checkout — see ORDERING.md
 assets/css/styles.css   tokens → base → nav → hero → sections → footer → motion → responsive → print
 assets/js/app.js        nav state, mobile disclosure, scroll reveal
+assets/js/picks.js      "Add to order" on the two menu pages — localStorage only, no requests
 assets/js/order.js      the checkout's three steps
 assets/img/             8 photographs, two widths each, WebP + JPEG
 favicon.svg             "NM" mark
@@ -25,9 +26,11 @@ test/                   browser tests for the checkout and both dashboards
 
 **`index.html` and `nice-meal-menu.html` are self-contained.** They hold no
 keys, make no requests, and render identically with the database switched off —
-there is a test that loads them with the API down. Only `order.html` talks to a
-server. `ORDERING.md`, `backend/`, `kitchen/` and `admin/` each document their
-own part.
+there is a test that loads them with the API down. That stays true now that
+both pages can start an order: `picks.js` writes to `localStorage` and nothing
+else, and a test picks a dish and asserts that no request left the page. Only
+`order.html` talks to a server. `ORDERING.md`, `backend/`, `kitchen/` and
+`admin/` each document their own part.
 
 ## Running it
 
@@ -50,16 +53,24 @@ description and price.
 JavaScript-rendered: a menu is the page search engines most need to read, and a
 JS-built one is the page they read worst.
 
-Adding a dish means adding one `<article class="menu-item">`:
+Adding a dish means adding one `<article class="menu-item">`. The `data-dish`
+attribute is what puts an **Add to order** button on it, and its value has to be
+the dish's name **exactly as the database spells it** — that name is the only
+thing carried to the checkout, and a dish the checkout cannot find is reported to
+the customer as not on today's menu:
 
 ```html
-<article class="menu-item">
+<article data-dish="Ofada Rice &amp; Ayamase" class="menu-item">
   <h3 class="menu-item-name">Ofada Rice &amp; Ayamase <span class="menu-tag">New</span></h3>
   <p class="menu-item-price">From ₦3,000</p>
   <p class="menu-item-desc">Local ofada rice with green pepper sauce.</p>
   <ul class="menu-item-options"><li>Beef</li><li>Assorted</li></ul>
 </article>
 ```
+
+`.menu-tag` and `.menu-item-options` are both optional; the options list is a
+description of what the dish comes with, not the picker — the real choices are
+read from the database at the checkout.
 
 `.menu-tag` and `.menu-item-options` are both optional. Mirror the change in the
 `Menu` JSON-LD at the bottom of the same file so the structured data keeps matching
@@ -130,7 +141,7 @@ They are set as real response headers in `_headers` instead, which Netlify and
 Cloudflare Pages apply. The meta CSP stays in both pages as the fallback for hosts
 with no header control (GitHub Pages among them); it covers every directive except
 those three. `script-src` is `'self'` with no `'unsafe-inline'` — all JavaScript is
-in `assets/js/app.js`. `style-src` keeps `'unsafe-inline'` because the design uses a
+in `assets/js/`, none of it inline. `style-src` keeps `'unsafe-inline'` because the design uses a
 few inline `style` attributes.
 
 `order.html` is the exception, and the only one: it opens `connect-src` to
@@ -180,9 +191,14 @@ These come from the copy as supplied and are worth a second look:
 2. **The Facebook link is generic** — `https://facebook.com`, not the restaurant's own
    page. Replace with the real URL. (The Glovo links are gone: every route to food now
    goes to this site's own ordering page or to the full menu.)
-3. **No `aggregateRating` in the JSON-LD.** The page shows "4.6 stars on Google", but
+3. **The menu page's option lists disagree with the kitchen's.** It offers
+   *"Fried chicken"* and *"Grilled chicken"*; the database's options for that dish
+   are *"Fried"* and *"Grilled"*. Nothing breaks — the checkout asks with the
+   database's own wording — but the two should be made to match. The same risk
+   applies to every dish name, which is why a pick carries a dish and not a choice.
+4. **No `aggregateRating` in the JSON-LD.** The page shows "4.6 stars on Google", but
    Google requires a rating *count* alongside the value and only accepts ratings the
    site itself collected. Add it once you have a review count you can stand behind.
-4. **The map is a placeholder card**, not an embedded map — deliberately, since an
+5. **The map is a placeholder card**, not an embedded map — deliberately, since an
    embedded Google map would need `frame-src` opened up and would load third-party
    trackers. It links out to Google Maps instead.

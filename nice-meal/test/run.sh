@@ -58,12 +58,13 @@ echo "stub listening on $PORT"
 # ── Run ─────────────────────────────────────────────────────────────────────
 status=0
 # Order matters. The kitchen suite asserts an empty board, so it runs before
-# anything places an order; the checkout suite reads the seeded menu, so it runs
-# before the admin suite starts repricing it. Each suite puts back whatever it
+# anything places an order; the checkout and picks suites read the seeded menu,
+# so they run before the admin suite starts repricing it. picks.test.js fills a
+# basket but never submits one, so it leaves no orders behind either. Each suite puts back whatever it
 # changed, but the cheapest way to keep them independent is to run them in an
 # order where they do not need to.
 for suite in kitchen.test.js kitchen-a11y.test.js \
-             checkout.test.js site-a11y.test.js \
+             checkout.test.js picks.test.js site-a11y.test.js \
              admin.test.js admin-a11y.test.js; do
   [ -f "$suite" ] || continue
   echo

@@ -567,6 +567,106 @@
     drawRecent();
   });
 
+  /* ── Dishes picked on the marketing pages ────────────────────────────────
+     index.html and nice-meal-menu.html carry a second, static copy of the
+     menu, so what arrives here is only a dish name and a quantity. This is
+     where it meets the real thing.
+
+     Everything that can disagree is checked rather than assumed: a dish may
+     have been renamed, withdrawn, or sold out since the page was last built,
+     and a dish with choices cannot be added without one — place_order() would
+     refuse it, so the card is opened with the database's own options instead
+     of a guess at what the customer wanted. Whatever happens, the customer is
+     told, because a pick that quietly vanishes reads as a bug in the shop. */
+
+  var PICKS_KEY = 'nm.picks';
+
+  function takePicks() {
+    var raw;
+    try { raw = global.localStorage.getItem(PICKS_KEY); } catch (e) { return []; }
+    // Taken, not read: applying the same picks again on every reload would
+    // keep re-stocking a basket the customer had just emptied.
+    try { global.localStorage.removeItem(PICKS_KEY); } catch (e) {}
+    if (!raw) { return []; }
+    var saved;
+    try { saved = JSON.parse(raw); } catch (e) { return []; }
+    if (Object.prototype.toString.call(saved) !== '[object Array]') { return []; }
+    return saved;
+  }
+
+  function itemByName(name) {
+    var want = String(name).replace(/^\s+|\s+$/g, '').toLowerCase();
+    for (var c = 0; c < shop.categories.length; c++) {
+      var items = shop.categories[c].items;
+      for (var i = 0; i < items.length; i++) {
+        if (items[i].name.replace(/^\s+|\s+$/g, '').toLowerCase() === want) { return items[i]; }
+      }
+    }
+    return null;
+  }
+
+  function listNames(names) {
+    if (names.length === 1) { return names[0]; }
+    return names.slice(0, -1).join(', ') + ' and ' + names[names.length - 1];
+  }
+
+  function applyPicks() {
+    var picks = takePicks();
+    if (!picks.length) { return; }
+
+    var added = 0, ask = [], gone = [], out = [], firstCard = null;
+
+    for (var i = 0; i < picks.length; i++) {
+      var pick = picks[i];
+      if (!pick || typeof pick.name !== 'string') { continue; }
+      var qty = Math.max(1, Math.min(50, parseInt(pick.qty, 10) || 1));
+
+      var item = itemByName(pick.name);
+      if (!item) { gone.push(pick.name); continue; }
+      if (!item.is_available) { out.push(item.name); continue; }
+
+      var card = $('dishes').querySelector('[data-item="' + item.id + '"]');
+      if (!card) { gone.push(pick.name); continue; }
+
+      if (item.groups.length) {
+        // Open it where it stands, with the real choices showing.
+        var opts = card.querySelector('.dish-options');
+        if (opts) {
+          opts.hidden = false;
+          card.classList.add('is-open');
+          card.querySelector('[data-add]').textContent = 'Add to order';
+        }
+        ask.push(item.name);
+        if (!firstCard) { firstCard = card; }
+        continue;
+      }
+
+      for (var q = 0; q < qty; q++) { addToBasket(card, item); }
+      added += qty;
+    }
+
+    var lines = [];
+    if (added) {
+      lines.push('We brought over ' + added + (added === 1 ? ' dish' : ' dishes') + ' from the menu.');
+    }
+    if (ask.length) {
+      lines.push(listNames(ask) + (ask.length === 1 ? ' needs a choice' : ' need a choice')
+        + ' before it can be added \u2014 opened below.');
+    }
+    if (out.length) {
+      lines.push(listNames(out) + (out.length === 1 ? ' is' : ' are') + ' sold out today.');
+    }
+    if (gone.length) {
+      lines.push(listNames(gone) + (gone.length === 1 ? ' is' : ' are') + " not on today's menu.");
+    }
+    if (!lines.length) { return; }
+
+    $('carried-said').textContent = lines.join(' ');
+    $('carried').hidden = false;
+    say(lines.join(' '));
+    if (firstCard) { firstCard.scrollIntoView({ block: 'center' }); }
+  }
+
   /* ── Boot ───────────────────────────────────────────────────────────────*/
 
   var client = null;
@@ -624,6 +724,9 @@
     }
 
     drawMenu();
+    // Before the first paint of the basket, so a carried-over order is already
+    // sitting there rather than appearing a moment later.
+    applyPicks();
     drawBasket();
     drawRecent();
     $('step-choose').hidden = false;

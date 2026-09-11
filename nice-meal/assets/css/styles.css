@@ -314,6 +314,10 @@ nav.at-top {
   transition: background 0.2s, transform 0.15s;
 }
 .btn-primary:hover { background: var(--spice-ink-hover); transform: translateY(-2px); }
+/* Cream on a translucent cream hairline: this belongs on the dark grounds —
+   the hero, the order band, the footer, the picks bar. On cream or white it
+   measures about 1.1:1, which is not low contrast but no contrast. Re-colour
+   it explicitly before putting it on a light surface. */
 .btn-secondary {
   display: inline-flex;
   align-items: center;
@@ -1000,6 +1004,129 @@ body > footer {
 }
 .menu-outro .btn-primary { display: inline-flex; }
 
+/* ── PICKING A DISH ── */
+/* Built by picks.js on the homepage and the full menu. What it collects is a
+   dish and a quantity; the choices and every figure of money belong to the
+   checkout, which reads them from the database. Nothing here quotes a price. */
+
+.pick-add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 16px;
+}
+.menu-item .pick-add { grid-column: 1 / -1; margin-top: 12px; }
+/* Its own colours rather than .btn-secondary. That button is cream text on a
+   translucent cream hairline — built for the dark hero and the dark order
+   band, and 1.13:1 on the cream menu rows, which is invisible rather than
+   merely low. This is the third place on this site where reusing it on a light
+   ground has had to be undone. */
+.pick-add-btn {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--spice-ink);
+  background: transparent;
+  border: 1px solid var(--spice-ink);
+  border-radius: 2px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.pick-add-btn:hover { background: var(--spice-ink); color: var(--cream); }
+.menu-card--img .pick-add-btn,
+.menu-card--gradient .pick-add-btn {
+  color: #fcd9a8;
+  background: rgba(15,7,0,0.45);
+  border-color: rgba(252,217,168,0.5);
+}
+.menu-card--img .pick-add-btn:hover,
+.menu-card--gradient .pick-add-btn:hover { background: #fcd9a8; color: var(--dark); }
+
+.pick-said {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--spice-ink);
+}
+.pick-step { display: flex; align-items: center; gap: 10px; }
+.pick-step-btn {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  font-family: var(--sans);
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--spice-ink);
+  background: var(--white);
+  border: 1px solid var(--spice-ink);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s;
+}
+.pick-step-btn:hover { background: var(--spice-ink); color: var(--cream); }
+.pick-qty {
+  min-width: 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The photo cards are dark under their scrim, so the controls there take the
+   same warm accent the price and category already use on them — the ink
+   version would disappear into the photograph. */
+.menu-card--img .pick-said,
+.menu-card--gradient .pick-said { color: #fcd9a8; }
+.menu-card--img .pick-step-btn,
+.menu-card--gradient .pick-step-btn {
+  color: #fcd9a8;
+  background: rgba(15,7,0,0.45);
+  border-color: rgba(252,217,168,0.5);
+}
+.menu-card--img .pick-step-btn:hover,
+.menu-card--gradient .pick-step-btn:hover { background: #fcd9a8; color: var(--dark); }
+.menu-card--img .pick-qty,
+.menu-card--gradient .pick-qty { color: #fff; }
+
+.pick-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 90;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--dark);
+  border-top: 1px solid var(--spice-ink);
+}
+.pick-bar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+}
+.pick-bar-sum { display: flex; flex-direction: column; gap: 2px; }
+.pick-bar-sum strong { font-size: 15px; font-weight: 700; color: var(--cream); }
+.pick-bar-sum span { font-size: 12px; font-weight: 300; color: var(--text-light); }
+.pick-bar-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+/* The bar is fixed, so the page needs the height back or it sits on the footer. */
+body.has-picks { padding-bottom: 88px; }
+
+@media (max-width: 600px) {
+  .pick-bar-inner { flex-direction: column; align-items: stretch; }
+  .pick-bar-actions a, .pick-bar-actions button { flex: 1 1 auto; text-align: center; justify-content: center; }
+  body.has-picks { padding-bottom: 132px; }
+}
+
 /* ── ANIMATIONS ── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(24px); }
@@ -1100,7 +1227,9 @@ body > footer {
 /* ── PRINT ── */
 @media print {
   nav, .nav-scrim, .skip-link, .hero-ornament, .hero-bg-pattern,
-  .location-map, .footer-socials, .menu-outro, .page-back { display: none !important; }
+  .location-map, .footer-socials, .menu-outro, .page-back,
+  .pick-bar, .pick-add { display: none !important; }
+  body.has-picks { padding-bottom: 0; }
   body { background: #fff; color: #000; }
   #hero { min-height: auto; padding: 0 0 24px; }
   .hero-photo, .hero-veil { display: none; }

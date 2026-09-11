@@ -28,8 +28,28 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
 
     for (const path of ['/index.html', '/nice-meal-menu.html']) {
       await p.goto(BASE + path, { waitUntil: 'load' });
+      await p.evaluate(() => { try { localStorage.removeItem('nm.picks'); } catch (e) {} });
+      await p.reload({ waitUntil: 'load' });
       await settle(p);
       await run(p, `${path} @ ${width}`, AA_PLUS);
+
+      // Picking a dish puts a stepper on it and a fixed bar over the page —
+      // new foreground/background pairs on both the cream rows and the dark
+      // photo cards.
+      await p.locator('.pick-add-btn').first().click();
+      await p.waitForTimeout(200);
+      await settle(p);
+      await run(p, `${path} with a dish picked @ ${width}`, AA_PLUS);
+
+      // A hover that fills a button flips its foreground and background, and
+      // that is where this project has lost contrast before.
+      await p.locator('.pick-step-btn').first().hover();
+      await p.waitForTimeout(150);
+      await run(p, `${path} hovering the stepper @ ${width}`, AA_PLUS);
+
+      await p.locator('#pick-bar .btn-secondary').hover();
+      await p.waitForTimeout(150);
+      await run(p, `${path} hovering the bar @ ${width}`, AA_PLUS);
     }
 
     // ── The checkout, in order ──────────────────────────────────────────
@@ -68,6 +88,16 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
     await p.click('#place-order');
     await p.waitForTimeout(300);
     await run(p, `order.html with a form error @ ${width}`, AA);
+
+    // Arriving with dishes carried over from the menu pages: the notice that
+    // says what came through, and a dish opened because it still needs a
+    // choice.
+    await p.evaluate(() => localStorage.setItem('nm.picks', JSON.stringify(
+      [{ name: 'Beans & Plantain', qty: 2 }, { name: 'Egusi Soup & Swallow', qty: 1 }])));
+    await p.goto(BASE + '/order.html', { waitUntil: 'load' });
+    await p.waitForSelector('#carried:not([hidden])', { timeout: 8000 });
+    await settle(p);
+    await run(p, `order.html with dishes carried over @ ${width}`, AA);
 
     // ── The two states that are not the happy path ──────────────────────
     await q("update settings set accepting_orders = false, pause_reason = 'Swamped — back at 7pm'");

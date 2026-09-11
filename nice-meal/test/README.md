@@ -1,6 +1,6 @@
 # Browser tests — the checkout and both dashboards
 
-228 checks that drive the real screens in a real browser, against the real
+260 checks that drive the real screens in a real browser, against the real
 migrations on a real Postgres. No mocked database, no mocked queries: an order
 placed in these tests goes through `place_order()`, gets priced by the
 database, trips the trigger, and comes back out through `kitchen_board()` and
@@ -25,6 +25,7 @@ stub-supabase.js      a stand-in for Supabase
 seed.sql              three test accounts: kitchen, admin, and a non-staff one
 kitchen.test.js       80 checks
 checkout.test.js      69 checks
+picks.test.js         32 checks
 admin.test.js         79 checks
 kitchen-a11y.test.js  axe-core over the kitchen screen
 site-a11y.test.js     axe-core over the three public pages
@@ -32,8 +33,9 @@ admin-a11y.test.js    axe-core over all five admin tabs
 ```
 
 They run in a set order, and `run.sh` says why: the kitchen suite asserts an
-empty board so it goes before anything places an order, and the checkout suite
-reads the seeded menu so it goes before the admin suite starts repricing it.
+empty board so it goes before anything places an order, and the checkout and
+picks suites read the seeded menu so they go before the admin suite starts
+repricing it.
 Each suite restores what it changed; the order just means they do not have to.
 
 All three accessibility suites run at three widths, on WCAG 2.0 A/AA and 2.1
@@ -139,6 +141,31 @@ seams.
   the full menu are loaded with the API switched off and must render intact.
 - **A dish name containing markup**, which must render as characters.
 
+## What the picks suite covers
+
+Picking dishes on the homepage and the full menu, and the handover to the
+checkout. The buttons are the easy part; the seam is the point.
+
+- **The controls appear on every dish** on both pages, and the bar stays out of
+  the way until something is picked.
+- **The stepper**, because being able to add three and not take one back off is
+  the kind of small cruelty that sends people to the phone. Taking the last one
+  off puts the add button back and takes the bar away.
+- **That picking a dish sends no request anywhere.** These pages hold no keys and
+  their CSP sets `connect-src 'none'`; a regression would otherwise surface as a
+  silent CSP violation rather than a broken feature.
+- **That picks survive moving between the two pages.**
+- **The handover**: a dish with no choices arrives in the basket priced by *the
+  database*, not by the page it was picked from; a dish that needs a choice is
+  opened with the database's own options rather than guessed at; and the customer
+  is told which is which.
+- **That picks are spent, not repeated** — a reload does not re-stock a basket
+  somebody just emptied.
+- **When the two menus disagree**: a dish sold out today and a dish withdrawn
+  from the menu are both named to the customer and left out, rather than
+  vanishing.
+- **That the full menu still reads, and still takes a pick, with the API down.**
+
 ## The accessibility suites
 
 `kitchen-a11y.test.js` covers the sign-in screen, the board with a ticket on it,
@@ -146,7 +173,8 @@ and the open cancel sheet. `admin-a11y.test.js` covers the sign-in screen, the
 order list, an order open, the cancel prompt, and all five tabs.
 `site-a11y.test.js` covers the homepage, the full menu, and the checkout in
 every state — choosing, options open, a validation error showing, the details
-step, paused, and unreachable.
+step, dishes carried over from the menu pages, paused, and unreachable. It also
+covers both menu pages with a dish picked, and hovers the stepper and the bar.
 
 Both hover each kind of button and re-run. That is not thoroughness for its own
 sake: a hover that lightens a coloured fill under white text loses contrast
@@ -171,3 +199,13 @@ secondary button is cream-on-transparent, built for the dark hero. Reused on the
 checkout's white cards it measured **1.22:1** — not low-contrast but genuinely
 invisible. This suite caught 258 violations on its first run, almost all of them
 that one button repeated down the page.
+
+It then caught the same mistake twice more. The "Add to order" button on the
+full menu reused that same secondary style and measured **1.13:1** on the cream
+rows — invisible on the page where most people would press it, while being
+perfectly legible on the homepage, whose cards are dark. `.btn-secondary` now
+carries a comment in `styles.css` saying which grounds it is for.
+
+**A fixed bar is page content sitting outside every landmark.** The picks bar is
+appended to the body, so on its first run axe reported the count and the
+checkout link as content in no region at all. It lives in an `<aside>` now.
