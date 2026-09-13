@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" translate="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Full Menu — Nice Meal, Ipaja, Lagos</title>
+<meta name="description" content="The full Nice Meal menu — jollof, fried rice, egusi, banga, beans and plantain, and cold drinks. Fresh Nigerian cooking in Baruwa, Ipaja, from ₦1,500.">
+
+<!-- See the note in index.html: frame-ancestors and X-Frame-Options belong in ./_headers. -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self';
+  script-src 'self';
+  connect-src 'none';
+  object-src 'none';
+  frame-src 'none';
+  base-uri 'self';
+  form-action 'self';
+">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<link rel="canonical" href="./nice-meal-menu.html">
+<meta property="og:site_name" content="Nice Meal">
+<meta property="og:title" content="Full Menu — Nice Meal, Ipaja, Lagos">
+<meta property="og:description" content="Jollof, fried rice, egusi, banga, beans and plantain, and cold drinks. From ₦1,500.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_NG">
+<meta property="og:image" content="./assets/img/jollof-rice-800.jpg">
+
+<meta name="theme-color" content="#0f0700">
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./assets/css/styles.css">
+<script defer src="./assets/js/app.js"></script>
+<script defer src="./assets/js/picks.js"></script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="./index.html" class="nav-logo">Nice<span>Meal</span></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="./index.html#menu">Menu</a></li>
+    <li><a href="./nice-meal-menu.html" aria-current="page">Full Menu</a></li>
+    <li><a href="./index.html#order">Order</a></li>
+    <li><a href="./index.html#reviews">Reviews</a></li>
+    <li><a href="./index.html#kids">Kids Play</a></li>
+    <li><a href="./index.html#about">About</a></li>
+    <li><a href="./index.html#location">Find Us</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="./order.html" class="nav-order">Order Now</a>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
+      <span class="visually-hidden">Menu</span>
+      <svg class="icon-open" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+<div class="nav-scrim" id="nav-scrim" hidden></div>
+
+<main id="main">
+
+<header class="page-head">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-ornament"></div>
+  <div class="page-head-inner">
+    <p class="section-eyebrow">The full spread</p>
+    <h1 class="section-title">Everything we're <em>cooking.</em></h1>
+    <p class="section-lead">Prepared fresh each morning on Aina Obembe Street. Prices start from ₦1,500 — every plate comes the way it would at home.</p>
+    <a href="./index.html" class="page-back">← Back to the homepage</a>
+  </div>
+</header>
+
+<section id="full-menu" aria-label="Full menu">
+
+  <div class="menu-course">
+    <div class="menu-course-head">
+      <h2 class="menu-course-title">Rice dishes</h2>
+      <p class="menu-course-note">Cooked from scratch each morning</p>
+    </div>
+
+    <article data-dish="Jollof Rice &amp; Protein" class="menu-item">
+      <h3 class="menu-item-name">Jollof Rice &amp; Protein <span class="menu-tag">Popular</span></h3>
+      <p class="menu-item-price">From ₦2,000</p>
+      <p class="menu-item-desc">Our signature smoky jollof, cooked low and slow with a rich tomato base.</p>
+      <div class="menu-item-choice">
+        <p class="menu-item-choice-q" id="choice-jollof">Choose your protein</p>
+        <ul class="menu-item-options" aria-labelledby="choice-jollof">
+          <li>Chicken</li><li>Beef</li><li>Fish</li><li>Gizzard</li>
+        </ul>
+      </div>
+    </article>
+
+    <article data-dish="Fried Rice &amp; Chicken" class="menu-item">
+      <h3 class="menu-item-name">Fried Rice &amp; Chicken</h3>
+      <p class="menu-item-price">From ₦2,200</p>
+      <p class="menu-item-desc">Golden, well-seasoned fried rice loaded with vegetables and served with succulent chicken.</p>
+      <div class="menu-item-choice">
+        <p class="menu-item-choice-q" id="choice-fried-rice">How would you like the chicken?</p>
+        <ul class="menu-item-options" aria-labelledby="choice-fried-rice">
+          <li>Fried</li><li>Grilled</li>
+        </ul>
+      </div>
+    </article>
+
+    <article data-dish="White Rice &amp; Stew" class="menu-item">
+      <h3 class="menu-item-name">White Rice &amp; Stew</h3>
+      <p class="menu-item-price">From ₦2,000</p>
+      <p class="menu-item-desc">Fluffy steamed rice paired with our house tomato stew. The everyday favourite — simple, satisfying, and always on point.</p>
+    </article>
+  </div>
+
+  <div class="menu-course">
+    <div class="menu-course-head">
+      <h2 class="menu-course-title">Soups &amp; Swallows</h2>
+      <p class="menu-course-note">Served with your choice of swallow</p>
+    </div>
+
+    <article data-dish="Egusi Soup &amp; Swallow" class="menu-item">
+      <h3 class="menu-item-name">Egusi Soup &amp; Swallow <span class="menu-tag">Popular</span></h3>
+      <p class="menu-item-price">From ₦2,500</p>
+      <p class="menu-item-desc">Thick, hearty egusi soup with assorted meat. Comfort in a bowl.</p>
+      <div class="menu-item-choice">
+        <p class="menu-item-choice-q" id="choice-egusi">Choose your swallow</p>
+        <ul class="menu-item-options" aria-labelledby="choice-egusi">
+          <li>Eba</li><li>Fufu</li><li>Pounded yam</li>
+        </ul>
+      </div>
+    </article>
+
+    <article data-dish="Banga Soup &amp; Starch" class="menu-item">
+      <h3 class="menu-item-name">Banga Soup &amp; Starch</h3>
+      <p class="menu-item-price">From ₦2,500</p>
+      <p class="menu-item-desc">Rich palm-nut soup slow-cooked with fragrant spices and assorted protein. A true Delta classic, right here in Lagos.</p>
+    </article>
+  </div>
+
+  <div class="menu-course">
+    <div class="menu-course-head">
+      <h2 class="menu-course-title">Light meals</h2>
+      <p class="menu-course-note">Lighter plates, same kitchen</p>
+    </div>
+
+    <article data-dish="Beans &amp; Plantain" class="menu-item">
+      <h3 class="menu-item-name">Beans &amp; Plantain</h3>
+      <p class="menu-item-price">From ₦1,500</p>
+      <p class="menu-item-desc">Slow-cooked honey beans, perfectly sweetened, served with crispy fried plantain. A Nigerian classic that never gets old.</p>
+    </article>
+  </div>
+
+  <div class="menu-course">
+    <div class="menu-course-head">
+      <h2 class="menu-course-title">Drinks</h2>
+      <p class="menu-course-note">Served cold</p>
+    </div>
+
+    <article data-dish="Soft Drinks &amp; Water" class="menu-item">
+      <h3 class="menu-item-name">Soft Drinks &amp; Water</h3>
+      <p class="menu-item-price">From ₦200</p>
+      <p class="menu-item-desc">Cold and ready to wash down your meal.</p>
+      <div class="menu-item-choice">
+        <p class="menu-item-choice-q" id="choice-drinks">Which drink?</p>
+        <ul class="menu-item-options" aria-labelledby="choice-drinks">
+          <li>Coca-Cola</li><li>Fanta</li><li>Sprite</li><li>Table water</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <div class="menu-outro">
+    <p>The kitchen cooks to the day, so what is actually on right now is whatever the ordering page is showing. Not seeing what you're after? Give us a call and we'll tell you what's cooking.</p>
+    <a href="./order.html" class="btn-primary">Order online</a>
+    <a href="tel:+2349157428604" class="btn-secondary" aria-label="Call Nice Meal on 0915 742 8604">Call 0915 742 8604</a>
+  </div>
+
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="./index.html" class="nav-logo" style="font-size:26px;">Nice<span>Meal</span></a>
+      <p>Real food, real flavour — served fresh daily in the heart of Baruwa, Ipaja, Lagos.</p>
+      <p class="footer-tagline">"Every meal is made with care — come hungry, leave happy."</p>
+    </div>
+    <div>
+      <h2 class="footer-col-title">Quick links</h2>
+      <ul class="footer-links">
+        <li><a href="./index.html#menu">Menu</a></li>
+        <li><a href="./nice-meal-menu.html">Full Menu</a></li>
+        <li><a href="./index.html#order">Order</a></li>
+        <li><a href="./index.html#reviews">Reviews</a></li>
+        <li><a href="./index.html#kids">Kids Play</a></li>
+        <li><a href="./index.html#about">About us</a></li>
+        <li><a href="./index.html#location">Location &amp; Hours</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-col-title">Contact us</h2>
+      <div class="footer-contact">
+        <a href="tel:+2349157428604" aria-label="Call Nice Meal on 0915 742 8604">0915 742 8604</a>
+        <a href="./order.html">Order online</a>
+        <a href="./nice-meal-menu.html" aria-current="page">Full menu</a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook page</a>
+        <a href="https://maps.google.com/?q=Aina+Obembe+St,+Idimu,+Lagos" target="_blank" rel="noopener noreferrer">Google Maps</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Nice Meal Restaurant · Aina Obembe St, Idimu, Lagos</p>
+    <div class="footer-socials">
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://maps.google.com/?q=Aina+Obembe+St,+Idimu,+Lagos" target="_blank" rel="noopener noreferrer">Google Maps</a>
+    </div>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Menu",
+  "name": "Nice Meal — full menu",
+  "inLanguage": "en-NG",
+  "hasMenuSection": [
+    {
+      "@type": "MenuSection",
+      "name": "Rice dishes",
+      "hasMenuItem": [
+        { "@type": "MenuItem", "name": "Jollof Rice & Protein", "description": "Our signature smoky jollof, cooked low and slow with a rich tomato base.", "offers": { "@type": "Offer", "price": "2000", "priceCurrency": "NGN" } },
+        { "@type": "MenuItem", "name": "Fried Rice & Chicken", "description": "Golden, well-seasoned fried rice loaded with vegetables and served with succulent chicken.", "offers": { "@type": "Offer", "price": "2200", "priceCurrency": "NGN" } },
+        { "@type": "MenuItem", "name": "White Rice & Stew", "description": "Fluffy steamed rice paired with our house tomato stew.", "offers": { "@type": "Offer", "price": "2000", "priceCurrency": "NGN" } }
+      ]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Soups & Swallows",
+      "hasMenuItem": [
+        { "@type": "MenuItem", "name": "Egusi Soup & Swallow", "description": "Thick, hearty egusi soup with assorted meat.", "offers": { "@type": "Offer", "price": "2500", "priceCurrency": "NGN" } },
+        { "@type": "MenuItem", "name": "Banga Soup & Starch", "description": "Rich palm-nut soup slow-cooked with fragrant spices and assorted protein.", "offers": { "@type": "Offer", "price": "2500", "priceCurrency": "NGN" } }
+      ]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Light meals",
+      "hasMenuItem": [
+        { "@type": "MenuItem", "name": "Beans & Plantain", "description": "Slow-cooked honey beans served with crispy fried plantain.", "offers": { "@type": "Offer", "price": "1500", "priceCurrency": "NGN" } }
+      ]
+    },
+    {
+      "@type": "MenuSection",
+      "name": "Drinks",
+      "hasMenuItem": [
+        { "@type": "MenuItem", "name": "Soft Drinks & Water", "description": "Coca-Cola, Fanta, Sprite and table water, served cold.", "offers": { "@type": "Offer", "price": "200", "priceCurrency": "NGN" } }
+      ]
+    }
+  ]
+}
+</script>
+
+</body>
+</html>

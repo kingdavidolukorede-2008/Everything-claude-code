@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Admin — Nice Meal</title>
+
+<meta name="robots" content="noindex, nofollow">
+
+<!--
+  Same posture as the kitchen screen: one opening, to Supabase, over https and
+  wss. This page shows every phone number and every naira the shop has taken,
+  so there is nowhere else a script on it could send anything. frame-ancestors
+  is in ../_headers, which a meta CSP cannot set.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  img-src 'self';
+  style-src 'self';
+  script-src 'self';
+  object-src 'none';
+  frame-src 'none';
+  base-uri 'self';
+  form-action 'self'">
+
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/admin.css">
+</head>
+<body class="booting">
+
+<!-- ── Sign in ──────────────────────────────────────────────────────────── -->
+<section class="signin" id="view-signin" hidden>
+  <form class="signin-card" id="signin-form" autocomplete="on">
+    <h1 class="signin-title">Nice Meal <span>Admin</span></h1>
+    <p class="signin-sub">Sign in with an administrator account.</p>
+
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input type="email" id="email" name="email" autocomplete="username"
+             required autocapitalize="none" spellcheck="false" inputmode="email">
+    </label>
+    <label class="field">
+      <span class="field-label">Password</span>
+      <input type="password" id="password" name="password"
+             autocomplete="current-password" required>
+    </label>
+
+    <p class="form-error" id="signin-error" role="alert" hidden></p>
+    <button type="submit" class="btn btn--go btn--wide" id="signin-submit">Sign in</button>
+  </form>
+</section>
+
+<!-- ── The app ──────────────────────────────────────────────────────────── -->
+<div class="app" id="view-app" hidden>
+
+  <header class="topbar">
+    <h1 class="brand">Nice Meal <span>Admin</span></h1>
+    <nav class="tabs" id="tabs" aria-label="Sections">
+      <a class="tab" href="#/orders" data-view="orders">Orders</a>
+      <a class="tab" href="#/new"    data-view="new">Take an order</a>
+      <a class="tab" href="#/menu"   data-view="menu">Menu &amp; shop</a>
+      <a class="tab" href="#/reports" data-view="reports">Reports</a>
+      <a class="tab" href="#/staff"  data-view="staff">Staff</a>
+    </nav>
+    <div class="topbar-actions">
+      <a class="btn btn--ghost btn--sm" href="../kitchen/">Kitchen screen</a>
+      <span class="whoami" id="whoami"></span>
+      <button type="button" class="btn btn--ghost btn--sm" id="signout">Sign out</button>
+    </div>
+  </header>
+
+  <p class="banner banner--warn" id="paused-banner" hidden></p>
+  <p class="banner banner--bad" id="app-error" role="alert" hidden></p>
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+
+  <main class="main" id="main">
+
+    <!-- ── Orders ─────────────────────────────────────────────────────── -->
+    <section class="view" id="v-orders" hidden aria-labelledby="h-orders">
+      <div class="view-head">
+        <h2 id="h-orders">Orders</h2>
+        <span class="muted" id="orders-count"></span>
+      </div>
+
+      <form class="filters" id="order-filters">
+        <label class="field field--inline">
+          <span class="field-label">From</span>
+          <input type="date" id="f-from">
+        </label>
+        <label class="field field--inline">
+          <span class="field-label">To</span>
+          <input type="date" id="f-to">
+        </label>
+        <label class="field field--inline">
+          <span class="field-label">Status</span>
+          <select id="f-status">
+            <option value="">Any</option>
+            <option value="new">New</option>
+            <option value="preparing">Cooking</option>
+            <option value="ready">Ready</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </label>
+        <label class="field field--inline field--grow">
+          <span class="field-label">Search</span>
+          <input type="search" id="f-search" placeholder="Code, phone or name"
+                 autocomplete="off" spellcheck="false">
+        </label>
+        <button type="submit" class="btn btn--go btn--sm">Apply</button>
+        <button type="button" class="btn btn--quiet btn--sm" id="f-today">Today</button>
+        <button type="button" class="btn btn--quiet btn--sm" id="f-clear">All time</button>
+      </form>
+
+      <div class="split">
+        <div class="table-wrap">
+          <table class="table" id="orders-table">
+            <caption class="sr-only">Orders, most recent first</caption>
+            <thead>
+              <tr>
+                <th scope="col">Code</th><th scope="col">When</th>
+                <th scope="col">Customer</th><th scope="col">Type</th>
+                <th scope="col">Status</th><th scope="col" class="num">Total</th>
+              </tr>
+            </thead>
+            <tbody id="orders-body"></tbody>
+          </table>
+          <p class="empty" id="orders-empty" hidden>No orders match that.</p>
+          <div class="pager">
+            <button type="button" class="btn btn--quiet btn--sm" id="page-prev">Previous</button>
+            <span class="muted" id="page-label"></span>
+            <button type="button" class="btn btn--quiet btn--sm" id="page-next">Next</button>
+          </div>
+        </div>
+
+        <aside class="detail" id="order-detail" aria-live="polite">
+          <p class="empty">Pick an order to see the address, the lines and the money.</p>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── Take an order ──────────────────────────────────────────────── -->
+    <section class="view" id="v-new" hidden aria-labelledby="h-new">
+      <div class="view-head">
+        <h2 id="h-new">Take an order</h2>
+        <span class="muted">For a call or someone at the counter.</span>
+      </div>
+
+      <div class="split split--even">
+        <div>
+          <h3 class="sub">Dishes</h3>
+          <div id="new-menu" class="pick-list"></div>
+        </div>
+
+        <form class="card" id="new-form">
+          <h3 class="sub">This order</h3>
+          <ul class="basket" id="basket"></ul>
+          <p class="empty" id="basket-empty">Nothing added yet.</p>
+
+          <p class="total-line">
+            <span>Subtotal</span><span id="sum-subtotal">₦0</span>
+          </p>
+          <p class="total-line" id="fee-line" hidden>
+            <span>Delivery</span><span id="sum-fee">₦0</span>
+          </p>
+          <p class="total-line total-line--big">
+            <span>Total</span><span id="sum-total">₦0</span>
+          </p>
+          <p class="muted small">
+            The database prices the order again when it is saved. That figure is
+            the one the customer pays, and it is shown on the confirmation.
+          </p>
+
+          <fieldset class="fieldset">
+            <legend>How it arrived</legend>
+            <div class="radio-row" id="channel-row">
+              <label class="radio"><input type="radio" name="channel" value="phone" checked> By phone</label>
+              <label class="radio"><input type="radio" name="channel" value="walk_in"> At the counter</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend>How it leaves</legend>
+            <div class="radio-row" id="fulfilment-row">
+              <label class="radio"><input type="radio" name="fulfilment" value="pickup" checked> Pickup</label>
+              <label class="radio"><input type="radio" name="fulfilment" value="dine_in"> Dine in</label>
+              <label class="radio"><input type="radio" name="fulfilment" value="delivery"> Delivery</label>
+            </div>
+          </fieldset>
+
+          <label class="field">
+            <span class="field-label">Customer name</span>
+            <input type="text" id="c-name" maxlength="80" required autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field-label">Phone</span>
+            <input type="tel" id="c-phone" maxlength="20" required autocomplete="off"
+                   placeholder="0803 123 4567">
+          </label>
+
+          <div id="delivery-fields" hidden>
+            <label class="field">
+              <span class="field-label">Delivery area</span>
+              <select id="c-area"></select>
+            </label>
+            <label class="field">
+              <span class="field-label">Address</span>
+              <input type="text" id="c-address" maxlength="200" autocomplete="off">
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field-label">Note for the kitchen</span>
+            <input type="text" id="c-notes" maxlength="500" autocomplete="off">
+          </label>
+
+          <p class="form-error" id="new-error" role="alert" hidden></p>
+          <p class="form-ok" id="new-ok" role="status" hidden></p>
+
+          <button type="submit" class="btn btn--go btn--wide" id="new-submit">Save order</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Menu and shop ──────────────────────────────────────────────── -->
+    <section class="view" id="v-menu" hidden aria-labelledby="h-menu">
+      <div class="view-head">
+        <h2 id="h-menu">Menu &amp; shop</h2>
+        <span class="muted">Changes take effect immediately, on the website and the kitchen screen.</span>
+      </div>
+
+      <div class="card card--wide">
+        <h3 class="sub">Taking orders</h3>
+        <div class="switch-row">
+          <label class="switch">
+            <input type="checkbox" id="s-accepting">
+            <span>The website is accepting orders</span>
+          </label>
+          <label class="field field--inline field--grow" id="pause-reason-field" hidden>
+            <span class="field-label">Reason shown to customers</span>
+            <input type="text" id="s-pause-reason" maxlength="200" placeholder="Swamped — back in 30 minutes">
+          </label>
+        </div>
+        <p class="muted small">
+          This stops the website only. Staff can still take an order by phone or
+          at the counter while it is off.
+        </p>
+        <div class="settings-grid">
+          <label class="field field--inline">
+            <span class="field-label">Minimum order (₦)</span>
+            <input type="number" id="s-min" min="0" step="50">
+          </label>
+          <label class="field field--inline">
+            <span class="field-label">Free delivery over (₦, 0 for none)</span>
+            <input type="number" id="s-free" min="0" step="100">
+          </label>
+          <label class="field field--inline">
+            <span class="field-label">Prep time (minutes)</span>
+            <input type="number" id="s-prep" min="1" step="5">
+          </label>
+          <button type="button" class="btn btn--go btn--sm" id="s-save">Save settings</button>
+        </div>
+      </div>
+
+      <div class="card card--wide">
+        <h3 class="sub">Delivery areas</h3>
+        <p class="muted small" id="fee-warning" hidden></p>
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="sr-only">Delivery areas and their fees</caption>
+            <thead><tr><th scope="col">Area</th><th scope="col" class="num">Fee (₦)</th><th scope="col">On</th></tr></thead>
+            <tbody id="areas-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="menu-tree"></div>
+    </section>
+
+    <!-- ── Reports ────────────────────────────────────────────────────── -->
+    <section class="view" id="v-reports" hidden aria-labelledby="h-reports">
+      <div class="view-head">
+        <h2 id="h-reports">Reports</h2>
+        <span class="muted">Completed orders only, by Lagos business day.</span>
+      </div>
+
+      <form class="filters" id="report-filters">
+        <label class="field field--inline">
+          <span class="field-label">From</span><input type="date" id="r-from">
+        </label>
+        <label class="field field--inline">
+          <span class="field-label">To</span><input type="date" id="r-to">
+        </label>
+        <button type="submit" class="btn btn--go btn--sm">Run</button>
+        <button type="button" class="btn btn--quiet btn--sm" data-range="7">Last 7 days</button>
+        <button type="button" class="btn btn--quiet btn--sm" data-range="30">Last 30 days</button>
+      </form>
+
+      <div class="stat-row" id="report-totals"></div>
+      <div class="split split--even">
+        <div class="card">
+          <h3 class="sub">By day</h3>
+          <div id="report-days"></div>
+        </div>
+        <div>
+          <div class="card">
+            <h3 class="sub">Best sellers</h3>
+            <div id="report-top"></div>
+          </div>
+          <div class="card">
+            <h3 class="sub">How orders arrived</h3>
+            <div id="report-splits"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Staff ──────────────────────────────────────────────────────── -->
+    <section class="view" id="v-staff" hidden aria-labelledby="h-staff">
+      <div class="view-head">
+        <h2 id="h-staff">Staff</h2>
+        <span class="muted">A row here is what makes an account staff.</span>
+      </div>
+
+      <div class="card card--wide">
+        <h3 class="sub">Add someone</h3>
+        <p class="muted small">
+          Create their login first in Supabase (Authentication → Users → Add
+          user), then add them here by the same email. Creating a login needs a
+          key that must never reach a browser, so it cannot be done from this
+          page.
+        </p>
+        <form class="filters" id="staff-add">
+          <label class="field field--inline field--grow">
+            <span class="field-label">Email</span>
+            <input type="email" id="st-email" required autocapitalize="none" spellcheck="false">
+          </label>
+          <label class="field field--inline field--grow">
+            <span class="field-label">Name on screen</span>
+            <input type="text" id="st-name" maxlength="60" required>
+          </label>
+          <label class="field field--inline">
+            <span class="field-label">Role</span>
+            <select id="st-role">
+              <option value="kitchen">Kitchen</option>
+              <option value="admin">Admin</option>
+            </select>
+          </label>
+          <button type="submit" class="btn btn--go btn--sm">Add</button>
+        </form>
+        <p class="form-error" id="staff-error" role="alert" hidden></p>
+      </div>
+
+      <div class="card card--wide">
+        <div class="table-wrap">
+          <table class="table">
+            <caption class="sr-only">Staff accounts</caption>
+            <thead><tr>
+              <th scope="col">Name</th><th scope="col">Email</th>
+              <th scope="col">Role</th><th scope="col">Active</th>
+            </tr></thead>
+            <tbody id="staff-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+<script src="../config.js"></script>
+<script src="../assets/js/nm-client.js"></script>
+<script src="assets/admin.js"></script>
+<script src="assets/admin-orders.js"></script>
+<script src="assets/admin-shop.js"></script>
+<script src="assets/admin-boot.js"></script>
+</body>
+</html>

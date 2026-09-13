@@ -1,0 +1,14 @@
+{
+  "name": "nice-meal-kitchen-tests",
+  "private": true,
+  "description": "End-to-end checks for the kitchen dashboard, against the real migrations on a local Postgres.",
+  "scripts": {
+    "test": "./run.sh"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.0",
+    "pg": "^8.13.0",
+    "playwright": "^1.48.0",
+    "ws": "^8.18.0"
+  }
+}

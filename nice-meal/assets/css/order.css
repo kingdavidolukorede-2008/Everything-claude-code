@@ -1,0 +1,321 @@
+/* ==========================================================================
+   Nice Meal — the ordering page.
+   Loaded after styles.css and using its tokens, so this is the same site
+   rather than a checkout bolted onto the side of one.
+
+   Colour rule inherited from styles.css and worth restating, because it is the
+   easiest thing to get wrong here: --spice is for display type and hairlines
+   only. Any small accent text, and any fill with text on it, takes
+   --spice-ink, which clears 4.5:1 both ways.
+
+   This page hides whole steps with the `hidden` attribute, and several of them
+   are grids and flex rows. styles.css carries the `[hidden] { display: none
+   !important }` rule that makes that work; without it a hidden step is still
+   laid out.
+   ========================================================================== */
+
+.order-page { background: var(--cream); padding: 72px 0 96px; }
+.order-page .container { max-width: 1140px; margin: 0 auto; padding: 0 32px; }
+
+/* ── Notices ─────────────────────────────────────────────────────────────*/
+
+.notice {
+  background: var(--white);
+  border: 1px solid var(--cream3);
+  border-left: 5px solid var(--spice-ink);
+  border-radius: 10px;
+  padding: 22px 26px;
+  margin-bottom: 28px;
+  color: var(--text-muted);
+}
+.notice h3 { font-family: var(--serif); font-size: 24px; color: var(--text); margin-bottom: 8px; }
+.notice p { line-height: 1.6; }
+.notice p + p { margin-top: 10px; }
+.notice--bad  { border-left-color: #a32626; }
+.notice--warn { border-left-color: #a86a10; }
+.notice-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 18px; }
+
+/* ── What was carried over from the menu pages ───────────────────────────*/
+
+/* Quieter than a .notice: this is a receipt for something that already
+   worked, not a problem to solve. It only says more when part of the
+   handover could not be completed. */
+.carried {
+  background: var(--cream2);
+  border-left: 4px solid var(--spice-ink);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin-bottom: 22px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* ── Recent orders from this device ──────────────────────────────────────*/
+
+.recent { margin-bottom: 34px; }
+.recent-title {
+  font-family: var(--serif); font-size: 22px; color: var(--text); margin-bottom: 12px;
+}
+.recent-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.recent-item {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: var(--white); border: 1px solid var(--cream3);
+  border-radius: 10px; padding: 14px 18px;
+}
+.recent-code { font-weight: 900; letter-spacing: 0.02em; font-variant-numeric: tabular-nums; }
+.recent-total { color: var(--text-soft); font-size: 15px; font-variant-numeric: tabular-nums; }
+.recent-state { margin-left: auto; }
+
+.state-pill {
+  display: inline-block; font-size: 12px; font-weight: 900;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 5px 11px; border-radius: 6px;
+  background: var(--cream2); color: var(--text-muted); border: 1px solid var(--cream3);
+}
+.state-pill--new       { background: #fdeedd; color: #8a4206; border-color: #e8c9a5; }
+.state-pill--preparing { background: #e2edf7; color: #1d4b73; border-color: #b9d3ea; }
+.state-pill--ready     { background: #e0f2e6; color: #17603a; border-color: #b4dcc3; }
+.state-pill--completed { background: var(--cream2); color: var(--text-muted); }
+.state-pill--cancelled { background: #fbe6e4; color: #8f2018; border-color: #efc3bd; }
+
+/* ── Layout ──────────────────────────────────────────────────────────────*/
+
+.order-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.step-title {
+  font-family: var(--serif); font-size: 28px; color: var(--text);
+  margin-bottom: 20px; display: flex; align-items: center; gap: 12px;
+}
+.step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; border-radius: 50%; flex: none;
+  background: var(--spice-ink); color: var(--white);
+  font-family: var(--sans); font-size: 17px; font-weight: 900;
+}
+
+/* ── A dish ──────────────────────────────────────────────────────────────*/
+
+.course { margin-bottom: 38px; }
+.course-name {
+  font-family: var(--serif); font-size: 21px; color: var(--spice-ink);
+  padding-bottom: 8px; margin-bottom: 16px; border-bottom: 1px solid var(--cream3);
+}
+
+.dish-card {
+  background: var(--white); border: 1px solid var(--cream3);
+  border-radius: 12px; padding: 20px 22px; margin-bottom: 14px;
+}
+.dish-card.is-open { border-color: var(--spice-ink); }
+.dish-top { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.dish-name { font-family: var(--serif); font-size: 20px; color: var(--text); }
+.dish-price {
+  margin-left: auto; font-weight: 900; color: var(--spice-ink);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.dish-desc { color: var(--text-muted); line-height: 1.55; margin-top: 6px; font-size: 15px; }
+
+.dish-card.is-out { background: var(--cream2); border-style: dashed; }
+.out-tag {
+  font-size: 12px; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 6px;
+  background: #fbe6e4; color: #8f2018; border: 1px solid #efc3bd;
+}
+
+.dish-options { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--cream3); }
+.opt-group { margin-bottom: 16px; }
+.opt-group-name {
+  display: block; font-size: 14px; font-weight: 700; color: var(--text);
+  margin-bottom: 8px;
+}
+.opt-group-note { font-weight: 400; color: var(--text-soft); }
+.opt-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.opt {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 9px 14px; border: 1px solid var(--cream3); border-radius: 8px;
+  background: var(--cream); cursor: pointer; font-size: 15px;
+}
+.opt:hover { border-color: var(--spice-ink); }
+.opt input { width: 17px; height: 17px; accent-color: var(--spice-ink); }
+.opt.is-out { color: var(--text-soft); cursor: not-allowed; background: var(--cream2); }
+.opt-delta { color: var(--spice-ink); font-weight: 700; }
+
+.dish-note-field { margin-top: 4px; }
+.dish-actions { display: flex; gap: 10px; align-items: center; margin-top: 16px; flex-wrap: wrap; }
+.dish-error { color: #8f2018; font-size: 14px; font-weight: 700; }
+
+/* ── The basket ──────────────────────────────────────────────────────────*/
+
+.basket-panel {
+  background: var(--white); border: 1px solid var(--cream3);
+  border-radius: 12px; padding: 24px; position: sticky; top: 96px;
+}
+.basket-title { font-family: var(--serif); font-size: 22px; margin-bottom: 14px; }
+.basket { list-style: none; }
+.basket-line { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--cream3); }
+.basket-line:first-child { border-top: 0; }
+.basket-body { flex: 1 1 auto; min-width: 0; }
+.basket-name { font-weight: 700; display: block; }
+.basket-opts { display: block; font-size: 14px; color: var(--spice-ink); }
+.basket-note { display: block; font-size: 14px; color: var(--text-soft); font-style: italic; }
+.basket-money { font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 700; }
+.basket-empty { color: var(--text-soft); font-size: 15px; padding: 10px 0; }
+
+.qty-controls { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.qty-btn {
+  width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--cream3); background: var(--cream);
+  font-size: 18px; font-weight: 900; line-height: 1; color: var(--text);
+}
+.qty-btn:hover { border-color: var(--spice-ink); }
+.qty-count { min-width: 2ch; text-align: center; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+.totals { margin: 18px 0; border-top: 1px solid var(--cream3); padding-top: 14px; }
+.total-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.total-row dt { color: var(--text-muted); }
+.total-row dd { font-variant-numeric: tabular-nums; font-weight: 700; }
+.total-row--big { font-size: 21px; padding-top: 10px; border-top: 1px solid var(--cream3); }
+.total-row--big dt { color: var(--text); font-weight: 700; }
+.total-row--big dd { font-weight: 900; color: var(--spice-ink); }
+
+.min-warning {
+  background: #fdf0dd; border: 1px solid #e8c9a5; color: #7a3c05;
+  border-radius: 8px; padding: 10px 12px; font-size: 14px; margin-bottom: 14px;
+}
+
+.btn-block { width: 100%; display: block; text-align: center; }
+.btn-small { padding: 11px 22px; font-size: 14px; }
+
+/* The site's secondary button is built for the dark hero and the dark order
+   band: cream text on a translucent cream hairline. On this page it sits on
+   white cards, where that is 1.22:1 — invisible rather than merely low. Every
+   one inside .order-page takes the ink accent instead, which clears 4.5:1 on
+   both the white cards and the cream page behind them. */
+.order-page .btn-secondary,
+.cart-bar .btn-secondary {
+  color: var(--spice-ink);
+  border-color: var(--spice-ink);
+}
+.order-page .btn-secondary:hover {
+  color: var(--white);
+  background: var(--spice-ink);
+  border-color: var(--spice-ink);
+}
+.order-page .btn-secondary:disabled,
+.order-page .btn-secondary[disabled] {
+  color: var(--text-soft); border-color: var(--cream3);
+  background: transparent; cursor: not-allowed;
+}
+
+/* The site's primary button has no disabled state of its own, and an ordering
+   flow needs one that is unmistakably not-yet-pressable. */
+.btn-primary:disabled, .btn-primary[disabled] {
+  background: var(--cream3); color: var(--text-soft);
+  border-color: var(--cream3); cursor: not-allowed; box-shadow: none;
+}
+
+/* ── Details ─────────────────────────────────────────────────────────────*/
+
+.details-card {
+  background: var(--white); border: 1px solid var(--cream3);
+  border-radius: 12px; padding: 32px; max-width: 680px; margin: 0 auto;
+}
+
+.choice-set { border: 0; margin-bottom: 22px; }
+.choice-set legend { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+.choice-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.choice {
+  display: grid; grid-template-columns: auto 1fr; gap: 4px 10px;
+  padding: 14px 16px; border: 2px solid var(--cream3); border-radius: 10px;
+  cursor: pointer; background: var(--cream);
+}
+.choice input { grid-row: 1 / 3; align-self: center; width: 18px; height: 18px; accent-color: var(--spice-ink); }
+.choice-name { font-weight: 700; }
+.choice-note { font-size: 14px; color: var(--text-soft); }
+.choice:hover { border-color: var(--spice-ink); }
+.choice:focus-within { border-color: var(--spice-ink); }
+
+.fld { display: block; margin-bottom: 18px; }
+.fld-label { display: block; font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.fld-optional { font-weight: 400; color: var(--text-soft); }
+.fld-hint { display: block; font-size: 14px; color: var(--text-soft); margin-top: 6px; }
+.fld input, .fld select {
+  width: 100%; font-family: var(--sans); font-size: 16px;
+  padding: 13px 15px; color: var(--text); background: var(--white);
+  border: 2px solid var(--cream3); border-radius: 10px;
+}
+.fld input:focus, .fld select:focus { border-color: var(--spice-ink); outline: none; }
+.fld input.is-wrong, .fld select.is-wrong { border-color: #a32626; }
+
+.pay-note {
+  background: var(--cream2); border-radius: 10px; padding: 14px 16px;
+  color: var(--text-muted); font-size: 15px; line-height: 1.55; margin-bottom: 18px;
+}
+.form-error {
+  background: #fbe6e4; border: 1px solid #efc3bd; color: #8f2018;
+  border-radius: 10px; padding: 12px 14px; font-size: 15px; margin-bottom: 18px;
+}
+.details-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.details-actions .btn-primary { flex: 1 1 200px; }
+
+/* ── Done ────────────────────────────────────────────────────────────────*/
+
+.done-card {
+  background: var(--white); border: 1px solid var(--cream3);
+  border-radius: 12px; padding: 44px 32px; max-width: 620px; margin: 0 auto;
+  text-align: center;
+}
+.done-tick {
+  width: 62px; height: 62px; margin: 0 auto 18px; border-radius: 50%;
+  background: #17603a; color: var(--white);
+  font-size: 32px; line-height: 62px; font-weight: 900;
+}
+.done-title { font-family: var(--serif); font-size: 30px; margin-bottom: 12px; }
+.done-code {
+  font-size: 34px; font-weight: 900; color: var(--spice-ink);
+  letter-spacing: 0.02em; font-variant-numeric: tabular-nums; margin-bottom: 10px;
+}
+.done-line { color: var(--text-muted); line-height: 1.6; margin-bottom: 8px; }
+.track {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  flex-wrap: wrap; margin: 24px 0; padding: 16px;
+  background: var(--cream2); border-radius: 10px;
+}
+.track-status { font-weight: 700; }
+.done-card .notice-actions { justify-content: center; }
+
+/* ── The bar on a phone ──────────────────────────────────────────────────*/
+
+.cart-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+  display: none; align-items: center; gap: 14px;
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--dark); border-top: 1px solid var(--spice-ink);
+}
+.cart-bar-sum { color: var(--cream); font-weight: 700; }
+
+/* ── Narrow ──────────────────────────────────────────────────────────────*/
+
+@media (max-width: 900px) {
+  .order-page { padding: 48px 0 72px; }
+  .order-page .container { padding: 0 24px; }
+  .order-grid { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .basket-panel { position: static; }
+  .details-card { padding: 24px; }
+  .step-title { font-size: 24px; }
+
+  /* The bar only earns its space once there is something in the order; the JS
+     unhides it. Padding keeps the last dish clear of it. */
+  .cart-bar:not([hidden]) { display: flex; }
+  .order-page { padding-bottom: 110px; }
+}
+
+@media print {
+  .cart-bar, .basket-panel, #step-choose, #step-details { display: none !important; }
+  .done-card { border: 0; }
+}

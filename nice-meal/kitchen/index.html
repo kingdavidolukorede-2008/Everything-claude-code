@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kitchen — Nice Meal</title>
+
+<!-- Staff screen. Keep it out of search results and out of frames. -->
+<meta name="robots" content="noindex, nofollow">
+
+<!--
+  connect-src is the only opening this page needs: the Supabase REST API over
+  https and the realtime socket over wss. It is scoped to supabase.co rather
+  than left open, so a script that somehow got onto this page still has
+  nowhere to send an order to. Self-hosting Supabase? Replace both patterns
+  with your own origin. frame-ancestors lives in ../_headers, because a meta
+  CSP cannot set it.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+  img-src 'self';
+  style-src 'self';
+  script-src 'self';
+  object-src 'none';
+  frame-src 'none';
+  base-uri 'self';
+  form-action 'self'">
+
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/kitchen.css">
+<!--
+  No web fonts. A tablet on a bad connection must never wait on a font server
+  to show that an order has come in, and system faces are what that device
+  renders fastest and most legibly anyway.
+-->
+</head>
+<body class="booting">
+
+<!-- ── Sign in ──────────────────────────────────────────────────────────── -->
+<section class="signin" id="view-signin" hidden>
+  <form class="signin-card" id="signin-form" autocomplete="on">
+    <h1 class="signin-title">Nice Meal <span>Kitchen</span></h1>
+    <p class="signin-sub">Sign in with your staff account.</p>
+
+    <label class="field">
+      <span class="field-label">Email</span>
+      <input type="email" id="email" name="email" autocomplete="username"
+             required autocapitalize="none" spellcheck="false" inputmode="email">
+    </label>
+
+    <label class="field">
+      <span class="field-label">Password</span>
+      <input type="password" id="password" name="password"
+             autocomplete="current-password" required>
+    </label>
+
+    <p class="form-error" id="signin-error" role="alert" hidden></p>
+
+    <button type="submit" class="btn btn--go btn--wide" id="signin-submit">Sign in</button>
+  </form>
+</section>
+
+<!-- ── The board ────────────────────────────────────────────────────────── -->
+<div class="app" id="view-board" hidden>
+
+  <header class="topbar">
+    <h1 class="brand">Nice Meal <span>Kitchen</span></h1>
+
+    <div class="status-group">
+      <!-- Truthful, not decorative: this reflects the socket's actual state,
+           and the poll's last success underneath it. -->
+      <span class="pill" id="conn" data-state="connecting">
+        <span class="pill-dot" aria-hidden="true"></span>
+        <span class="pill-text">Connecting…</span>
+      </span>
+      <span class="pill pill--quiet" id="freshness">—</span>
+    </div>
+
+    <div class="topbar-actions">
+      <!-- Whose account is signed in. On a shared tablet this is what makes
+           orders acknowledged in someone's name mean anything. -->
+      <span class="whoami" id="whoami"></span>
+      <button type="button" class="btn btn--ghost" id="sound-test">Test sound</button>
+      <button type="button" class="btn btn--ghost" id="signout">Sign out</button>
+    </div>
+  </header>
+
+  <!--
+    The sound unlock. A browser will not play a sound until someone has
+    interacted with the page, and that permission dies on every reload — so a
+    tablet that reboots overnight comes back silent. This band is deliberately
+    impossible to miss, and it never claims sound is on unless the audio
+    context is genuinely running.
+  -->
+  <div class="soundbar" id="soundbar" hidden>
+    <button type="button" class="soundbar-btn" id="sound-on">
+      <span aria-hidden="true">🔔</span> Tap to turn the alert sound on
+    </button>
+    <span class="soundbar-note">New orders still flash on screen without it.</span>
+  </div>
+
+  <p class="banner banner--warn" id="paused-banner" hidden>
+    Ordering is paused on the website. <span id="paused-reason"></span>
+  </p>
+  <p class="banner banner--bad" id="board-error" role="alert" hidden></p>
+
+  <!-- Announced to a screen reader at the same moment the beep sounds. -->
+  <p class="sr-only" id="live-new" role="alert" aria-live="assertive"></p>
+  <p class="sr-only" id="live-quiet" role="status" aria-live="polite"></p>
+
+  <main class="board" id="board">
+    <section class="col col--new" aria-labelledby="h-new">
+      <h2 class="col-head" id="h-new">New <span class="count" id="count-new">0</span></h2>
+      <p class="col-empty" id="empty-new">Nothing waiting.</p>
+      <div class="col-body" id="col-new"></div>
+    </section>
+
+    <section class="col col--preparing" aria-labelledby="h-preparing">
+      <h2 class="col-head" id="h-preparing">Cooking <span class="count" id="count-preparing">0</span></h2>
+      <p class="col-empty" id="empty-preparing">Nothing on the stove.</p>
+      <div class="col-body" id="col-preparing"></div>
+    </section>
+
+    <section class="col col--ready" aria-labelledby="h-ready">
+      <h2 class="col-head" id="h-ready">Ready <span class="count" id="count-ready">0</span></h2>
+      <p class="col-empty" id="empty-ready">Nothing waiting to go out.</p>
+      <div class="col-body" id="col-ready"></div>
+    </section>
+  </main>
+</div>
+
+<!-- ── Cancelling ───────────────────────────────────────────────────────── -->
+<!-- The database refuses a cancellation with no reason, so the screen asks for
+     one rather than letting the save fail. -->
+<div class="overlay" id="cancel-overlay" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cancel-title">
+    <h2 class="sheet-title" id="cancel-title">Cancel order</h2>
+    <p class="sheet-sub" id="cancel-which"></p>
+    <label class="field">
+      <span class="field-label">Why? The customer will be told this.</span>
+      <input type="text" id="cancel-reason" maxlength="200" autocomplete="off">
+    </label>
+    <p class="form-error" id="cancel-error" role="alert" hidden></p>
+    <div class="sheet-actions">
+      <button type="button" class="btn btn--quiet" id="cancel-back">Keep order</button>
+      <button type="button" class="btn btn--danger" id="cancel-confirm">Cancel it</button>
+    </div>
+  </div>
+</div>
+
+<p class="toast" id="toast" role="status" aria-live="polite" hidden></p>
+
+<script src="../config.js"></script>
+<script src="../assets/js/nm-client.js"></script>
+<script src="assets/kitchen.js"></script>
+</body>
+</html>

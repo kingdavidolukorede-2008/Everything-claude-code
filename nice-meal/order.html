@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Online — Nice Meal, Ipaja</title>
+<meta name="description" content="Order Nice Meal's home-cooked Nigerian food for pickup, dine-in or delivery around Baruwa and Ipaja. Pay when it arrives.">
+
+<!--
+  This is the one page on the site that talks to a server, so it is the one
+  page whose CSP opens connect-src — and only to Supabase, over https. No wss:
+  a customer's page never subscribes to anything. Everything else here matches
+  the rest of the site. frame-ancestors is in ./_headers, which a meta CSP
+  cannot set.
+-->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  connect-src 'self' https://*.supabase.co;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com;
+  img-src 'self';
+  script-src 'self';
+  object-src 'none';
+  frame-src 'none';
+  base-uri 'self';
+  form-action 'self'">
+
+<link rel="canonical" href="./order.html">
+<meta property="og:title" content="Order Online — Nice Meal">
+<meta property="og:description" content="Home-cooked Nigerian food, delivered around Ipaja or ready to collect. Pay when it arrives.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="./assets/img/dining-hall-1600.jpg">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="icon" href="./favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Lato:wght@300;400;700;900&display=swap">
+<link rel="stylesheet" href="./assets/css/styles.css">
+<link rel="stylesheet" href="./assets/css/order.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="./index.html" class="nav-logo">Nice<span>Meal</span></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="./index.html#menu">Menu</a></li>
+    <li><a href="./nice-meal-menu.html">Full Menu</a></li>
+    <li><a href="./order.html" aria-current="page">Order</a></li>
+    <li><a href="./index.html#reviews">Reviews</a></li>
+    <li><a href="./index.html#kids">Kids Play</a></li>
+    <li><a href="./index.html#about">About</a></li>
+    <li><a href="./index.html#location">Find Us</a></li>
+  </ul>
+  <div class="nav-actions">
+    <a href="tel:+2349157428604" class="nav-order" aria-label="Call Nice Meal on 0915 742 8604">Call Us</a>
+    <button type="button" class="nav-toggle" id="nav-toggle" aria-expanded="false" aria-controls="nav-links">
+      <span class="visually-hidden">Menu</span>
+      <svg class="icon-open" viewBox="0 0 24 24" aria-hidden="true"><line x1="3" y1="7" x2="21" y2="7"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="17" x2="21" y2="17"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+<div class="nav-scrim" id="nav-scrim" hidden></div>
+
+<main id="main">
+
+<header class="page-head">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-ornament"></div>
+  <div class="page-head-inner">
+    <p class="section-eyebrow">Order online</p>
+    <h1 class="section-title">Real food, <em>on its way.</em></h1>
+    <p class="section-lead">
+      Pick what you want, tell us where it's going, and we'll call to confirm.
+      There's nothing to pay online — you pay when you collect it or when it
+      reaches you.
+    </p>
+  </div>
+</header>
+
+<section class="order-page" aria-labelledby="order-app-title">
+  <div class="container">
+    <h2 id="order-app-title" class="visually-hidden">Place an order</h2>
+
+    <!-- Announcements: adding a dish, a step change, an error. -->
+    <p class="visually-hidden" id="live" role="status" aria-live="polite"></p>
+
+    <p class="notice" id="loading">Loading today's menu…</p>
+
+    <!--
+      The fallback that matters. If the database cannot be reached, this page
+      must not become a dead end: the restaurant still has a telephone.
+    -->
+    <div class="notice notice--bad" id="unavailable" hidden>
+      <h3>Online ordering isn't loading</h3>
+      <p>
+        Something's wrong at our end — not yours. Please call us and we'll take
+        your order over the phone.
+      </p>
+      <p class="notice-actions">
+        <a class="btn-primary" id="fallback-call" href="tel:+2349157428604">Call 0915 742 8604</a>
+        <a class="btn-secondary" href="./nice-meal-menu.html">See the menu</a>
+      </p>
+    </div>
+
+    <div class="notice notice--warn" id="paused" hidden>
+      <h3>We've paused online orders</h3>
+      <p id="paused-reason"></p>
+      <p class="notice-actions">
+        <a class="btn-primary" id="paused-call" href="tel:+2349157428604">Call 0915 742 8604</a>
+      </p>
+    </div>
+
+    <!-- Orders placed from this device before, so "where is my food" has an
+         answer without an account or an email. -->
+    <div class="recent" id="recent" hidden>
+      <h3 class="recent-title">Your recent orders</h3>
+      <ul class="recent-list" id="recent-list"></ul>
+    </div>
+
+    <!-- ── Step 1: choose ─────────────────────────────────────────────── -->
+    <div class="order-grid" id="step-choose" hidden>
+      <div>
+        <h3 class="step-title"><span class="step-num">1</span> Choose your food</h3>
+        <div class="carried" id="carried" hidden>
+          <p id="carried-said"></p>
+        </div>
+        <div id="dishes"></div>
+      </div>
+
+      <aside class="basket-panel" id="basket-panel" aria-labelledby="basket-title">
+        <h3 id="basket-title" class="basket-title">Your order</h3>
+        <ul class="basket" id="basket"></ul>
+        <p class="basket-empty" id="basket-empty">Nothing added yet.</p>
+        <dl class="totals">
+          <div class="total-row"><dt>Subtotal</dt><dd id="sum-subtotal">₦0</dd></div>
+          <div class="total-row total-row--big"><dt>Total so far</dt><dd id="sum-total">₦0</dd></div>
+        </dl>
+        <p class="min-warning" id="min-warning" hidden></p>
+        <button type="button" class="btn-primary btn-block" id="to-details" disabled>
+          Continue
+        </button>
+      </aside>
+    </div>
+
+    <!-- ── Step 2: details ────────────────────────────────────────────── -->
+    <form class="details-card" id="step-details" hidden novalidate>
+      <h3 class="step-title"><span class="step-num">2</span> Where it's going</h3>
+
+      <fieldset class="choice-set">
+        <legend>How would you like it?</legend>
+        <div class="choice-row">
+          <label class="choice"><input type="radio" name="fulfilment" value="pickup" checked>
+            <span class="choice-name">Pick it up</span>
+            <span class="choice-note">Aina Obembe St, Idimu</span></label>
+          <label class="choice"><input type="radio" name="fulfilment" value="dine_in">
+            <span class="choice-name">Eat in</span>
+            <span class="choice-note">We'll have a table ready</span></label>
+          <label class="choice"><input type="radio" name="fulfilment" value="delivery">
+            <span class="choice-name">Deliver it</span>
+            <span class="choice-note">Around Ipaja and Baruwa</span></label>
+        </div>
+      </fieldset>
+
+      <div id="delivery-fields" hidden>
+        <label class="fld">
+          <span class="fld-label">Which area?</span>
+          <select id="c-area"></select>
+        </label>
+        <label class="fld">
+          <span class="fld-label">Street address</span>
+          <input type="text" id="c-address" maxlength="200" autocomplete="street-address"
+                 placeholder="House number, street, landmark">
+        </label>
+      </div>
+
+      <label class="fld">
+        <span class="fld-label">Your name</span>
+        <input type="text" id="c-name" maxlength="80" autocomplete="name" required>
+      </label>
+      <label class="fld">
+        <span class="fld-label">Phone number</span>
+        <input type="tel" id="c-phone" maxlength="20" autocomplete="tel" required
+               inputmode="tel" placeholder="0803 123 4567">
+        <span class="fld-hint">We'll call this number to confirm your order.</span>
+      </label>
+      <label class="fld">
+        <span class="fld-label">Anything we should know? <span class="fld-optional">(optional)</span></span>
+        <input type="text" id="c-notes" maxlength="500" autocomplete="off"
+               placeholder="No pepper, call when you reach the gate…">
+      </label>
+
+      <dl class="totals">
+        <div class="total-row"><dt>Subtotal</dt><dd id="d-subtotal">₦0</dd></div>
+        <div class="total-row" id="d-fee-row" hidden><dt>Delivery</dt><dd id="d-fee">₦0</dd></div>
+        <div class="total-row total-row--big"><dt>To pay on arrival</dt><dd id="d-total">₦0</dd></div>
+      </dl>
+
+      <p class="pay-note">
+        <strong>No payment online.</strong> Pay with cash or transfer when you
+        collect your food or when the rider hands it over.
+      </p>
+
+      <p class="form-error" id="details-error" role="alert" hidden></p>
+
+      <div class="details-actions">
+        <button type="button" class="btn-secondary" id="back-to-choose">Back</button>
+        <button type="submit" class="btn-primary" id="place-order">Place order</button>
+      </div>
+    </form>
+
+    <!-- ── Step 3: done ───────────────────────────────────────────────── -->
+    <div class="done-card" id="step-done" hidden>
+      <p class="done-tick" aria-hidden="true">✓</p>
+      <h3 class="done-title">That's with the kitchen</h3>
+      <p class="done-code" id="done-code"></p>
+      <p class="done-line" id="done-summary"></p>
+      <p class="done-line" id="done-call"></p>
+
+      <div class="track">
+        <p class="track-status" id="track-status">Status: with the kitchen</p>
+        <button type="button" class="btn-secondary btn-small" id="track-refresh">Check again</button>
+      </div>
+
+      <p class="notice-actions">
+        <a class="btn-primary" href="./order.html">Order something else</a>
+        <a class="btn-secondary" href="./index.html">Back to the site</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- The bottom bar on a phone: what's in the order and the way forward,
+     without scrolling back up past the whole menu. -->
+<div class="cart-bar" id="cart-bar" hidden>
+  <span class="cart-bar-sum" id="cart-bar-sum"></span>
+  <button type="button" class="btn-primary btn-small" id="cart-bar-go">Review order</button>
+</div>
+
+</main>
+
+<!-- FOOTER — the same markup and classes as the other two pages. -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="./index.html" class="nav-logo" style="font-size:26px;">Nice<span>Meal</span></a>
+      <p>Real food, real flavour — served fresh daily in the heart of Baruwa, Ipaja, Lagos.</p>
+      <p class="footer-tagline">"Every meal is made with care — come hungry, leave happy."</p>
+    </div>
+    <div>
+      <h2 class="footer-col-title">Quick links</h2>
+      <ul class="footer-links">
+        <li><a href="./index.html#menu">Menu</a></li>
+        <li><a href="./nice-meal-menu.html">Full Menu ↗</a></li>
+        <li><a href="./order.html" aria-current="page">Order online</a></li>
+        <li><a href="./index.html#reviews">Reviews</a></li>
+        <li><a href="./index.html#kids">Kids Play</a></li>
+        <li><a href="./index.html#about">About us</a></li>
+        <li><a href="./index.html#location">Location &amp; Hours</a></li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="footer-col-title">Contact us</h2>
+      <div class="footer-contact">
+        <a href="tel:+2349157428604" aria-label="Call Nice Meal on 0915 742 8604">0915 742 8604</a>
+        <a href="./nice-meal-menu.html">Full menu</a>
+        <a href="https://maps.google.com/?q=Aina+Obembe+St,+Idimu,+Lagos" target="_blank" rel="noopener noreferrer">Google Maps</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© 2026 Nice Meal Restaurant · Aina Obembe St, Idimu, Lagos</p>
+    <div class="footer-socials">
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://maps.google.com/?q=Aina+Obembe+St,+Idimu,+Lagos" target="_blank" rel="noopener noreferrer">Google Maps</a>
+    </div>
+  </div>
+</footer>
+
+<script src="./config.js"></script>
+<script src="./assets/js/nm-client.js"></script>
+<script defer src="./assets/js/app.js"></script>
+<script defer src="./assets/js/order.js"></script>
+</body>
+</html>

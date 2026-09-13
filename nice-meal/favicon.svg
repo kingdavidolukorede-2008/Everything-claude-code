@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Nice Meal">
+  <rect width="64" height="64" rx="10" fill="#0f0700"/>
+  <text x="32" y="43" text-anchor="middle"
+        font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700"
+        fill="#e07a2a">NM</text>
+</svg>
