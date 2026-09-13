@@ -158,7 +158,9 @@ who can read what.
 
 ## Still to do
 
-- **Set the delivery fees.** All seven areas are seeded at ₦0 because the
+- **Set the delivery fees.** None of the seven areas has one, because the
   website never quoted one. The [admin dashboard](../admin) has the table and
-  warns you how many are still unset. Do this before accepting a delivery
-  order.
+  warns you how many are still unset. Until then a customer is told the fee is
+  confirmed when you call, and the order says so on the admin screen — so
+  nothing is promised that cannot be kept, but somebody still has to say a
+  number on the phone every time. Do this before accepting a delivery order.

@@ -242,9 +242,15 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   await page.waitForSelector('#v-menu:not([hidden])');
   await page.waitForSelector('#areas-body tr', { timeout: 10000 }).catch(() => {});
 
-  ok('the zero-fee warning is showing, because the seed ships them at zero',
+  ok('the unset-fee warning is showing, because the seed sets none',
     await page.isVisible('#fee-warning'),
     await page.textContent('#fee-warning'));
+  ok('and it says what the customer is being told meanwhile',
+    /confirm it when we call/i.test(await page.textContent('#fee-warning')),
+    await page.textContent('#fee-warning'));
+  ok('the boxes are empty rather than showing a fee of zero nobody chose',
+    (await page.locator('#areas-body input[data-field="fee"]').first().inputValue()) === '',
+    await page.locator('#areas-body input[data-field="fee"]').first().inputValue());
 
   // The table is ordered by sort_order, not by name, so read back the area the
   // first row is actually for rather than assuming.
@@ -258,9 +264,86 @@ const q = async (sql, args) => (await pool.query(sql, args)).rows;
   ok('a delivery fee can be set', feeNow && feeNow.fee_kobo === 70000,
     feeArea + ' = ' + (feeNow ? feeNow.fee_kobo : 'no such area'));
   await page.waitForTimeout(300);
-  ok('and the zero-fee warning counts down as they are filled in',
+  ok('and the unset-fee warning counts down as they are filled in',
     !/\b7 areas\b/.test(await page.textContent('#fee-warning')),
     await page.textContent('#fee-warning'));
+
+  // Number('') is 0, so a cleared box used to announce free delivery to every
+  // customer in that area. It now changes nothing at all.
+  await firstFee.fill('');
+  await firstFee.dispatchEvent('change');
+  await page.waitForTimeout(900);
+  const feeAfterClear = (await q('select fee_kobo from delivery_areas where name=$1', [feeArea]))[0];
+  ok('clearing the box does not quietly set delivery there to free',
+    feeAfterClear && feeAfterClear.fee_kobo === 70000,
+    feeArea + ' = ' + (feeAfterClear ? feeAfterClear.fee_kobo : 'no such area'));
+  ok('and the box goes back to the fee that is actually set',
+    (await firstFee.inputValue()) === '700', await firstFee.inputValue());
+
+  // Zero typed on purpose is a decision rather than a gap, so it is kept and
+  // it settles that area: the warning is about fees nobody has thought about,
+  // and one that nags after a decision is one nobody reads.
+  ok('six areas are still unset at this point',
+    /\b6 areas\b/.test(await page.textContent('#fee-warning')),
+    await page.textContent('#fee-warning'));
+  const freeRow = page.locator('#areas-body tr').nth(1);
+  const freeArea = (await freeRow.locator('td').first().textContent()).trim();
+  const freeFee = freeRow.locator('input[data-field="fee"]');
+  await freeFee.fill('0');
+  await freeFee.dispatchEvent('change');
+  await page.waitForTimeout(900);
+  const feeFree = (await q('select fee_kobo from delivery_areas where name=$1', [freeArea]))[0];
+  ok('a fee of zero can be set deliberately', feeFree && feeFree.fee_kobo === 0,
+    freeArea + ' = ' + (feeFree ? String(feeFree.fee_kobo) : 'no such area'));
+  ok('and it counts as decided, not as missing',
+    /\b5 areas\b/.test(await page.textContent('#fee-warning')),
+    await page.textContent('#fee-warning'));
+
+  console.log('\n== an order whose delivery fee was never set ==');
+  // Whoever handles this order has to agree a fee on the call. They can only
+  // do that if the screen says so: a total that looks finished is how the food
+  // goes out of the door with the delivery forgotten.
+  const unsetArea = (await q("select id from delivery_areas where name = 'Egbeda'"))[0];
+  await q('update delivery_areas set fee_kobo = null where id = $1', [unsetArea.id]);
+  const pendingOrder = await place({
+    fulfilment: 'delivery', area: unsetArea.id, address: '9 Aina Obembe Street'
+  });
+  await page.click('.tab[data-view="orders"]');
+  await page.waitForSelector('#v-orders:not([hidden])');
+  await page.click('#f-clear');
+  await page.waitForTimeout(900);
+  await page.click(`#orders-body tr:has-text("${pendingOrder.code}")`);
+  await page.waitForTimeout(400);
+  const pendingDetail = await page.textContent('#order-detail');
+  ok('the order says its delivery fee was never quoted',
+    /not quoted/i.test(pendingDetail), pendingDetail.slice(0, 240));
+  ok('and the total is labelled as the food alone',
+    /total before delivery/i.test(pendingDetail), pendingDetail.slice(0, 240));
+
+  // This site has had to undo cream-on-cream three times. The one line on this
+  // panel that must not be missed is measured rather than eyeballed.
+  const warnRatio = await page.evaluate(() => {
+    function chan(v) { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }
+    function lum(c) { return 0.2126 * chan(c[0]) + 0.7152 * chan(c[1]) + 0.0722 * chan(c[2]); }
+    function rgb(s) { return (s.match(/\d+(\.\d+)?/g) || []).slice(0, 3).map(Number); }
+    var el = document.querySelector('#order-detail .warn-text');
+    if (!el) { return null; }
+    var node = el, bg = null;
+    while (node) {
+      var c = getComputedStyle(node).backgroundColor;
+      if (c && c !== 'transparent' && !/rgba\(0, 0, 0, 0\)/.test(c)) { bg = rgb(c); break; }
+      node = node.parentElement;
+    }
+    if (!bg) { return null; }
+    var a = lum(rgb(getComputedStyle(el).color)), b = lum(bg);
+    return Math.round(((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)) * 100) / 100;
+  });
+  ok('and it is legible against the panel it sits on',
+    warnRatio !== null && warnRatio >= 4.5, warnRatio + ':1');
+
+  await page.click('.tab[data-view="menu"]');
+  await page.waitForSelector('#v-menu:not([hidden])');
+  await page.waitForTimeout(600);
 
   const priceInput = page.locator('.dish-row', { hasText: 'Egusi Soup & Swallow' })
     .locator('input[data-field="price"]');

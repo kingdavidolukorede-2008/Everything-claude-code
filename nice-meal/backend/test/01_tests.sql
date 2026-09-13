@@ -279,6 +279,49 @@ select _check('the report totals only completed orders',
   || ' vs completed ' || coalesce((select sum(total_kobo) from orders where status='completed')::text,'null'));
 select _check('admin sees best sellers',
   (select count(*) from top_dishes(current_date - 7, current_date)) >= 1);
+
+-- ── The three states of a delivery fee ──────────────────────────────────────
+-- The seed leaves every area without a fee, because the website never quoted
+-- one. Storing that as ₦0 made it indistinguishable from a decision to deliver
+-- for free, and the checkout read it as exactly that. Only the database can
+-- settle which of the three an order was taken under, so it is checked here.
+do $$
+declare r jsonb; i uuid; a uuid; f int; t int; s int;
+begin
+  select id into i from menu_items where name = 'White Rice & Stew';
+  select id into a from delivery_areas where name = 'Ayobo';
+  update delivery_areas set fee_kobo = null where id = a;
+
+  r := place_order('No quote', '08030000011', 'delivery',
+        jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+        a, '1 Test Street');
+  perform _check('an order to an area with no fee set carries no fee at all',
+    r->'delivery_fee_kobo' = 'null'::jsonb,
+    'got ' || coalesce(r->>'delivery_fee_kobo', '<absent>'));
+  select subtotal_kobo, total_kobo into s, t from orders where code = r->>'code';
+  perform _check('and its total is the food on its own, not the food plus nothing',
+    t = s, 'total ' || t || ', subtotal ' || s);
+
+  update delivery_areas set fee_kobo = 0 where id = a;
+  r := place_order('Free area', '08030000012', 'delivery',
+        jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+        a, '1 Test Street');
+  perform _check('a fee of zero is a decision, and it is kept as one',
+    (r->>'delivery_fee_kobo')::int = 0, coalesce(r->>'delivery_fee_kobo', '<absent>'));
+
+  update delivery_areas set fee_kobo = 40000 where id = a;
+  r := place_order('Charged', '08030000013', 'delivery',
+        jsonb_build_array(jsonb_build_object('item_id', i, 'quantity', 1)),
+        a, '1 Test Street');
+  select delivery_fee_kobo, subtotal_kobo, total_kobo into f, s, t
+    from orders where code = r->>'code';
+  perform _check('a fee that is set is charged and added to the total',
+    f = 40000 and t = s + 40000, 'fee ' || f || ', total ' || t || ', subtotal ' || s);
+
+  -- Back the way the seed leaves it, for whatever runs after this.
+  update delivery_areas set fee_kobo = null where id = a;
+end $$;
+
 do $$
 declare n int;
 begin
@@ -289,8 +332,12 @@ begin
   get diagnostics n = row_count;
   perform _check('admin can pause ordering', n = 1, 'rows updated: ' || n);
 end $$;
+-- coalesce, not a bare sum: an order whose delivery fee was never quoted has
+-- no fee at all, and `total <> subtotal + null` is null, which this check
+-- would have read as "fine" for exactly the orders worth checking.
 select _check('every order total still adds up',
-  not exists (select 1 from orders where total_kobo <> subtotal_kobo + delivery_fee_kobo));
+  not exists (select 1 from orders
+              where total_kobo <> subtotal_kobo + coalesce(delivery_fee_kobo, 0)));
 select _check('line totals match quantity times unit price',
   not exists (select 1 from order_items where line_total_kobo <> unit_price_kobo * quantity));
 select _check('order subtotal equals the sum of its lines',
@@ -408,7 +455,7 @@ select _check('the menu tree carries the delivery areas and the settings',
   and (admin_menu()->'settings'->>'accepting_orders') is not null);
 
 -- Setting the fees is the one thing that has to happen before a delivery order
--- can be taken: they are all seeded at zero.
+-- can be taken: the seed leaves every area without one.
 do $$ declare a uuid; f int; begin
   select id into a from delivery_areas order by name limit 1;
   perform admin_set_area(a, 50000);

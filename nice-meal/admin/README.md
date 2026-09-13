@@ -65,11 +65,20 @@ too, so "no gizzard today" does not take the whole jollof off the menu.
 Repricing never rewrites history. Every order line carries its own copy of the
 name and the price it sold at, so last month's takings stay what they were.
 
-This tab also holds the delivery areas and their fees — **all seeded at ₦0**,
+This tab also holds the delivery areas and their fees — **none of them set**,
 because the website never quoted one. A warning at the top of that table counts
-how many are still unset. And the pause switch, which stops the *website* taking
-orders; staff can still take an order by phone or at the counter while it is
-off, which is the whole point of pausing.
+how many are still unset, and the boxes are empty rather than showing a ₦0
+nobody chose. Until you fill one in, customers ordering to that area are told
+the fee is confirmed when you call, and the order arrives here marked *not
+quoted — agree it on the call* with its total labelled **before delivery**.
+Type `0` if delivery there really is free: that is a decision, it is kept, and
+that area stops being counted. Clearing a box back to empty deliberately does
+nothing at all — `Number('')` is 0, and free delivery is the one setting that
+must never happen by accident.
+
+And the pause switch, which stops the *website* taking orders; staff can still
+take an order by phone or at the counter while it is off, which is the whole
+point of pausing.
 
 **Reports.** Completed orders only, by Lagos business day. Headline totals, a
 day-by-day bar list, best sellers, and how orders arrived and left.
@@ -119,6 +128,6 @@ cd ../test && npm install
 cd .. && PGHOST=/tmp PGPORT=5433 ./test/run.sh
 ```
 
-79 checks drive this dashboard in a real browser against a local Postgres
+89 checks drive this dashboard in a real browser against a local Postgres
 running the real migrations, plus an accessibility pass over every tab at three
 widths. See [`../test/README.md`](../test/README.md).

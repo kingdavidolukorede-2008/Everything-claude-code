@@ -113,13 +113,34 @@ page opens `connect-src`, and only to Supabase.
 
 ## Delivery fees
 
-Read from `delivery_areas`. An area with a fee of ₦0 is shown as **free
-delivery**, because that is what the database will actually charge. All seven
-are seeded at ₦0, so until they are set in the admin dashboard, every delivery
-is genuinely free. The admin screen warns how many are still unset.
+Read from `delivery_areas`, which holds **three** states, not two:
+
+| `fee_kobo` | The customer is told | The order stores |
+|---|---|---|
+| a number | that fee, added to the total | the fee |
+| `0` | **free delivery** | `0` |
+| *not set* | **the fee is confirmed when we call** | no fee, and a total that is the food alone |
+
+The third one exists because all seven areas start with no fee: the website
+never quoted one, and inventing one on a restaurant's behalf was not on. Held
+as ₦0, that placeholder was indistinguishable from a decision to deliver for
+free — and the checkout read it as exactly that, offering every customer "free
+delivery" and printing a total that looked settled. The rider would have been
+the one to break that promise.
+
+So an unset fee is now absent rather than zero, all the way through: the area
+list says it is coming, the delivery line says "We will confirm when we call",
+the total reads "₦2,000 + delivery", the confirmation repeats it, and the order
+reaches the admin dashboard marked *not quoted — agree it on the call*. Nothing
+downstream can mistake it for nothing owed, which is the entire point.
+
+**Setting a fee of ₦0 is still available and still means free** — it is a
+decision, it is stored as one, and the admin screen stops counting that area as
+unset. Clearing the box back to empty changes nothing, because `Number('')` is
+0 and a fee of zero is the one thing that must never be set by accident.
 
 If a free-delivery threshold is configured, the fee is waived above it and the
-line reads "Free".
+line reads "Free" — a real zero, because the shop decided it.
 
 ## Setting it up
 
@@ -139,6 +160,6 @@ cd test && npm install
 cd .. && PGHOST=/tmp PGPORT=5433 ./test/run.sh
 ```
 
-69 checks drive this page in a real browser against a local Postgres running
+79 checks drive this page in a real browser against a local Postgres running
 the real migrations, plus an accessibility pass over every state of it. See
 [`test/README.md`](test/README.md).

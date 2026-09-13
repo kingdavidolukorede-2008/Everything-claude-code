@@ -6,9 +6,11 @@
 -- 200000. The option groups come from the dish descriptions themselves —
 -- "chicken, beef, fish, or gizzard", "eba, fufu, or pounded yam".
 --
--- Delivery fees are NOT from the website, which never quoted one. They are
--- placeholders of ₦0 so nothing is invented on a real restaurant's behalf; set
--- them in the admin screen before taking a delivery order.
+-- Delivery fees are NOT from the website, which never quoted one. Nothing is
+-- invented on a real restaurant's behalf, so they go in as ₦0 here and
+-- 0008_delivery_fee.sql turns them into "not set yet" — a state the customer
+-- is told about honestly instead of being promised free delivery. Set them in
+-- the admin screen before taking a delivery order.
 -- ============================================================================
 
 insert into public.settings (id, accepting_orders, min_order_kobo, prep_time_minutes)

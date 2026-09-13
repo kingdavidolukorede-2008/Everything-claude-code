@@ -62,14 +62,19 @@
 
   /* The same rule place_order() applies, so the figure on screen and the figure
      saved agree. The saved one is still the one that counts: it is read back
-     from the database and shown on the confirmation. */
+     from the database and shown on the confirmation.
+
+     Null, not zero, when no fee has been set for that area. Zero means
+     delivery there is free and the customer is told so; null means nobody can
+     quote it until we call, and printing "Free" over that is a promise the
+     rider is the one who has to break. */
   function deliveryFee() {
     if (fulfilment() !== 'delivery') { return 0; }
     var area = chosenArea();
     if (!area) { return 0; }
     var threshold = shop.settings.free_delivery_threshold_kobo;
     if (threshold && subtotal() >= threshold) { return 0; }
-    return area.fee_kobo || 0;
+    return typeof area.fee_kobo === 'number' ? area.fee_kobo : null;
   }
 
   function fulfilment() {
@@ -316,15 +321,21 @@
   function drawTotals() {
     var sub = subtotal();
     var fee = deliveryFee();
+    // An unquoted fee is left out of the arithmetic and said out loud instead.
+    // Adding nothing and printing a total would be the same lie in a quieter
+    // font: the number would look settled and would not be.
+    var pending = fee === null;
+    var due = sub + (pending ? 0 : fee);
+    var payable = naira(due) + (pending ? ' + delivery' : '');
     var min = (shop && shop.settings.min_order_kobo) || 0;
     var under = min > 0 && sub > 0 && sub < min;
 
     $('sum-subtotal').textContent = naira(sub);
-    $('sum-total').textContent = naira(sub + fee);
+    $('sum-total').textContent = payable;
     $('d-subtotal').textContent = naira(sub);
-    $('d-fee').textContent = fee ? naira(fee) : 'Free';
+    $('d-fee').textContent = pending ? 'We will confirm when we call' : (fee ? naira(fee) : 'Free');
     $('d-fee-row').hidden = fulfilment() !== 'delivery';
-    $('d-total').textContent = naira(sub + fee);
+    $('d-total').textContent = payable;
 
     var warn = $('min-warning');
     if (under) {
@@ -341,7 +352,7 @@
     if (basket.length) {
       var count = 0;
       for (var i = 0; i < basket.length; i++) { count += basket[i].qty; }
-      $('cart-bar-sum').textContent = count + (count === 1 ? ' item · ' : ' items · ') + naira(sub + fee);
+      $('cart-bar-sum').textContent = count + (count === 1 ? ' item · ' : ' items · ') + payable;
       bar.hidden = false;
     } else {
       bar.hidden = true;
@@ -479,10 +490,15 @@
     $('done-code').textContent = out.code;
 
     var when = how === 'delivery' ? 'be with you' : 'be ready';
+    var arrives = how === 'delivery' ? 'when it arrives' : 'when you collect it';
+    // The order went in with no delivery fee because none is set for that
+    // area. Saying so on the confirmation is the last chance to say it before
+    // somebody is standing at the door with the food.
+    var owed = typeof out.delivery_fee_kobo !== 'number'
+      ? naira(out.total_kobo) + ' for the food, plus a delivery fee we will confirm on the call, to pay ' + arrives
+      : naira(out.total_kobo) + ' to pay ' + arrives;
     $('done-summary').textContent =
-      naira(out.total_kobo) + ' to pay ' +
-      (how === 'delivery' ? 'when it arrives' : 'when you collect it') +
-      '. It should ' + when + ' in about ' + (out.prep_time_minutes || 30) + ' minutes.';
+      owed + '. It should ' + when + ' in about ' + (out.prep_time_minutes || 30) + ' minutes.';
 
     $('done-call').textContent = 'We will call ' + phone + ' to confirm.';
     $('track-status').textContent = 'Status: with the kitchen';
@@ -508,7 +524,11 @@
   function remember(out) {
     try {
       var list = readStored();
-      list.unshift({ code: out.code, token: out.track_token, at: out.placed_at, total: out.total_kobo });
+      list.unshift({
+        code: out.code, token: out.track_token, at: out.placed_at, total: out.total_kobo,
+        // Kept so the list does not quietly round a delivery away days later.
+        feePending: typeof out.delivery_fee_kobo !== 'number'
+      });
       global.localStorage.setItem(STORE_KEY, JSON.stringify(list.slice(0, 5)));
     } catch (e) { /* private mode; the confirmation on screen still stands */ }
   }
@@ -528,7 +548,7 @@
       var o = list[i];
       var li = elt('li', 'recent-item');
       li.appendChild(elt('span', 'recent-code', o.code));
-      li.appendChild(elt('span', 'recent-total', naira(o.total)));
+      li.appendChild(elt('span', 'recent-total', naira(o.total) + (o.feePending ? ' + delivery' : '')));
       var state = elt('span', 'recent-state');
       var pill = elt('span', 'state-pill', 'Checking…');
       pill.setAttribute('data-code', o.code);
@@ -716,10 +736,16 @@
 
     var sel = $('c-area');
     for (var a = 0; a < shop.areas.length; a++) {
-      var opt = elt('option', null, shop.areas[a].fee_kobo
-        ? shop.areas[a].name + ' — ' + naira(shop.areas[a].fee_kobo)
-        : shop.areas[a].name + ' — free delivery');
-      opt.value = shop.areas[a].id;
+      // Three states, and the third is the one that matters: a fee of zero is
+      // free delivery, and no fee at all is a question nobody has answered
+      // yet. Until this shop sets its fees, every area is the third.
+      var area = shop.areas[a];
+      var label;
+      if (typeof area.fee_kobo !== 'number') { label = area.name + ' — fee confirmed when we call'; }
+      else if (area.fee_kobo) { label = area.name + ' — ' + naira(area.fee_kobo); }
+      else { label = area.name + ' — free delivery'; }
+      var opt = elt('option', null, label);
+      opt.value = area.id;
       sel.appendChild(opt);
     }
 

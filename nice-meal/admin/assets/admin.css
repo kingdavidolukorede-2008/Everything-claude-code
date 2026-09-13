@@ -281,6 +281,9 @@ input[type=radio]    { accent-color: var(--spice); }
 
 .total-line { display: flex; justify-content: space-between; margin: 6px 0; font-variant-numeric: tabular-nums; }
 .total-line--big { font-size: 1.2rem; font-weight: 800; border-top: 1px solid var(--line); padding-top: 10px; }
+/* Sits where a figure would, on an order whose delivery fee was never set. It
+   has to read as a gap somebody must close, not as a number already settled. */
+.warn-text { color: var(--warm); font-weight: 600; font-size: 0.92rem; }
 
 /* ── Menu management ─────────────────────────────────────────────────────*/
 

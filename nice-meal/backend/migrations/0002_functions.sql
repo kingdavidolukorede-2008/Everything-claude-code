@@ -194,9 +194,14 @@ begin
     if not found then
       raise exception 'We are not delivering to that area.' using errcode = '22023';
     end if;
+    -- Null when no fee has been set for that area: the order then carries no
+    -- delivery fee rather than a zero, because a zero here would be read by
+    -- everyone downstream — the customer, the kitchen, the day's takings — as
+    -- a decision to deliver for free. See 0008_delivery_fee.sql.
     v_fee := v_area.fee_kobo;
     if v_settings.free_delivery_threshold_kobo is not null
        and v_subtotal >= v_settings.free_delivery_threshold_kobo then
+      -- This one is a real zero: the shop said free above the threshold.
       v_fee := 0;
     end if;
   end if;
@@ -218,7 +223,9 @@ begin
     case when p_fulfilment = 'delivery' then p_delivery_area_id end,
     case when p_fulfilment = 'delivery' then btrim(p_address) end,
     nullif(btrim(coalesce(p_notes, '')), ''),
-    v_subtotal, v_fee, v_subtotal + v_fee
+    -- An unquoted fee cannot be added to anything, so the total is the food on
+    -- its own and the delivery fee stays absent to say why.
+    v_subtotal, v_fee, v_subtotal + coalesce(v_fee, 0)
   ) returning * into v_order;
 
   insert into public.order_items (

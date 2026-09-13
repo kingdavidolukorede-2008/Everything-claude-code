@@ -159,14 +159,24 @@
     sub.appendChild(elt('span', null, 'Subtotal'));
     sub.appendChild(elt('span', null, naira(o.subtotal_kobo)));
     money.appendChild(sub);
-    if (o.delivery_fee_kobo) {
+    // No fee was set for that area when the order came in, so nobody has
+    // quoted this customer anything. Whoever handles the order has to, and
+    // they can only do that if the screen says so rather than showing a total
+    // that looks complete.
+    if (o.delivery_fee_kobo === null || o.delivery_fee_kobo === undefined) {
+      var owed = elt('p', 'total-line');
+      owed.appendChild(elt('span', null, 'Delivery'));
+      owed.appendChild(elt('span', 'warn-text', 'not quoted — agree it on the call'));
+      money.appendChild(owed);
+    } else if (o.delivery_fee_kobo) {
       var fee = elt('p', 'total-line');
       fee.appendChild(elt('span', null, 'Delivery'));
       fee.appendChild(elt('span', null, naira(o.delivery_fee_kobo)));
       money.appendChild(fee);
     }
     var tot = elt('p', 'total-line total-line--big');
-    tot.appendChild(elt('span', null, 'Total'));
+    var pending = o.delivery_fee_kobo === null || o.delivery_fee_kobo === undefined;
+    tot.appendChild(elt('span', null, pending ? 'Total before delivery' : 'Total'));
     tot.appendChild(elt('span', null, naira(o.total_kobo)));
     money.appendChild(tot);
     box.appendChild(money);
@@ -332,8 +342,9 @@
     var areas = (shop && shop.areas) || [];
     for (var a = 0; a < areas.length; a++) {
       if (!areas[a].is_active) { continue; }
-      var opt = elt('option', null,
-        areas[a].name + ' — ' + (areas[a].fee_kobo ? naira(areas[a].fee_kobo) : 'no fee set'));
+      var note = typeof areas[a].fee_kobo !== 'number' ? 'no fee set'
+        : (areas[a].fee_kobo ? naira(areas[a].fee_kobo) : 'free');
+      var opt = elt('option', null, areas[a].name + ' — ' + note);
       opt.value = areas[a].id;
       opt.setAttribute('data-fee', areas[a].fee_kobo);
       sel.appendChild(opt);

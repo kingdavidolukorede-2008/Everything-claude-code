@@ -19,9 +19,10 @@ migrations/
   0005_seed.sql       the menu exactly as the website states it
   0006_admin.sql      the admin queries, each behind its own is_admin() check
   0007_checkout.sql   public_menu(), the checkout's one read
+  0008_delivery_fee.sql  an unset delivery fee, told apart from a free one
 test/
   00_supabase_stub.sql  enough of Supabase to run locally
-  01_tests.sql          97 checks, most of them about who can see what
+  01_tests.sql          101 checks, most of them about who can see what
   run.sh                applies everything to a scratch db and runs them
 ```
 
@@ -179,15 +180,21 @@ Because the front end can be bypassed:
   change no screen could undo.
 - A completed or cancelled order cannot be reopened, and a cancellation needs a
   reason.
-- `total_kobo = subtotal_kobo + delivery_fee_kobo` is a check constraint, not a
-  convention.
+- `total_kobo = subtotal_kobo + coalesce(delivery_fee_kobo, 0)` is a check
+  constraint, not a convention. The `coalesce` is load-bearing: a delivery fee
+  nobody has set is null, and a check that evaluates to null passes, so the
+  bare sum left exactly those orders unguarded.
 
 ## Still to decide
 
-- **Delivery fees are seeded at ₦0** for all seven areas. The website never
-  quoted a fee, so nothing was invented on the restaurant's behalf. The admin
-  dashboard's Menu & shop tab has the table, and warns how many are still
-  unset. Set them before taking a delivery order.
+- **No delivery fee is set** for any of the seven areas. The website never
+  quoted one, so nothing was invented on the restaurant's behalf.
+  `delivery_areas.fee_kobo` is null for all of them, and null is a third state
+  rather than a zero: a customer ordering to such an area is told the fee is
+  confirmed on the call, and the order stores no fee at all. ₦0 now means what
+  it says — free delivery, decided. See `0008_delivery_fee.sql`. The admin
+  dashboard's Menu & shop tab has the table and warns how many are still unset;
+  set them, and the whole "confirmed when we call" path stops being reachable.
 - **The menu now exists in two places** — these tables and the static HTML.
   Until the site reads from here, a price changed in one is wrong in the other.
   The plan is for the marketing pages to keep their static markup for search

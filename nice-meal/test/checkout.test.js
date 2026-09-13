@@ -301,6 +301,68 @@ async function addSimple(page, name) {
   await fetch(BASE + '/__test/api?up=1');
   await ctx3.close();
 
+  console.log('\n== a delivery fee nobody has set ==');
+  // The seed leaves every area without one, because the website never quoted a
+  // fee. Held as ₦0 that was indistinguishable from a decision to deliver for
+  // free, and this page believed it: every area read "free delivery" and the
+  // total was printed as if it were settled. The rider would have been the one
+  // to break that promise.
+  await q('update settings set accepting_orders = true, min_order_kobo = 0, free_delivery_threshold_kobo = null');
+  await q('update delivery_areas set fee_kobo = null');
+  await page.goto(APP, { waitUntil: 'load' });
+  await page.waitForSelector('#step-choose:not([hidden])', { timeout: 8000 });
+  await addSimple(page, 'White Rice & Stew');
+  await page.click('#to-details');
+  await page.waitForTimeout(250);
+  await page.check('input[name=fulfilment][value=delivery]');
+  await page.waitForTimeout(250);
+
+  const areaText = await page.textContent('#c-area');
+  ok('no area offers free delivery on the strength of a fee nobody set',
+    !/free delivery/i.test(areaText), areaText);
+  ok('each one says the fee is still coming', /confirmed when we call/i.test(areaText), areaText);
+  ok('and the delivery line says so instead of "Free"',
+    /confirm/i.test(await page.textContent('#d-fee')), await page.textContent('#d-fee'));
+  ok('the total does not present itself as settled',
+    /\+ delivery$/.test(await page.textContent('#d-total')), await page.textContent('#d-total'));
+
+  await page.fill('#c-name', 'Ifeoma Balogun');
+  await page.fill('#c-phone', '08033334444');
+  await page.fill('#c-address', '2 Aina Obembe Street');
+  await page.click('#place-order');
+  await page.waitForSelector('#step-done:not([hidden])', { timeout: 8000 });
+  const pendingCode = (await page.textContent('#done-code')).trim();
+  const pendingOrder = (await q(
+    'select subtotal_kobo, delivery_fee_kobo, total_kobo from orders where code = $1',
+    [pendingCode]))[0];
+  ok('the order is stored with no delivery fee, not with a fee of zero',
+    pendingOrder.delivery_fee_kobo === null, String(pendingOrder.delivery_fee_kobo));
+  ok('and its total is the food alone',
+    pendingOrder.total_kobo === pendingOrder.subtotal_kobo,
+    pendingOrder.total_kobo + ' vs ' + pendingOrder.subtotal_kobo);
+  // The last moment anyone can be told, before somebody is at the door with it.
+  const doneText = await page.textContent('#done-summary');
+  ok('and the confirmation says the delivery fee is still to come',
+    /delivery fee we will confirm on the call/i.test(doneText), doneText);
+  ok('while still making clear nothing was paid online',
+    /pay when it arrives/i.test(doneText), doneText);
+
+  // A fee of zero is a different thing, and it is allowed to say so.
+  await q(`update delivery_areas set fee_kobo = 0 where name = 'Ayobo'`);
+  await page.goto(APP, { waitUntil: 'load' });
+  await page.waitForSelector('#step-choose:not([hidden])', { timeout: 8000 });
+  await addSimple(page, 'White Rice & Stew');
+  await page.click('#to-details');
+  await page.waitForTimeout(250);
+  await page.check('input[name=fulfilment][value=delivery]');
+  await page.selectOption('#c-area', (await q("select id from delivery_areas where name = 'Ayobo'"))[0].id);
+  await page.waitForTimeout(250);
+  ok('an area actually set to zero is free, and says free',
+    (await page.textContent('#d-fee')) === 'Free', await page.textContent('#d-fee'));
+  ok('and its total is a settled figure again',
+    !/\+ delivery/.test(await page.textContent('#d-total')), await page.textContent('#d-total'));
+  await q('update delivery_areas set fee_kobo = null');
+
   console.log('\n== narrow screens ==');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto(APP, { waitUntil: 'load' });
@@ -332,7 +394,9 @@ async function addSimple(page, name) {
 
   // Put the shop back exactly as the seed leaves it, for the suites after this.
   await q('update settings set min_order_kobo = 0, free_delivery_threshold_kobo = null, accepting_orders = true, pause_reason = null');
-  await q(`update delivery_areas set fee_kobo = 0`);
+  // Null, not zero: the seed leaves the fees unset, and zero would hand the
+  // suites after this a shop that has decided to deliver everywhere for free.
+  await q(`update delivery_areas set fee_kobo = null`);
   await q('update menu_items set is_available = true, is_active = true');
   await q('update menu_options set is_available = true');
 

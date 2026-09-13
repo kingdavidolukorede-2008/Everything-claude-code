@@ -59,14 +59,19 @@
     var missing = 0;
     for (var i = 0; i < areas.length; i++) {
       var a = areas[i];
-      if (a.is_active && !a.fee_kobo) { missing++; }
+      // Unset, not zero: a fee of zero is a decision to deliver there for
+      // free, and nagging about a decision somebody made is how a warning
+      // gets ignored.
+      var unset = typeof a.fee_kobo !== 'number';
+      if (a.is_active && unset) { missing++; }
       var tr = elt('tr');
       tr.appendChild(elt('td', null, a.name));
 
       var feeCell = elt('td', 'num');
       var fee = elt('input');
       fee.type = 'number'; fee.min = '0'; fee.step = '50';
-      fee.value = (a.fee_kobo || 0) / 100;
+      fee.value = unset ? '' : a.fee_kobo / 100;
+      fee.placeholder = 'not set';
       fee.setAttribute('data-area', a.id);
       fee.setAttribute('data-field', 'fee');
       // The column heading is not a label as far as a screen reader is
@@ -88,13 +93,14 @@
       body.appendChild(tr);
     }
 
-    // The seed ships every area at zero, because the website never quoted a
-    // fee. Saying so here is the difference between noticing and finding out
+    // The seed ships every area with no fee, because the website never quoted
+    // one. Saying so here is the difference between noticing and finding out
     // from a driver.
     var warn = el('fee-warning');
     if (missing) {
       warn.textContent = missing + (missing === 1 ? ' area has' : ' areas have')
-        + ' no delivery fee set, so delivery there is currently free.';
+        + ' no delivery fee set, so customers there are told we will confirm it'
+        + ' when we call. Enter 0 to make delivery there genuinely free.';
       warn.hidden = false;
     } else {
       warn.hidden = true;
@@ -107,7 +113,15 @@
     A.begin();
     var field = ev.target.getAttribute('data-field');
     var args = { p_area_id: id };
-    if (field === 'fee') { args.p_fee_kobo = A.kobo(ev.target.value); }
+    if (field === 'fee') {
+      // An empty box means nobody has decided yet, and Number('') is 0 — so
+      // without this, clearing the field would quietly announce free delivery,
+      // which is the whole fault this screen is here to prevent.
+      // Reloaded rather than left blank, so the box goes back to showing what
+      // the shop actually has.
+      if (!ev.target.value.trim()) { loadShop(); return; }
+      args.p_fee_kobo = A.kobo(ev.target.value);
+    }
     else { args.p_is_active = ev.target.checked; }
     A.call('admin_set_area', args).then(function () {
       A.toast('Delivery areas updated.');

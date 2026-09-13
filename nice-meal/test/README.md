@@ -1,6 +1,6 @@
 # Browser tests — the checkout and both dashboards
 
-260 checks that drive the real screens in a real browser, against the real
+289 checks that drive the real screens in a real browser, against the real
 migrations on a real Postgres. No mocked database, no mocked queries: an order
 placed in these tests goes through `place_order()`, gets priced by the
 database, trips the trigger, and comes back out through `kitchen_board()` and
@@ -24,9 +24,9 @@ run.sh                rebuilds the database, starts the stub, runs every suite
 stub-supabase.js      a stand-in for Supabase
 seed.sql              three test accounts: kitchen, admin, and a non-staff one
 kitchen.test.js       80 checks
-checkout.test.js      69 checks
-picks.test.js         32 checks
-admin.test.js         79 checks
+checkout.test.js      79 checks
+picks.test.js         41 checks
+admin.test.js         89 checks
 kitchen-a11y.test.js  axe-core over the kitchen screen
 site-a11y.test.js     axe-core over the three public pages
 admin-a11y.test.js    axe-core over all five admin tabs
@@ -105,6 +105,11 @@ seams.
   fees and the warning that counts how many are still unset. Including the
   cross-check that matters: a choice switched off here is unselectable on the
   order-taking screen a moment later.
+- **The three states of a delivery fee** — that an unset one is empty rather
+  than ₦0, that clearing the box does not quietly announce free delivery, that
+  a ₦0 typed on purpose counts as decided, and that an order taken before a fee
+  was set says *not quoted* on the panel, with its contrast measured rather
+  than eyeballed.
 - **Pausing** — that it stops the website, says so across the dashboard, and
   does *not* stop staff taking an order by phone.
 - **Reports** — headline figures checked against the database directly.
