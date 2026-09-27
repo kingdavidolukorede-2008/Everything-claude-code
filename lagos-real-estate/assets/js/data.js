@@ -18,7 +18,7 @@ window.SITE = {
   // or the full endpoint URL. Both forms post here; each submission's subject
   // line says which form it came from. Leave "" to run without a backend: the
   // forms still confirm, and the visitor can send the details on WhatsApp.
-  formspree: "",
+  formspree: "xyzabcd",
   yearsExperience: 12,
   propertiesManaged: 260,
   happyTenants: 1800,
