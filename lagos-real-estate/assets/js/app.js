@@ -248,9 +248,42 @@
       '<fieldset class="slots-field"><legend class="field-label">Preferred time</legend><div class="slots">' +
         SLOTS.map(function (t, i) { return '<label><input type="radio" name="time" value="' + t + '"' + (i === 1 ? " checked" : "") + "><span>" + t + "</span></label>"; }).join("") +
       '</div><span class="err" aria-live="polite"></span></fieldset>' +
+      HONEYPOT +
       '<button class="btn btn-gold btn-block btn-lg" type="submit">' + icon("cal") + "Book inspection</button>" +
       '<p class="form-foot">We\'ll call to confirm within 2 working hours. Your details are only used to arrange this viewing.</p>' +
       "</form>";
+  }
+
+  /* Sends a lead to Formspree when SITE.formspree is set; otherwise succeeds
+     at once so the site still works as a demo. On failure the form stays
+     filled in and offers a retry plus a WhatsApp fallback. */
+  var HONEYPOT = '<input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">';
+  var endpoint = function () {
+    var f = (SITE.formspree || "").trim();
+    return !f ? "" : /^https?:\/\//.test(f) ? f : "https://formspree.io/f/" + f;
+  };
+  function sendLead(form, data, waMsg, onSent) {
+    var url = endpoint(), btn = $('button[type="submit"]', form), alert = $(".form-alert", form);
+    if (alert) alert.remove();
+    if (!url) { onSent(false); return; }
+    if (form.elements._gotcha && form.elements._gotcha.value) { onSent(true); return; } // bot: pretend it worked
+    var label = btn.innerHTML;
+    btn.disabled = true; btn.classList.add("is-loading"); btn.innerHTML = '<span class="spinner" aria-hidden="true"></span>Sending…';
+    data._subject = data._subject + " — " + SITE.name + " website";
+    data.page = location.href;
+    fetch(url, { method: "POST", headers: { "Accept": "application/json", "Content-Type": "application/json" }, body: JSON.stringify(data) })
+      .then(function (r) {
+        if (r.ok) return onSent(true);
+        return r.json().catch(function () { return {}; }).then(function (j) {
+          throw new Error((j.errors || []).map(function (x) { return x.message; }).join(" ") || "HTTP " + r.status);
+        });
+      })
+      .catch(function (err) {
+        if (window.console) console.warn("Form not sent:", err.message);
+        btn.disabled = false; btn.classList.remove("is-loading"); btn.innerHTML = label;
+        btn.insertAdjacentHTML("beforebegin", '<div class="form-alert" role="alert"><strong>That didn\'t go through.</strong> ' +
+          'Check your connection and try again, or <a href="' + esc(waLink(waMsg)) + '" target="_blank" rel="noopener">send it to us on WhatsApp</a>.</div>');
+      });
   }
 
   function mountBooking(mount, preselect) {
@@ -281,6 +314,10 @@
         "Name: " + name + "\nPhone: " + el.phone.value.trim() + "\nProperty: " + what + (l ? " (ref " + l.id.toUpperCase() + ")" : "") +
         "\nDate: " + niceDate(date) + "\nTime: " + time;
       var first = name.split(/\s+/)[0];
+      var lead = { _subject: "Inspection request: " + (l ? l.title + " (" + l.id.toUpperCase() + ")" : "help me find a property"),
+        form: "Inspection booking", name: name, phone: el.phone.value.trim(), property: what + (l ? " — " + priceText(l) + ", ref " + l.id.toUpperCase() : ""),
+        date: niceDate(date), time: time, _gotcha: el._gotcha.value };
+      sendLead(form, lead, msg, function (sent) {
       mount.innerHTML = '<div class="success" tabindex="-1">' +
         '<div class="success-ic">' + icon("check") + "</div>" +
         "<h3>You're booked in, " + esc(first) + "!</h3>" +
@@ -292,12 +329,13 @@
           "<li><span>Time</span><span>" + esc(time) + "</span></li>" +
         "</ul>" +
         '<div class="success-actions">' +
-          '<a class="btn btn-wa btn-block" href="' + esc(waLink(msg)) + '" target="_blank" rel="noopener">' + icon("wa") + "Send details on WhatsApp</a>" +
+          '<a class="btn ' + (sent ? "btn-outline" : "btn-wa") + ' btn-block" href="' + esc(waLink(msg)) + '" target="_blank" rel="noopener">' + icon("wa") + (sent ? "Also send on WhatsApp" : "Send details on WhatsApp") + "</a>" +
           '<button type="button" class="btn btn-outline btn-block" data-again>Book another viewing</button>' +
         "</div></div>";
       var box = $(".success", mount); box.focus({ preventScroll: true });
       if (!mount.closest("dialog")) box.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
       $("[data-again]", mount).addEventListener("click", function () { mountBooking(mount, preselect); });
+      });
     });
   }
 
@@ -317,6 +355,10 @@
       if (bad.length) { bad[0].focus(); return; }
       var msg = "Hello " + SITE.name + ", I'd like to list my property with you.\n\nName: " + el.name.value.trim() + "\nPhone: " + el.phone.value.trim() +
         "\nLocation: " + el.location.value.trim() + "\nType: " + el.type.value + "\nI want to: " + el.intent.value + (el.note.value.trim() ? "\nNotes: " + el.note.value.trim() : "");
+      var lead = { _subject: "New landlord enquiry: " + el.type.value + " in " + el.location.value.trim(),
+        form: "Landlord listing", name: el.name.value.trim(), phone: el.phone.value.trim(), location: el.location.value.trim(),
+        type: el.type.value, intent: el.intent.value, note: el.note.value.trim(), _gotcha: el._gotcha.value };
+      sendLead(form, lead, msg, function () {
       panel.innerHTML = '<div class="success" tabindex="-1">' +
         '<div class="success-ic">' + icon("check") + "</div>" +
         "<h3>Thank you, " + esc(el.name.value.trim().split(/\s+/)[0]) + ".</h3>" +
@@ -327,6 +369,7 @@
         "</div></div>";
       $(".success", panel).focus({ preventScroll: true });
       $("[data-again]", panel).addEventListener("click", function () { panel.innerHTML = original; initLandlordForm(); });
+      });
     });
   }
 

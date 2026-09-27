@@ -406,6 +406,12 @@ p { margin: 0; }
 .form-sub { color: var(--muted); margin-top: -8px; }
 .form-row { display: grid; gap: 16px; }
 @media (min-width: 560px) { .form-row { grid-template-columns: 1fr 1fr; } }
+.hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.form-alert { padding: 12px 14px; border-radius: var(--r-sm); background: #FCEBEA; border: 1px solid #F1C3BF; color: #7A1A14; font-size: .9rem; animation: drop .25s var(--ease); }
+.form-alert a { font-weight: 700; color: inherit; }
+.btn.is-loading { cursor: progress; opacity: .85; transform: none; }
+.spinner { width: 18px; height: 18px; border-radius: 50%; border: 2.5px solid currentColor; border-right-color: transparent; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 .form-foot { font-size: .82rem; color: var(--muted); text-align: center; }
 .slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .slots label { position: relative; }

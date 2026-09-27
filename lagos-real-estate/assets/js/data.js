@@ -14,6 +14,11 @@ window.SITE = {
   address: "Plot 12, Admiralty Way, Lekki Phase 1, Lagos",
   hours: "Mon–Fri 9am–6pm · Sat 10am–4pm",
   cac: "RC 1234567",
+  // Formspree form ID (the part after /f/ in the endpoint, e.g. "xyzabcde"),
+  // or the full endpoint URL. Both forms post here; each submission's subject
+  // line says which form it came from. Leave "" to run without a backend: the
+  // forms still confirm, and the visitor can send the details on WhatsApp.
+  formspree: "",
   yearsExperience: 12,
   propertiesManaged: 260,
   happyTenants: 1800,

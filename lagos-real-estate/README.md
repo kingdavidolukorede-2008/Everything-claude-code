@@ -36,13 +36,33 @@ Everything is in `assets/js/data.js`:
   when tapped, which keeps the page fast. With `video: ""` the tour tile offers a live
   WhatsApp video walkthrough instead.
 
-## How the forms work
+## How the forms work (Formspree)
 
-There is no server. The booking and landlord forms validate input (Nigerian phone
-format, no Sundays or past dates) and then show a confirmation screen. That
-screen has a **"Send details on WhatsApp"** button with the full request
-pre-filled, so the enquiry actually reaches the manager. To receive the forms
-by email as well, point them at Formspree or Netlify Forms.
+Both forms, **Book an inspection** and **List your property**, post to
+[Formspree](https://formspree.io), which emails each submission to the owner.
+
+1. Create a free Formspree account and a new form. Formspree gives you an
+   endpoint like `https://formspree.io/f/xyzabcde`.
+2. Paste the ID (`xyzabcde`) or the whole URL into `formspree` in
+   `assets/js/data.js`.
+3. Deploy, then send one test booking from the live site. Formspree asks you to
+   confirm the first submission by email before it starts delivering.
+
+Both forms share one Formspree form. The email subject says which form sent it,
+e.g. *"Inspection request: 3-Bedroom Terrace Duplex (HM-101)"* or *"New landlord
+enquiry: Terrace in Ikate, Lekki"*. Each email also includes the name, phone
+number, property (with price and ref), date and time, and the page the visitor
+submitted from.
+
+- The confirmation screen shows only after Formspree accepts the submission.
+  While it sends, the button reads "Sending…".
+- If sending fails (bad connection, wrong ID), the visitor's answers stay in the
+  form and they see a retry message with a link to send the same details on WhatsApp.
+- A hidden `_gotcha` field catches most spam bots. Formspree also has its own
+  spam filtering.
+- With `formspree: ""` the site sends nothing. The forms still validate and
+  confirm, and the visitor can send the details on WhatsApp. This mode is useful
+  for demos.
 
 ## Details worth knowing
 
