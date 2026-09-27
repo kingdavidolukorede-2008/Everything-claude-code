@@ -376,7 +376,7 @@
   /* ---------------------------------------------------------------- property page */
   function initProperty() {
     var mount = $("[data-property-mount]"); if (!mount) return;
-    var id = new URLSearchParams(location.search).get("id"), l = byId(id);
+    var id = new URLSearchParams(location.search).get("id") || location.hash.slice(1), l = byId(id);
 
     if (!l) {
       mount.innerHTML = '<div class="wrap not-found"><h1>This listing has moved on</h1><p>It may have been let or sold. Browse what\'s available now, or tell us what you need on WhatsApp.</p>' +
