@@ -11,9 +11,9 @@ export function BrandMark() {
 
 export default function Brand({ as: Tag = "a", ...props }) {
   return (
-    <Tag className="brand" {...(Tag === "a" ? { href: "#home", "aria-label": "Edemrey Homes and Properties, home" } : {})} {...props}>
+    <Tag className="brand" {...(Tag === "a" ? { href: "#home", "aria-label": "Edmery Homes and Properties, home" } : {})} {...props}>
       <BrandMark />
-      <span className="brand__text"><span className="brand__name">Edemrey</span><span className="brand__sub">Homes &amp; Properties</span></span>
+      <span className="brand__text"><span className="brand__name">Edmery</span><span className="brand__sub">Homes &amp; Properties</span></span>
     </Tag>
   );
 }

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Edemrey Homes and Properties — React app shell
+   Edmery Homes and Properties — React app shell
    Content: ../../static/assets/data/content.js (shared with the static site)
    Routing: hash based. "#/property/<id>" shows a listing, any other hash is a
    section anchor on the home view.

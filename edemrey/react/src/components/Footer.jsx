@@ -15,7 +15,7 @@ export default function Footer() {
             <p>Residential, commercial and industrial real estate in Lekki and across Lagos. Reliable advice, smooth transactions.</p>
             <div className="socials">
               {Object.entries(BUSINESS.social).map(([k, url]) => (
-                <a key={k} href={url || "#"} {...(url ? { target: "_blank", rel: "noopener" } : {})} aria-label={`Edemrey Homes on ${label(k)}`}><Icon name={k} /></a>
+                <a key={k} href={url || "#"} {...(url ? { target: "_blank", rel: "noopener" } : {})} aria-label={`Edmery Homes on ${label(k)}`}><Icon name={k} /></a>
               ))}
             </div>
           </div>

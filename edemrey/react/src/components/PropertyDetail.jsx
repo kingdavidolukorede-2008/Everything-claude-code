@@ -46,7 +46,7 @@ export default function PropertyDetail({ p }) {
   useReveal(rootRef, [p?.id]);
 
   useEffect(() => {
-    document.title = p ? `${p.title}, ${p.location} | Edemrey Homes` : "Listing not found | Edemrey Homes";
+    document.title = p ? `${p.title}, ${p.location} | Edmery Homes` : "Listing not found | Edmery Homes";
     scrollTo({ top: 0, behavior: "instant" });
     titleRef.current?.focus({ preventScroll: true });
   }, [p]);
@@ -68,7 +68,7 @@ export default function PropertyDetail({ p }) {
     { icon: "building", v: p.type, l: "Property type" },
     { icon: "key", v: p.status, l: "Status" },
   ].filter(Boolean).slice(0, 4);
-  const waText = `Hello Edemrey Homes, I'm interested in "${p.title}" (${p.location}). Is it still available?`;
+  const waText = `Hello Edmery Homes, I'm interested in "${p.title}" (${p.location}). Is it still available?`;
 
   return (
     <article className="detail view-enter" ref={rootRef}>
@@ -93,7 +93,7 @@ export default function PropertyDetail({ p }) {
           </div>
           <aside className="detail__aside" aria-label="Contact an agent">
             <div className="agent">
-              <div className="agent__head"><BrandMark /><div><strong>Edemrey Homes agent</strong><span>Lekki office · replies fast</span></div></div>
+              <div className="agent__head"><BrandMark /><div><strong>Edmery Homes agent</strong><span>Lekki office · replies fast</span></div></div>
               <div className="agent__actions">
                 <a className="btn btn--gold btn--sm" href={telHref()}><Icon name="phone" /> Call</a>
                 <a className="btn btn--whatsapp btn--sm" href={waHref(waText)} target="_blank" rel="noopener"><Icon name="whatsapp" /> WhatsApp</a>

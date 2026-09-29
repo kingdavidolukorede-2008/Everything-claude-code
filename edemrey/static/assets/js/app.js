@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Edemrey Homes and Properties — static site behaviour
+   Edmery Homes and Properties — static site behaviour
    --------------------------------------------------------------------------
    Content lives in ../data/content.js. This file only renders it:
      1. Helpers           5. Carousel           9. Mobile menu + header
@@ -204,12 +204,12 @@ function renderContactCard() {
 
 function renderFooter() {
   const soc = Object.entries(BUSINESS.social).map(([k, url]) =>
-    `<a href="${esc(url || "#")}" ${url ? 'target="_blank" rel="noopener"' : ""} aria-label="Edemrey Homes on ${k === "x" ? "X" : k[0].toUpperCase() + k.slice(1)}">${icon(k)}</a>`).join("");
+    `<a href="${esc(url || "#")}" ${url ? 'target="_blank" rel="noopener"' : ""} aria-label="Edmery Homes on ${k === "x" ? "X" : k[0].toUpperCase() + k.slice(1)}">${icon(k)}</a>`).join("");
   $("[data-footer]").innerHTML = `
     <div class="container">
       <div class="footer-grid">
         <div>
-          <a class="brand" href="#home">${brandMark}<span class="brand__text"><span class="brand__name">Edemrey</span><span class="brand__sub">Homes &amp; Properties</span></span></a>
+          <a class="brand" href="#home">${brandMark}<span class="brand__text"><span class="brand__name">Edmery</span><span class="brand__sub">Homes &amp; Properties</span></span></a>
           <p>Residential, commercial and industrial real estate in Lekki and across Lagos. Reliable advice, smooth transactions.</p>
           <div class="socials">${soc}</div>
         </div>
@@ -403,7 +403,7 @@ function DetailView(p) {
     { icon: "building", v: p.type, l: "Property type" },
     { icon: "key", v: p.status, l: "Status" },
   ].filter(Boolean).slice(0, 4);
-  const waText = `Hello Edemrey Homes, I'm interested in "${p.title}" (${p.location}). Is it still available?`;
+  const waText = `Hello Edmery Homes, I'm interested in "${p.title}" (${p.location}). Is it still available?`;
   return `
   <article class="detail view-enter">
     <div class="container">
@@ -435,7 +435,7 @@ function DetailView(p) {
         </div>
         <aside class="detail__aside" aria-label="Contact an agent">
           <div class="agent">
-            <div class="agent__head">${brandMark}<div><strong>Edemrey Homes agent</strong><span>Lekki office · replies fast</span></div></div>
+            <div class="agent__head">${brandMark}<div><strong>Edmery Homes agent</strong><span>Lekki office · replies fast</span></div></div>
             <div class="agent__actions">
               <a class="btn btn--gold btn--sm" href="${telHref()}">${icon("phone")} Call</a>
               <a class="btn btn--whatsapp btn--sm" href="${waHref(waText)}" target="_blank" rel="noopener">${icon("whatsapp")} WhatsApp</a>
@@ -494,7 +494,7 @@ function bindMap() {
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("[data-map-load]");
     if (!btn) return;
-    btn.outerHTML = `<iframe src="${BUSINESS.mapEmbed}" title="Map showing Edemrey Homes at Polystar Building, Lekki" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>`;
+    btn.outerHTML = `<iframe src="${BUSINESS.mapEmbed}" title="Map showing Edmery Homes at Polystar Building, Lekki" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>`;
   });
 }
 
@@ -574,7 +574,7 @@ function route() {
     home.hidden = true;
     detail.hidden = false;
     $$("[data-nav-link]").forEach((l) => l.setAttribute("aria-current", "false"));
-    document.title = p ? `${p.title}, ${p.location} | Edemrey Homes` : `Listing not found | Edemrey Homes`;
+    document.title = p ? `${p.title}, ${p.location} | Edmery Homes` : `Listing not found | Edmery Homes`;
     if (p) {
       mountGallery($("[data-gallery]", detail), p);
       mountForm($("[data-form-mount='detail']", detail), { id: "detail", property: p, compact: true });

@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Edemrey Homes and Properties — site content
+   Edmery Homes and Properties — site content
    --------------------------------------------------------------------------
    This is the ONE file to edit for listings, services, testimonials, team and
    contact details. Both the static site (edemrey/static) and the React site
@@ -11,8 +11,8 @@
    ========================================================================== */
 
 export const BUSINESS = {
-  name: "Edemrey Homes and Properties Limited",
-  shortName: "Edemrey Homes",
+  name: "Edmery Homes and Properties Limited",
+  shortName: "Edmery Homes",
   tagline: "Homes & Properties",
   phoneDisplay: "0802 090 2599",
   phoneIntl: "+2348020902599",           // used for tel: links and schema
@@ -29,7 +29,7 @@ export const BUSINESS = {
   hours: "Open 24 hours",
   rating: 4.9,
   reviewCount: 11,
-  googleUrl: "https://www.google.com/maps/search/?api=1&query=Edemrey+Homes+and+Properties+Limited+Lekki",
+  googleUrl: "https://www.google.com/maps/search/?api=1&query=Edmery+Homes+and+Properties+Limited+Lekki",
   mapEmbed: "https://www.google.com/maps?q=Polystar+Building,+Marwa,+Lekki,+Lagos&output=embed",
   directionsUrl: "https://www.google.com/maps/dir/?api=1&destination=Polystar+Building+Marwa+Lekki+Lagos",
   // Social links: leave "" to hide an icon. TODO: get real handles from the client.
@@ -239,15 +239,15 @@ export const STEPS = [
 ];
 
 export const TESTIMONIALS = [
-  { name: "Marcus Verli", role: "Home buyer", rating: 5, text: "Edemrey Homes exceeded my expectations in helping me find the perfect home. Their team's dedication, professionalism, and market knowledge made the process smooth and stress-free." },
-  { name: "Gil Automation", role: "Property seller", rating: 5, text: "Edemrey Homes made selling our property hassle-free. Their marketing strategies and negotiation skills were impressive, resulting in a quick and profitable sale." },
-  { name: "Lion Dynasty FX", role: "First-time buyer", rating: 5, text: "As a first-time homebuyer, I had many questions and concerns. Edemrey Homes provided me with valuable insights, and their patience and support made my home purchase a breeze." },
+  { name: "Marcus Verli", role: "Home buyer", rating: 5, text: "Edmery Homes exceeded my expectations in helping me find the perfect home. Their team's dedication, professionalism, and market knowledge made the process smooth and stress-free." },
+  { name: "Gil Automation", role: "Property seller", rating: 5, text: "Edmery Homes made selling our property hassle-free. Their marketing strategies and negotiation skills were impressive, resulting in a quick and profitable sale." },
+  { name: "Lion Dynasty FX", role: "First-time buyer", rating: 5, text: "As a first-time homebuyer, I had many questions and concerns. Edmery Homes provided me with valuable insights, and their patience and support made my home purchase a breeze." },
 ];
 
 /* About: draft copy. TODO: confirm the story, founding year and people with the client. */
 export const ABOUT = {
   story:
-    "Edemrey Homes and Properties Limited is a Lagos real estate company based in the heart of Lekki. We help families find homes, help owners sell and let with confidence, and help businesses secure the offices, warehouses and industrial land they need to grow.",
+    "Edmery Homes and Properties Limited is a Lagos real estate company based in the heart of Lekki. We help families find homes, help owners sell and let with confidence, and help businesses secure the offices, warehouses and industrial land they need to grow.",
   story2:
     "Our clients rate us 4.9 out of 5 on Google for one simple reason: we make property in Lagos feel straightforward. Every listing is checked, every client gets honest advice, and every deal is negotiated as if it were our own.",
   mission:

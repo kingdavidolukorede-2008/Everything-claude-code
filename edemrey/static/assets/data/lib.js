@@ -50,7 +50,7 @@ export function relatedProperties(p, n = 3) {
 
 /* ---------------------------------------------------------------- links */
 export const telHref = () => `tel:${BUSINESS.phoneIntl}`;
-export const waHref = (text = "Hello Edemrey Homes, I'd like to make an enquiry.") =>
+export const waHref = (text = "Hello Edmery Homes, I'd like to make an enquiry.") =>
   `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(text)}`;
 
 export const fullAddress = () => {
@@ -84,7 +84,7 @@ export function validateInquiry(v) {
 /** Plain-text summary used for WhatsApp hand-off and email bodies. */
 export function inquiryText(v, property) {
   return [
-    "Hello Edemrey Homes, I'd like to make an enquiry.",
+    "Hello Edmery Homes, I'd like to make an enquiry.",
     property ? `Property: ${property.title} (${property.location})` : "",
     `Name: ${v.name.trim()}`,
     `Phone: ${v.phone.trim()}`,

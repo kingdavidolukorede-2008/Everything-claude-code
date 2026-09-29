@@ -1,6 +1,6 @@
-# Edemrey Homes and Properties: website
+# Edmery Homes and Properties: website
 
-A conversion-focused, mobile-first website for **Edemrey Homes and Properties Limited**, a real estate agency at 4th Floor, Polystar Building, Marwa, Lekki, Lagos.
+A conversion-focused, mobile-first website for **Edmery Homes and Properties Limited**, a real estate agency at 4th Floor, Polystar Building, Marwa, Lekki, Lagos.
 
 There are two builds of the same design, and both read from **one content file**:
 
@@ -94,7 +94,7 @@ Everything lives in `static/assets/data/content.js`, and both builds pick up cha
 5. **Social media links:** Instagram, Facebook, LinkedIn and X handles, or tell us which to hide.
 6. **Confirmation that 0802 090 2599 is on WhatsApp**, or a separate WhatsApp business number.
 7. **An email inbox for enquiries** (to set up the form endpoint) and a public email address to display.
-8. **Domain name** (e.g. edemreyhomes.com) to update the canonical and Open Graph URLs.
+8. **Domain name** (e.g. edmeryhomes.com) to update the canonical and Open Graph URLs.
 9. **Their Google Business Profile link**, so the rating badge and "Get directions" point to the exact listing, and ideally the office's map coordinates for the schema.
 10. **Company story:** founding year, milestones, number of deals closed, and any RC/CAC registration or professional memberships they'd like to show. The current About copy is a draft that makes no factual claims beyond the Google rating.
 11. **Permission** to feature the three named reviewers' testimonials, plus any further reviews they'd like shown.

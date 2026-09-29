@@ -35,7 +35,7 @@ export function WhyUs() {
     <section className="section section--dark" id="why" aria-labelledby="why-title">
       <div className="container why">
         <div className="section-head">
-          <p className="eyebrow">Why choose Edemrey</p>
+          <p className="eyebrow">Why choose Edmery</p>
           <h2 id="why-title">What our clients say, in four words</h2>
           <p>We didn't write these values. We took them from our Google reviews, where clients keep describing the same things.</p>
           <a className="btn btn--gold" href={telHref()}><Icon name="phone" /> Talk to an agent</a>

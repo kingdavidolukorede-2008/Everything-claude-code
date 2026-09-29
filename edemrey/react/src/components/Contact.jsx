@@ -10,7 +10,7 @@ function MapFacade() {
   return (
     <div className="map">
       {load ? (
-        <iframe src={BUSINESS.mapEmbed} title="Map showing Edemrey Homes at Polystar Building, Lekki" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
+        <iframe src={BUSINESS.mapEmbed} title="Map showing Edmery Homes at Polystar Building, Lekki" loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen />
       ) : (
         <button className="map__facade" type="button" onClick={() => setLoad(true)}>
           <span className="pin"><Icon name="pin" /></span>
